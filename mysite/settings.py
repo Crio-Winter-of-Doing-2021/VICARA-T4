@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'djoser',
     # Local Apps (Your project's apps)
     # 'user.apps.UserConfig',
 ]
