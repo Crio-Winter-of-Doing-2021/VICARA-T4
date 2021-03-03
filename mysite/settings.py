@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     # Local Apps (Your project's apps)
-    # 'user.apps.UserConfig',
+    'user.apps.UserConfig',
 ]
 
 MIDDLEWARE = [
