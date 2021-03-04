@@ -19,7 +19,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['structure', 'first_name',
+        fields = ['filesystem', 'first_name',
                   'last_name', 'id', 'username']
 
     def get_auth_token(self, obj):
