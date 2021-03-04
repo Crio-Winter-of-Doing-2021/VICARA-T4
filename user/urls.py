@@ -21,5 +21,6 @@ urlpatterns = [
     path('auth/register/', Register.as_view(), name="signup"),
     path('auth/logout/', Logout.as_view(), name="signup"),
     path('filesystem/', Filesystem.as_view(), name="filesystem"),
+    path('profile/', ProfileView.as_view(), name="filesystem"),
 
 ]
