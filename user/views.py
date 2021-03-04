@@ -13,6 +13,8 @@ import re
 
 ALLOWED_TYPES = ["FOLDER", "FILE"]
 REGEX_NAME = r"^[\w\-. ]+$"
+REQUIRED_POST_PARAMS = ["TYPE", "NAME", "PARENT"]
+REQUIRED_PATCH_PARAMS = ["id", "NAME"]
 
 
 class LoginView(ObtainAuthToken):
@@ -75,6 +77,10 @@ class Filesystem(APIView):
     def post(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
+
+        if not all(request.data[attr] for attr in REQUIRED_POST_PARAMS):
+            return Response(data={"message": f"Insufficient Post params req {REQUIRED_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+
         type = request.data["TYPE"]
         name = request.data["NAME"]
         parent = request.data["PARENT"]
@@ -113,10 +119,29 @@ class Filesystem(APIView):
         return Response(data=profile.filesystem, status=status.HTTP_201_CREATED)
 
     def patch(self, request):
-        """
-        to update the the folders/file names
-        """
-        pass
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+
+        if not all(attr in request.data for attr in REQUIRED_PATCH_PARAMS):
+            return Response(data={"message": f"Insufficient Post params req {REQUIRED_PATCH_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        id = request.data["id"]
+        new_name = request.data["NAME"]
+
+        if re.match(REGEX_NAME, new_name) is None:
+            return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
+        elif id not in filesystem:
+            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
+        elif id is "ROOT":
+            return Response(data={"message": "Renaming ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        parent = filesystem[id]["PARENT"]
+        filesystem[parent]["CHILDREN"][id]["NAME"] = new_name
+        filesystem[id]["NAME"] = new_name
+
+        profile.filesystem = filesystem
+        profile.save()
+        return Response(data=profile.filesystem, status=status.HTTP_201_CREATED)
 
     def delete(self, request):
         """
