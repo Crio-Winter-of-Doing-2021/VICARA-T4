@@ -5,11 +5,21 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+def filesystem_default_value():
+    default_filesystem = {
+        "ROOT": {
+            "PARENT": None,
+            "TYPE": "FOLDER",
+            "CHILDREN": {
+            }
+        }
+    }
+    return default_filesystem
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)
-    location = models.CharField(max_length=30, blank=True)
-    birth_date = models.DateField(null=True, blank=True)
+    filesystem = models.JSONField(default=filesystem_default_value)
 
 
 @receiver(post_save, sender=User)
