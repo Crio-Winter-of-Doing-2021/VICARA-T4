@@ -15,6 +15,7 @@ ALLOWED_TYPES = ["FOLDER", "FILE"]
 REGEX_NAME = r"^[\w\-. ]+$"
 REQUIRED_POST_PARAMS = ["TYPE", "NAME", "PARENT"]
 REQUIRED_PATCH_PARAMS = ["id", "NAME"]
+REQUIRED_DELETE_PARAMS = ["id"]
 
 
 class LoginView(ObtainAuthToken):
@@ -123,7 +124,7 @@ class Filesystem(APIView):
         filesystem = profile.filesystem
 
         if not all(attr in request.data for attr in REQUIRED_PATCH_PARAMS):
-            return Response(data={"message": f"Insufficient Post params req {REQUIRED_PATCH_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": f"Insufficient patch params req {REQUIRED_PATCH_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         id = request.data["id"]
         new_name = request.data["NAME"]
@@ -132,7 +133,7 @@ class Filesystem(APIView):
             return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
         elif id not in filesystem:
             return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif id is "ROOT":
+        elif id == "ROOT":
             return Response(data={"message": "Renaming ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
 
         parent = filesystem[id]["PARENT"]
@@ -141,10 +142,27 @@ class Filesystem(APIView):
 
         profile.filesystem = filesystem
         profile.save()
-        return Response(data=profile.filesystem, status=status.HTTP_201_CREATED)
+        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
 
     def delete(self, request):
-        """
-        to update the the folders/file names
-        """
-        pass
+
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+
+        if not all(attr in request.data for attr in REQUIRED_DELETE_PARAMS):
+            return Response(data={"message": f"Insufficient delete params req {REQUIRED_DELETE_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        id = request.data["id"]
+
+        if id not in filesystem:
+            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
+        elif id == "ROOT":
+            return Response(data={"message": "Deleting ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
+
+        parent = filesystem[id]["PARENT"]
+        filesystem[parent]["CHILDREN"].pop(id)
+        filesystem.pop(id)
+
+        profile.filesystem = filesystem
+        profile.save()
+        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
