@@ -11,10 +11,6 @@ def filesystem_default_value():
             "PARENT": None,
             "TYPE": "FOLDER",
             "CHILDREN": {
-                "id1": {
-                    "NAME": "file.txt",
-                    "TYPE": "FILE"
-                }
             }
         }
     }
