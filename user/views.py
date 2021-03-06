@@ -79,7 +79,7 @@ class Filesystem(APIView):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
 
-        if not all(request.data[attr] for attr in REQUIRED_POST_PARAMS):
+        if not all(attr in request.data for attr in REQUIRED_POST_PARAMS):
             return Response(data={"message": f"Insufficient Post params req {REQUIRED_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         type = request.data["TYPE"]
