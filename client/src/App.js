@@ -3,7 +3,7 @@ import Dashboard from './features/Dashboard/dashboard'
 
 function App() {
   return (
-    <div className="App">
+    <div style={{padding:"0 !important"}} className="App">
       <Dashboard/>
     </div>
   );

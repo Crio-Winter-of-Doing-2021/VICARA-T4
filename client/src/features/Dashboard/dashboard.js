@@ -4,7 +4,7 @@ import Nav from '../Nav/navbar'
 export default class dashboard extends Component {
     render() {
         return (
-            <div>
+            <div style={{padding:"0 !important"}}>
                 <Nav/>
             </div>
         )
