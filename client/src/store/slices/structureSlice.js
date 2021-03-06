@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import faxios from '../../../axios'
+import API from '../../axios'
 
 export const structureSlice= createSlice({
     name:'structure',
@@ -16,8 +16,9 @@ export const structureSlice= createSlice({
 export const {updateStructure} =structureSlice.actions
 
 export const structureAsync = () => dispatch =>{
-    faxios().get('/api/filesystem/').then(res=>{
+    API.get('/api/filesystem/').then(res=>{
         dispatch(updateStructure(res.data))
+        console.log(res)
     }).catch(err=>{
         console.log(err)
     })
