@@ -8,6 +8,8 @@ import {
   currentStructure,
 } from "../../../store/slices/structureSlice";
 
+import AddFolder from '../../Buttons/addFolder'
+
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -101,7 +103,8 @@ export default function Structure() {
 
   return (
     <div>
-      <NavigationTabs />
+      <AddFolder/>
+      <NavigationTabs style={{margin:"10px 0"}}/>
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>

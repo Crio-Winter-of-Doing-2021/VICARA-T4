@@ -8,6 +8,7 @@ export const structureSlice = createSlice({
     keyFolder: [{ key: "ROOT", name: "Home" }], //last index is current
     fileStructure: {},
     currentDisplay: {},
+    selected:[]
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -33,7 +34,7 @@ export const structureSlice = createSlice({
 
         let newData = {
           key: state.currentFolderKey,
-          name: state.fileStructure[state.currentFolderKey].NAME,
+          name: state.currentFolderKey==='ROOT'?'Home':state.fileStructure[state.currentFolderKey].NAME,
         };
 
         state.keyFolder.push(newData);
@@ -61,7 +62,18 @@ export const structureAsync = () => (dispatch) => {
     });
 };
 
+export const addFolderAsync = (data) => (dispatch) => {
+    API.post("/api/filesystem/",data)
+      .then((res) => {
+        dispatch(structureAsync())
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+};
+
 export const selectStructure = (state) => state.structure.currentDisplay;
 export const navStructure = (state) => state.structure.keyFolder;
+export const currentKey = (state) => state.structure.currentFolderKey
 
 export default structureSlice.reducer;
