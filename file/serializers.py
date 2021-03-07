@@ -11,4 +11,6 @@ class FileSerializer(serializers.ModelSerializer):
         fields = ('file', 'filesystem_id', 'timestamp')
 
     def get_filesystem_id(self, obj):
-        return secrets.token_urlsafe(16)
+        if "filesystem_id" in self.context:
+            return self.context["filesystem_id"]
+        return "nai tha"
