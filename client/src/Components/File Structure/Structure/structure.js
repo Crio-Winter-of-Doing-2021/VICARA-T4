@@ -9,6 +9,8 @@ import {
 } from "../../../store/slices/structureSlice";
 
 import AddFolder from '../../Buttons/addFolder'
+import Delete from '../../Buttons/delete'
+import Update from '../../Buttons/update'
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -22,6 +24,9 @@ import Link from "@material-ui/core/Link";
 
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
+
+import Checkbox from '@material-ui/core/Checkbox';
+import {updateSelectedKeys,selectCheckedKeys} from '../../../store/slices/checkboxSlice'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -51,6 +56,8 @@ export default function Structure() {
   const classes = useStyles();
 
   const structureState = useSelector(selectStructure);
+  const selectedKeys=useSelector(selectCheckedKeys)
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync());
@@ -73,11 +80,23 @@ export default function Structure() {
     dispatch(currentStructure());
   };
 
+  const [checked, setChecked] = React.useState(true);
+
+  const handleCheckedChange = (key,e) => {
+      console.log("checked")
+      dispatch(updateSelectedKeys(key))
+  };
+
+
   let tableRenderer = tableData.map((data) => {
     return (
       <StyledTableRow key={data.key}>
         <StyledTableCell component="th" scope="row">
           <div style={{ display: "flex", alignItems: "center" }}>
+            <Checkbox
+              onChange={(e)=> handleCheckedChange(data.key,e)}
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+            />
             {data.type === "FOLDER" ? (
               <FolderOpenTwoToneIcon />
             ) : (
@@ -103,8 +122,12 @@ export default function Structure() {
 
   return (
     <div>
-      <AddFolder/>
-      <NavigationTabs style={{margin:"10px 0"}}/>
+      <div style={{display:"flex"}}>
+        <AddFolder />
+        <Delete/>
+        <Update/>
+      </div>
+      <NavigationTabs/>
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>

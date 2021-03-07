@@ -41,7 +41,6 @@ export default function CustomizedBreadcrumbs() {
   };
 
   let renderNav = nav.map((data) => {
-    console.log("history array", nav);
     return (
       <StyledBreadcrumb
         component="a"

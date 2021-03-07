@@ -41,7 +41,6 @@ export default function CustomizedBreadcrumbs() {
   };
 
   let renderNav = nav.map((data) => {
-    console.log("history array", nav);
     return (
       <StyledBreadcrumb
         component="a"
@@ -59,5 +58,5 @@ export default function CustomizedBreadcrumbs() {
     );
   });
 
-  return <Breadcrumbs aria-label="breadcrumb">{renderNav}</Breadcrumbs>;
+  return <Breadcrumbs style={{margin:"10px 0"}} aria-label="breadcrumb">{renderNav}</Breadcrumbs>;
 }
