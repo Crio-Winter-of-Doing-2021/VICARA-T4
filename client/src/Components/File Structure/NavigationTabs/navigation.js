@@ -13,6 +13,7 @@ import {
   changeKey,
   currentStructure,
   navStructure,
+  currentKey
 } from "../../../store/slices/structureSlice";
 
 const StyledBreadcrumb = withStyles((theme) => ({
@@ -34,12 +35,15 @@ const StyledBreadcrumb = withStyles((theme) => ({
 export default function CustomizedBreadcrumbs() {
   const dispatch = useDispatch();
   const nav = useSelector(navStructure);
+  const currKey=useSelector(currentKey);
 
   let updateFolder = (key) => {
     console.log("key called", key);
     dispatch(changeKey(key));
     dispatch(currentStructure());
-    dispatch(emptykeys())
+    if(key!==currKey){
+      dispatch(emptykeys())
+    }
   };
 
   let renderNav = nav.map((data) => {
