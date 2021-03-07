@@ -1,9 +1,13 @@
 import React from 'react';
+import {useDispatch,useSelector} from 'react-redux'
 import { emphasize, withStyles } from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import FolderIcon from '@material-ui/icons/Folder';
+
+import {changeKey,currentStructure,navStructure} from '../../../store/slices/structureSlice'
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -21,28 +25,33 @@ const StyledBreadcrumb = withStyles((theme) => ({
   },
 }))(Chip); // TypeScript only: need a type cast here because https://github.com/Microsoft/TypeScript/issues/26591
 
-function handleClick(event) {
-  event.preventDefault();
-  console.info('You clicked a breadcrumb.');
-}
+
 
 export default function CustomizedBreadcrumbs() {
-  return (
-    <Breadcrumbs aria-label="breadcrumb">
+
+  const dispatch = useDispatch()
+  const nav=useSelector(navStructure)
+
+  let updateFolder = (key) =>{
+    dispatch(changeKey(key));
+    dispatch(currentStructure());
+  }
+
+  let renderNav = nav.map(data=>{
+    return(
       <StyledBreadcrumb
         component="a"
         href="#"
-        label="Home"
-        icon={<HomeIcon fontSize="small" />}
-        onClick={handleClick}
+        label={data.name}
+        icon={data.key==='ROOT'?<HomeIcon fontSize="small" />:<FolderIcon fontSize="small" />}
+        onClick={updateFolder(data.key)}
       />
-      <StyledBreadcrumb component="a" href="#" label="Catalog" onClick={handleClick} />
-      <StyledBreadcrumb
-        label="Accessories"
-        // deleteIcon={<ExpandMoreIcon />}
-        onClick={handleClick}
-        // onDelete={handleClick}
-      />
+    )
+  })
+
+  return (
+    <Breadcrumbs aria-label="breadcrumb">
+      {renderNav}
     </Breadcrumbs>
   );
 }
