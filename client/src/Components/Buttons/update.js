@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import EditIcon from '@material-ui/icons/Edit';
 
 import {updateAsync,selectCheckedKeys} from '../../store/slices/checkboxSlice'
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +49,7 @@ export default function FormDialog() {
 
   return (
     <div>
-      <Button startIcon={<CreateNewFolderIcon/>} disabled={deactive} variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button startIcon={<EditIcon/>} disabled={deactive} variant="outlined" color="primary" onClick={handleClickOpen}>
         Update
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
