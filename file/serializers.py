@@ -3,6 +3,7 @@ from .models import File
 
 
 class FileSerializer(serializers.ModelSerializer):
+
     class Meta():
         model = File
         fields = ('file', 'filesystem_id', 'timestamp')
