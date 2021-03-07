@@ -26,7 +26,7 @@ import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
 import Checkbox from '@material-ui/core/Checkbox';
-import {updateSelectedKeys,selectCheckedKeys} from '../../../store/slices/checkboxSlice'
+import {updateSelectedKeys,selectCheckedKeys,emptykeys} from '../../../store/slices/checkboxSlice'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -78,6 +78,7 @@ export default function Structure() {
     console.log("key clicked", key);
     dispatch(changeKey(key));
     dispatch(currentStructure());
+    dispatch(emptykeys())
   };
 
   const [checked, setChecked] = React.useState(true);
