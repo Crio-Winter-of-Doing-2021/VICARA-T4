@@ -9,6 +9,7 @@ from user.models import Profile
 from .models import File
 REQUIRED_POST_PARAMS = ["PARENT", "file"]
 REQUIRED_PATCH_PARAMS = ["file_id", "new_name"]
+REQUIRED_DELETE_PARAMS = ["file_id"]
 REGEX_NAME = r"^[\w\-. ]+$"
 
 
@@ -54,6 +55,32 @@ class FileView(APIView):
             "TYPE": "FILE",
             "NAME": name
         }
+        profile.filesystem = filesystem
+        profile.save()
+        return Response(data=filesystem, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+
+        if not all(attr in request.data for attr in REQUIRED_DELETE_PARAMS):
+            return Response(data={"message": f"Insufficient Post params req {REQUIRED_DELETE_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        file_id = request.data["file_id"]
+
+        if file_id not in filesystem:
+            return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
+        elif filesystem[file_id]["TYPE"] != "FILE":
+            return Response(data={"message": "id sent is not of a file"}, status=status.HTTP_400_BAD_REQUEST)
+
+        parent = filesystem[file_id]["PARENT"]
+        children = filesystem[parent]["CHILDREN"]
+
+        file_obj = File.objects.get(filesystem_id=file_id).delete()
+
+        filesystem[parent]["CHILDREN"].pop(file_id)
+        filesystem.pop(file_id)
+
         profile.filesystem = filesystem
         profile.save()
         return Response(data=filesystem, status=status.HTTP_200_OK)
