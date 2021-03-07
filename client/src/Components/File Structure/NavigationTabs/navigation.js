@@ -7,6 +7,8 @@ import HomeIcon from "@material-ui/icons/Home";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FolderIcon from "@material-ui/icons/Folder";
 
+import {emptykeys} from '../../../store/slices/checkboxSlice'
+
 import {
   changeKey,
   currentStructure,
@@ -36,8 +38,8 @@ export default function CustomizedBreadcrumbs() {
   let updateFolder = (key) => {
     console.log("key called", key);
     dispatch(changeKey(key));
-
     dispatch(currentStructure());
+    dispatch(emptykeys())
   };
 
   let renderNav = nav.map((data) => {
