@@ -16,6 +16,7 @@ REGEX_NAME = r"^[\w\-. ]+$"
 REQUIRED_POST_PARAMS = ["TYPE", "NAME", "PARENT"]
 REQUIRED_PATCH_PARAMS = ["id", "NAME"]
 REQUIRED_DELETE_PARAMS = ["id"]
+REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
 
 
 class LoginView(ObtainAuthToken):
@@ -111,7 +112,8 @@ class Filesystem(APIView):
         filesystem[id] = {
             "PARENT": parent,
             "TYPE": type,
-            "NAME": name
+            "NAME": name,
+            "FAVOURITE": False
         }
         if(type == "FOLDER"):
             filesystem[id]["CHILDREN"] = {}
@@ -164,5 +166,37 @@ class Filesystem(APIView):
         filesystem.pop(id)
 
         profile.filesystem = filesystem
+        profile.save()
+        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
+
+
+class Favourites(APIView):
+
+    def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        return Response(data=profile.favourites, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        favourites = profile.favourites
+
+        if not all(attr in request.data for attr in REQUIRED_FAV_POST_PARAMS):
+            return Response(data={"message": f"Insufficient delete params req {REQUIRED_FAV_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        id = request.data["id"]
+        is_favourite = request.data["is_favourite"]
+        if id not in filesystem:
+            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
+        elif filesystem[id]["FAVOURITE"] == is_favourite:
+            return Response(data={"message": "Redundant request"}, status=status.HTTP_400_BAD_REQUEST)
+
+        filesystem[id]["FAVOURITE"] = is_favourite
+        if(is_favourite):
+            favourites[id] = is_favourite
+        else:
+            favourites.pop(id)
+        profile.filesystem = filesystem
+        profile.favourites = favourites
         profile.save()
         return Response(data=profile.filesystem, status=status.HTTP_200_OK)

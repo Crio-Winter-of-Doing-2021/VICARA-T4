@@ -10,6 +10,7 @@ def filesystem_default_value():
         "ROOT": {
             "PARENT": None,
             "TYPE": "FOLDER",
+            "FAVOURITE": False,
             "CHILDREN": {
             }
         }
@@ -20,6 +21,8 @@ def filesystem_default_value():
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     filesystem = models.JSONField(default=filesystem_default_value)
+    recent = models.JSONField(default=list)
+    favourites = models.JSONField(default=dict)
 
 
 @receiver(post_save, sender=User)
