@@ -8,8 +8,10 @@ from django.dispatch import receiver
 def filesystem_default_value():
     default_filesystem = {
         "ROOT": {
+            "NAME": "ROOT",
             "PARENT": None,
             "TYPE": "FOLDER",
+            "FAVOURITE": False,
             "CHILDREN": {
             }
         }
@@ -19,6 +21,8 @@ def filesystem_default_value():
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     filesystem = models.JSONField(default=filesystem_default_value)
+    recent = models.JSONField(default=dict)
+    favourites = models.JSONField(default=dict)
 
 
 @receiver(post_save, sender=User)
