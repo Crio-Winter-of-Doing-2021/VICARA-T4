@@ -4,7 +4,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 import secrets
-
+from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from rest_framework import serializers, status
 from .models import Profile
@@ -17,6 +17,7 @@ REQUIRED_POST_PARAMS = ["TYPE", "NAME", "PARENT"]
 REQUIRED_PATCH_PARAMS = ["id", "NAME"]
 REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
+DATE_TIME_FORMAT = "%m/%d/%y %H:%M:%S"
 
 
 class LoginView(ObtainAuthToken):
@@ -200,3 +201,98 @@ class Favourites(APIView):
         profile.favourites = favourites
         profile.save()
         return Response(data=profile.filesystem, status=status.HTTP_200_OK)
+
+
+def remove_oldest(recent):
+    presentday = datetime.now()
+    oldest_key = None
+    # tommorow
+    oldest_val = presentday + timedelta(1)
+    # smaller the date-time-object the older it is
+    for key, val in recent.items():
+        timestamp_string = val["TIMESTAMP"]
+        datetime_object = datetime.strptime(timestamp_string, DATE_TIME_FORMAT)
+        if(datetime_object < oldest_val):
+            oldest_key = key
+            oldest_val = datetime_object
+    recent.pop(oldest_key)
+
+
+class Recent(APIView):
+
+    def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        recent = profile.recent
+        filesystem = profile.filesystem
+        id = self.request.query_params.get('id', None)
+        if id == None:
+            return Response(data={"message": "Url param id required"}, status=status.HTTP_400_BAD_REQUEST)
+        elif id not in filesystem:
+            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        now = str(datetime.now().strftime(DATE_TIME_FORMAT))
+        recent[id] = {
+            "TIMESTAMP": now,
+            **filesystem[id]
+        }
+        if len(recent) >= 2:
+            remove_oldest(recent)
+
+        profile.recent = recent
+        profile.save()
+        return Response(data=profile.recent, status=status.HTTP_200_OK)
+
+
+# {
+#     "ROOT": {
+#         "PARENT": null,
+#         "TYPE": "FOLDER",
+#         "FAVOURITE": false,
+#         "CHILDREN": {
+#             "zp0HH5pwVYOP4-GI5eOZ-w": {
+#                 "TYPE": "FOLDER",
+#                 "NAME": "Folder One"
+#             },
+#             "nXEUXgSZn-sYT1UsBXIgOA": {
+#                 "TYPE": "FOLDER",
+#                 "NAME": "Folder Two"
+#             },
+#             "Ha7cjn5fWtgP9Cm0Ud1_jA": {
+#                 "TYPE": "FOLDER",
+#                 "NAME": "Folder Three"
+#             },
+#             "Mz3MVPV2OserTIyaIwV3jg": {
+#                 "TYPE": "FOLDER",
+#                 "NAME": "Folder Four"
+#             }
+#         }
+#     },
+#     "zp0HH5pwVYOP4-GI5eOZ-w": {
+#         "PARENT": "ROOT",
+#         "TYPE": "FOLDER",
+#         "NAME": "Folder One",
+#         "FAVOURITE": false,
+#         "CHILDREN": {}
+#     },
+#     "nXEUXgSZn-sYT1UsBXIgOA": {
+#         "PARENT": "ROOT",
+#         "TYPE": "FOLDER",
+#         "NAME": "Folder Two",
+#         "FAVOURITE": false,
+#         "CHILDREN": {}
+#     },
+#     "Ha7cjn5fWtgP9Cm0Ud1_jA": {
+#         "PARENT": "ROOT",
+#         "TYPE": "FOLDER",
+#         "NAME": "Folder Three",
+#         "FAVOURITE": false,
+#         "CHILDREN": {}
+#     },
+#     "Mz3MVPV2OserTIyaIwV3jg": {
+#         "PARENT": "ROOT",
+#         "TYPE": "FOLDER",
+#         "NAME": "Folder Four",
+#         "FAVOURITE": false,
+#         "CHILDREN": {}
+#     }
+# }
