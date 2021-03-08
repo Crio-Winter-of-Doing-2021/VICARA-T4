@@ -194,7 +194,7 @@ class Favourites(APIView):
 
         filesystem[id]["FAVOURITE"] = is_favourite
         if(is_favourite):
-            favourites[id] = is_favourite
+            favourites[id] = filesystem[id]
         else:
             favourites.pop(id)
         profile.filesystem = filesystem
@@ -219,8 +219,11 @@ def remove_oldest(recent):
 
 
 class Recent(APIView):
-
     def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        return Response(data=profile.recent, status=status.HTTP_200_OK)
+
+    def post(self, request):
         profile = Profile.objects.get(user=request.user)
         recent = profile.recent
         filesystem = profile.filesystem
