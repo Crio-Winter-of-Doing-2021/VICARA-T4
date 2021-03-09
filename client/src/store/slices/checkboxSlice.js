@@ -1,6 +1,6 @@
 import { createSlice, configureStore } from "@reduxjs/toolkit";
 import API from "../../axios";
-import {structureAsync} from './structureSlice'
+import {structureAsync,structureFavAsync} from './structureSlice'
 
 export const checkBoxSlice= createSlice({
   name: "checkbox",
@@ -41,6 +41,7 @@ export const deleteAsync = (arr) => (dispatch) => {
     })
     .then((res) => {
         dispatch(structureAsync())
+        dispatch(structureFavAsync())
     })
     .catch((err) => {
       console.log(err)
@@ -55,6 +56,7 @@ export const updateAsync = (data) => (dispatch) => {
         console.log(res)
         // dispatch(emptykeys())
         dispatch(structureAsync())
+        dispatch(structureFavAsync())
       })
       .catch((err) => {
         console.log(err)

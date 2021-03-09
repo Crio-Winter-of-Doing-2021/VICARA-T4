@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import NavigationTabs from "../NavigationTabs/navigation";
 import {
   structureAsync,
-  selectStructure,
+  selectPlainStructure,
   changeKey,
   currentStructure,
   wholefile,
-  addFavouriteAsync
+  addFavouriteAsync,
+  structureFavAsync
 } from "../../../store/slices/structureSlice";
 
 import AddFolder from '../../Buttons/addFolder'
@@ -62,7 +63,7 @@ export default function Structure() {
   const classes = useStyles();
 
   // const filestructure = useSelector(wholefile);
-  const structureState = useSelector(selectStructure);
+  const structureState = useSelector(selectPlainStructure);
   // const selectedKeys=useSelector(selectCheckedKeys)
 
   const dispatch = useDispatch();
@@ -102,6 +103,7 @@ export default function Structure() {
   const handleFavouriteClick =(e,data)=>{
     e.preventDefault();
     dispatch(addFavouriteAsync(data))
+    dispatch(structureFavAsync())
   }
 
   let tableRenderer = tableData.map((data) => {
@@ -151,11 +153,10 @@ export default function Structure() {
   return (
     <div>
       <div style={{display:"flex"}}>
-        <AddFolder />
         <Delete/>
         <Update/>
       </div>
-      <NavigationTabs/>
+      {/* <NavigationTabs/> */}
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
