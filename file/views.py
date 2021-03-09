@@ -65,6 +65,7 @@ class FileView(APIView):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         favourites = profile.favourites
+        recent = profile.recent
 
         if not all(attr in request.data for attr in REQUIRED_DELETE_PARAMS):
             return Response(data={"message": f"Insufficient Post params req {REQUIRED_DELETE_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -85,9 +86,12 @@ class FileView(APIView):
         filesystem.pop(file_id)
         if file_id in favourites:
             favourites.pop(file_id)
+        if id in recent:
+            recent.pop(file_id)
 
         profile.filesystem = filesystem
         profile.favourites = favourites
+        profile.recent = recent
         profile.save()
         return Response(data=filesystem, status=status.HTTP_200_OK)
 
