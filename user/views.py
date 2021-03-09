@@ -107,7 +107,8 @@ class Filesystem(APIView):
         id = secrets.token_urlsafe(16)
         children[id] = {
             "TYPE": type,
-            "NAME": name
+            "NAME": name,
+            "FAVOURITE": False
         }
         filesystem[parent]["CHILDREN"] = children
         filesystem[id] = {
@@ -192,7 +193,9 @@ class Favourites(APIView):
         elif filesystem[id]["FAVOURITE"] == is_favourite:
             return Response(data={"message": "Redundant request"}, status=status.HTTP_400_BAD_REQUEST)
 
+        parent = filesystem[id]["PARENT"]
         filesystem[id]["FAVOURITE"] = is_favourite
+        filesystem[parent]["CHILDREN"][id]["FAVOURITE"] = is_favourite
         if(is_favourite):
             favourites[id] = filesystem[id]
         else:
