@@ -47,13 +47,15 @@ class FileView(APIView):
         file_obj.save()
         children[filesystem_id] = {
             "TYPE": "FILE",
-            "NAME": name
+            "NAME": name,
+            "FAVOURITE": False
         }
         filesystem[parent]["CHILDREN"] = children
         filesystem[filesystem_id] = {
             "PARENT": parent,
             "TYPE": "FILE",
-            "NAME": name
+            "NAME": name,
+            "FAVOURITE": False
         }
         profile.filesystem = filesystem
         profile.save()
@@ -111,16 +113,9 @@ class FileView(APIView):
         file_obj = File.objects.get(filesystem_id=file_id)
         file_obj.file.name = new_name
         file_obj.save()
-        children[file_id] = {
-            "TYPE": "FILE",
-            "NAME": new_name
-        }
+        children[file_id]["NAME"] = new_name
         filesystem[parent]["CHILDREN"] = children
-        filesystem[file_id] = {
-            "PARENT": parent,
-            "TYPE": "FILE",
-            "NAME": new_name
-        }
+        filesystem[file_id]["NAME"] = new_name
         profile.filesystem = filesystem
         profile.save()
         return Response(data=filesystem, status=status.HTTP_200_OK)
