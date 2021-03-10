@@ -10,11 +10,12 @@ from rest_framework import serializers, status
 from .models import Profile
 from .serializers import ProfileSerializer
 import re
+from mysite.constants import FILE, PARENT, CHILDREN, FAVOURITE, NAME, FOLDER, TIMESTAMP, TYPE
 
-ALLOWED_TYPES = ["FOLDER", "FILE"]
+ALLOWED_TYPES = [FOLDER, FILE]
 REGEX_NAME = r"^[\w\-. ]+$"
-REQUIRED_POST_PARAMS = ["TYPE", "NAME", "PARENT"]
-REQUIRED_PATCH_PARAMS = ["id", "NAME"]
+REQUIRED_POST_PARAMS = [TYPE, NAME, PARENT]
+REQUIRED_PATCH_PARAMS = ["id", NAME]
 REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
 DATE_TIME_FORMAT = "%m/%d/%y %H:%M:%S"
@@ -84,9 +85,9 @@ class Filesystem(APIView):
         if not all(attr in request.data for attr in REQUIRED_POST_PARAMS):
             return Response(data={"message": f"Insufficient Post params req {REQUIRED_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        type = request.data["TYPE"]
-        name = request.data["NAME"]
-        parent = request.data["PARENT"]
+        type = request.data[TYPE]
+        name = request.data[NAME]
+        parent = request.data[PARENT]
 
         if parent not in filesystem:
             return Response(data={"message": "Invalid parent"}, status=status.HTTP_400_BAD_REQUEST)
@@ -94,31 +95,31 @@ class Filesystem(APIView):
             return Response(data={"message": "Invalid type"}, status=status.HTTP_400_BAD_REQUEST)
         elif re.match(REGEX_NAME, name) is None:
             return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
-        elif filesystem[parent]["TYPE"] != "FOLDER":
+        elif filesystem[parent][TYPE] != FOLDER:
             return Response(data={"message": "Parent is not a folder"}, status=status.HTTP_400_BAD_REQUEST)
 
-        children = filesystem[parent]["CHILDREN"]
+        children = filesystem[parent][CHILDREN]
         for x in children:
-            already_present_name = children[x]["NAME"]
-            already_present_type = children[x]["TYPE"]
+            already_present_name = children[x][NAME]
+            already_present_type = children[x][TYPE]
             if(name == already_present_name and type == already_present_type):
                 return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
 
         id = secrets.token_urlsafe(16)
         children[id] = {
-            "TYPE": type,
-            "NAME": name,
-            "FAVOURITE": False
+            TYPE: type,
+            NAME: name,
+            FAVOURITE: False
         }
-        filesystem[parent]["CHILDREN"] = children
+        filesystem[parent][CHILDREN] = children
         filesystem[id] = {
-            "PARENT": parent,
-            "TYPE": type,
-            "NAME": name,
-            "FAVOURITE": False
+            PARENT: parent,
+            TYPE: type,
+            NAME: name,
+            FAVOURITE: False
         }
-        if(type == "FOLDER"):
-            filesystem[id]["CHILDREN"] = {}
+        if(type == FOLDER):
+            filesystem[id][CHILDREN] = {}
         profile.filesystem = filesystem
         profile.save()
         return Response(data=profile.filesystem, status=status.HTTP_201_CREATED)
@@ -131,7 +132,7 @@ class Filesystem(APIView):
             return Response(data={"message": f"Insufficient patch params req {REQUIRED_PATCH_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
 
         id = request.data["id"]
-        new_name = request.data["NAME"]
+        new_name = request.data[NAME]
 
         if re.match(REGEX_NAME, new_name) is None:
             return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
@@ -140,9 +141,9 @@ class Filesystem(APIView):
         elif id == "ROOT":
             return Response(data={"message": "Renaming ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
 
-        parent = filesystem[id]["PARENT"]
-        filesystem[parent]["CHILDREN"][id]["NAME"] = new_name
-        filesystem[id]["NAME"] = new_name
+        parent = filesystem[id][PARENT]
+        filesystem[parent][CHILDREN][id][NAME] = new_name
+        filesystem[id][NAME] = new_name
 
         profile.filesystem = filesystem
         profile.save()
@@ -165,8 +166,8 @@ class Filesystem(APIView):
         elif id == "ROOT":
             return Response(data={"message": "Deleting ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
 
-        parent = filesystem[id]["PARENT"]
-        filesystem[parent]["CHILDREN"].pop(id)
+        parent = filesystem[id][PARENT]
+        filesystem[parent][CHILDREN].pop(id)
         filesystem.pop(id)
         if id in favourites:
             favourites.pop(id)
@@ -197,12 +198,12 @@ class Favourites(APIView):
         is_favourite = request.data["is_favourite"]
         if id not in filesystem:
             return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif filesystem[id]["FAVOURITE"] == is_favourite:
+        elif filesystem[id][FAVOURITE] == is_favourite:
             return Response(data={"message": "Redundant request"}, status=status.HTTP_400_BAD_REQUEST)
 
-        parent = filesystem[id]["PARENT"]
-        filesystem[id]["FAVOURITE"] = is_favourite
-        filesystem[parent]["CHILDREN"][id]["FAVOURITE"] = is_favourite
+        parent = filesystem[id][PARENT]
+        filesystem[id][FAVOURITE] = is_favourite
+        filesystem[parent][CHILDREN][id][FAVOURITE] = is_favourite
         if(is_favourite):
             favourites[id] = filesystem[id]
         else:
@@ -220,7 +221,7 @@ def remove_oldest(recent):
     oldest_val = presentday + timedelta(1)
     # smaller the date-time-object the older it is
     for key, val in recent.items():
-        timestamp_string = val["TIMESTAMP"]
+        timestamp_string = val[TIMESTAMP]
         datetime_object = datetime.strptime(timestamp_string, DATE_TIME_FORMAT)
         if(datetime_object < oldest_val):
             oldest_key = key
@@ -245,7 +246,7 @@ class Recent(APIView):
 
         now = str(datetime.now().strftime(DATE_TIME_FORMAT))
         recent[id] = {
-            "TIMESTAMP": now,
+            TIMESTAMP: now,
             **filesystem[id]
         }
         if len(recent) >= 2:
