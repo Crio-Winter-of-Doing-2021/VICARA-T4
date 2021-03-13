@@ -7,7 +7,7 @@ import re
 from .constants import REGEX_NAME, TYPE, file, CHILDREN, NAME, FILE
 
 
-def parent_present(func):
+def check_parent(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
@@ -18,7 +18,7 @@ def parent_present(func):
         if parent not in filesystem:
             return Response(data={"message": "Invalid parent"}, status=status.HTTP_400_BAD_REQUEST)
 
-        result = func(*args, **kwargs)
+        result = func(self, request, args, **kwargs)
         return result
     return wrapper
 
@@ -30,7 +30,7 @@ def check_regex(func):
         name = request.FILES[file].name
         if re.match(REGEX_NAME, name) is None:
             return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
-        result = func(*args, **kwargs)
+        result = func(self, request, *args, **kwargs)
         return result
     return wrapper
 
@@ -63,7 +63,7 @@ def check_already_present(func):
             already_present_type = children[x][TYPE]
             if(name == already_present_name and already_present_type == FILE):
                 return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
-        result = func(*args, **kwargs)
+        result = func(self, request, *args, **kwargs)
         return result
     return wrapper
 
@@ -90,7 +90,7 @@ def check_request_attr(REQUIRED_PARAMS):
         def wrapper(self, request, *args, **kwargs):
             if not all(attr in request.data for attr in REQUIRED_PARAMS):
                 return Response(data={"message": f"Insufficient Post params req {REQUIRED_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-            result = func(*args, **kwargs)
+            result = func(self, request, *args, **kwargs)
             return result
         return wrapper
     return decorator_check_type
