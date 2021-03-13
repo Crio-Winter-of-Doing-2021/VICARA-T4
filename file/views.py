@@ -1,3 +1,4 @@
+from mysite.decorators import parent_present
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ import re
 from user.models import Profile
 from .models import File
 from mysite.constants import FILE, PARENT, CHILDREN, FAVOURITE, NAME, FOLDER, TIMESTAMP, TYPE
-REQUIRED_POST_PARAMS = [PARENT, FILE]
+REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["file_id", "new_name"]
 REQUIRED_DELETE_PARAMS = ["file_id"]
 REGEX_NAME = r"^[\w\-. ]+$"
@@ -17,6 +18,7 @@ REGEX_NAME = r"^[\w\-. ]+$"
 class FileView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
+    @parent_present
     def post(self, request, *args, **kwargs):
 
         profile = Profile.objects.get(user=request.user)
@@ -28,9 +30,7 @@ class FileView(APIView):
         parent = request.data[PARENT]
         name = request.FILES['file'].name
 
-        if parent not in filesystem:
-            return Response(data={"message": "Invalid parent"}, status=status.HTTP_400_BAD_REQUEST)
-        elif re.match(REGEX_NAME, name) is None:
+        if re.match(REGEX_NAME, name) is None:
             return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
         elif filesystem[parent][TYPE] != "FOLDER":
             return Response(data={"message": "Parent is not a folder"}, status=status.HTTP_400_BAD_REQUEST)
