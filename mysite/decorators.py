@@ -4,7 +4,7 @@ from user.models import Profile
 from rest_framework.response import Response
 from rest_framework import status
 import re
-from .constants import REGEX_NAME, TYPE, file, CHILDREN, NAME, FILE
+from .constants import *
 
 
 def check_parent(func):
@@ -170,3 +170,53 @@ def check_already_present(to_check, type):
             return result
         return wrapper
     return decorator_func
+
+
+def check_id_present_in_params(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        id = self.request.query_params.get('id', None)
+        if id == None:
+            return Response(data={"message": "Url param id required"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_already_fav(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        id = request.data["id"]
+        is_favourite = request.data["is_favourite"]
+        if filesystem[id][FAVOURITE] == is_favourite:
+            return Response(data={"message": "Redundant request"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_id_not_root(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        id = request.data["id"]
+        if id == ROOT:
+            return Response(data={"message": "id can't be ROOT"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_parent(func):
+
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        parent = request.data[PARENT]
+        if parent not in filesystem:
+            return Response(data={"message": "Invalid Parent"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
