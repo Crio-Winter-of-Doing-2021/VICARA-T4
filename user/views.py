@@ -107,7 +107,8 @@ class Filesystem(APIView):
         id = secrets.token_urlsafe(16)
         children[id] = {
             "TYPE": type,
-            "NAME": name
+            "NAME": name,
+            "FAVOURITE": False
         }
         filesystem[parent]["CHILDREN"] = children
         filesystem[id] = {
@@ -151,6 +152,8 @@ class Filesystem(APIView):
 
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
+        favourites = profile.favourites
+        recent = profile.recent
 
         if not all(attr in request.data for attr in REQUIRED_DELETE_PARAMS):
             return Response(data={"message": f"Insufficient delete params req {REQUIRED_DELETE_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -165,8 +168,13 @@ class Filesystem(APIView):
         parent = filesystem[id]["PARENT"]
         filesystem[parent]["CHILDREN"].pop(id)
         filesystem.pop(id)
-
+        if id in favourites:
+            favourites.pop(id)
+        if id in recent:
+            recent.pop(id)
         profile.filesystem = filesystem
+        profile.favourites = favourites
+        profile.recent = recent
         profile.save()
         return Response(data=profile.filesystem, status=status.HTTP_200_OK)
 
@@ -192,7 +200,9 @@ class Favourites(APIView):
         elif filesystem[id]["FAVOURITE"] == is_favourite:
             return Response(data={"message": "Redundant request"}, status=status.HTTP_400_BAD_REQUEST)
 
+        parent = filesystem[id]["PARENT"]
         filesystem[id]["FAVOURITE"] = is_favourite
+        filesystem[parent]["CHILDREN"][id]["FAVOURITE"] = is_favourite
         if(is_favourite):
             favourites[id] = filesystem[id]
         else:
@@ -244,58 +254,3 @@ class Recent(APIView):
         profile.recent = recent
         profile.save()
         return Response(data=profile.recent, status=status.HTTP_200_OK)
-
-
-# {
-#     "ROOT": {
-#         "PARENT": null,
-#         "TYPE": "FOLDER",
-#         "FAVOURITE": false,
-#         "CHILDREN": {
-#             "zp0HH5pwVYOP4-GI5eOZ-w": {
-#                 "TYPE": "FOLDER",
-#                 "NAME": "Folder One"
-#             },
-#             "nXEUXgSZn-sYT1UsBXIgOA": {
-#                 "TYPE": "FOLDER",
-#                 "NAME": "Folder Two"
-#             },
-#             "Ha7cjn5fWtgP9Cm0Ud1_jA": {
-#                 "TYPE": "FOLDER",
-#                 "NAME": "Folder Three"
-#             },
-#             "Mz3MVPV2OserTIyaIwV3jg": {
-#                 "TYPE": "FOLDER",
-#                 "NAME": "Folder Four"
-#             }
-#         }
-#     },
-#     "zp0HH5pwVYOP4-GI5eOZ-w": {
-#         "PARENT": "ROOT",
-#         "TYPE": "FOLDER",
-#         "NAME": "Folder One",
-#         "FAVOURITE": false,
-#         "CHILDREN": {}
-#     },
-#     "nXEUXgSZn-sYT1UsBXIgOA": {
-#         "PARENT": "ROOT",
-#         "TYPE": "FOLDER",
-#         "NAME": "Folder Two",
-#         "FAVOURITE": false,
-#         "CHILDREN": {}
-#     },
-#     "Ha7cjn5fWtgP9Cm0Ud1_jA": {
-#         "PARENT": "ROOT",
-#         "TYPE": "FOLDER",
-#         "NAME": "Folder Three",
-#         "FAVOURITE": false,
-#         "CHILDREN": {}
-#     },
-#     "Mz3MVPV2OserTIyaIwV3jg": {
-#         "PARENT": "ROOT",
-#         "TYPE": "FOLDER",
-#         "NAME": "Folder Four",
-#         "FAVOURITE": false,
-#         "CHILDREN": {}
-#     }
-# }
