@@ -83,6 +83,7 @@ class Filesystem(APIView):
 
     @check_request_attr(REQUIRED_GET_PARAMS)
     @check_id
+    @check_type_id(type_required=FOLDER)
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
@@ -122,23 +123,30 @@ class Filesystem(APIView):
     @check_request_attr(REQUIRED_PATCH_PARAMS)
     @check_id_not_root
     @check_id
+    @check_type_id(type_required=FOLDER)
     @check_regex_file_name_from_request_body
     def patch(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
+        favourites = profile.favourites
+        recent = profile.recent
 
         id = request.data["id"]
         new_name = request.data[NAME]
-
         parent = filesystem[id][PARENT]
         filesystem[parent][CHILDREN][id][NAME] = new_name
         filesystem[id][NAME] = new_name
+        if(id in recent):
+            recent[id][NAME] = new_name
+        if(id in favourites):
+            favourites[id][NAME] = new_name
 
         update_profile(profile, filesystem)
         return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_200_OK)
 
     @check_request_attr(REQUIRED_DELETE_PARAMS)
     @check_id
+    @check_type_id(type_required=FOLDER)
     @check_id_not_root
     def delete(self, request):
 
