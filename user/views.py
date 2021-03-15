@@ -12,7 +12,7 @@ from rest_framework import status
 
 # local imports
 from .models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, UserSerializer
 from mysite.constants import *
 from mysite.decorators import *
 from .utils import update_profile, remove_oldest
@@ -234,3 +234,11 @@ class Path(APIView):
         path.append({NAME: ROOT, "id": ROOT})
         path.reverse()
         return Response(data=path)
+
+
+class ListOfUsers(APIView):
+
+    def get(self, request):
+        data = UserSerializer(User.objects.all(), many=True).data
+        print(User.objects.all())
+        return Response(data=data, status=status.HTTP_200_OK)

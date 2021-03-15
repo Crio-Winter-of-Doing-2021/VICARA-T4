@@ -1,14 +1,16 @@
 from mysite.constants import ROOT
 from rest_framework.authtoken.models import Token
 from rest_framework import serializers
-from django.contrib.auth import get_user_model, password_validation, authenticate
 from .models import Profile
+
+from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = ('username', 'first_name', 'last_name')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
