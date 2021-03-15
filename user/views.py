@@ -22,6 +22,8 @@ REQUIRED_POST_PARAMS = [NAME, PARENT]
 REQUIRED_PATCH_PARAMS = ["id", NAME]
 REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
+REQUIRED_GET_PARAMS = ["id"]
+REQUIRED_RECENT_GET_PARAMS = ["id"]
 
 
 class LoginView(ObtainAuthToken):
@@ -77,11 +79,12 @@ class ProfileView(APIView):
 
 class Filesystem(APIView):
 
-    @check_id_present_in_params
+    @check_request_attr(REQUIRED_GET_PARAMS)
+    @check_id
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
-        id = request.query_params.get('id', None)
+        id = request.data["id"]
         return Response(data=filesystem[id])
 
     @check_request_attr(REQUIRED_POST_PARAMS)
@@ -182,14 +185,16 @@ class Favourites(APIView):
 
 
 class Recent(APIView):
+
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
         return Response(data=profile.recent, status=status.HTTP_200_OK)
 
-    @check_id_present_in_params
+    @check_request_attr(REQUIRED_RECENT_GET_PARAMS)
     @check_id
+    @check_id_not_root
     def post(self, request):
-        id = request.query_params.get('id', None)
+        id = request.data["id"]
         profile = Profile.objects.get(user=request.user)
         recent = profile.recent
         filesystem = profile.filesystem
@@ -197,9 +202,9 @@ class Recent(APIView):
         now = str(datetime.now().strftime(DATE_TIME_FORMAT))
         recent[id] = {
             TIMESTAMP: now,
-            **filesystem[id]
+            NAME: filesystem[id][NAME]
         }
-        if len(recent) >= 2:
+        if len(recent) >= 10:
             remove_oldest(recent)
 
         update_profile(profile, recent)
