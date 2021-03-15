@@ -16,6 +16,7 @@ from .serializers import ProfileSerializer
 from mysite.constants import *
 from mysite.decorators import *
 from .utils import update_profile, remove_oldest
+from mysite.utils import recursive_delete
 
 
 REQUIRED_POST_PARAMS = [NAME, PARENT]
@@ -85,7 +86,7 @@ class Filesystem(APIView):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         id = request.data["id"]
-        return Response(data=filesystem[id])
+        return Response(data={"id": id, **filesystem[id]})
 
     @check_request_attr(REQUIRED_POST_PARAMS)
     @parent_present_and_folder
@@ -115,7 +116,7 @@ class Filesystem(APIView):
 
         filesystem[id][CHILDREN] = {}
         update_profile(profile, filesystem)
-        return Response(data=profile.filesystem[id], status=status.HTTP_201_CREATED)
+        return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_201_CREATED)
 
     @check_request_attr(REQUIRED_PATCH_PARAMS)
     @check_id_not_root
@@ -133,7 +134,7 @@ class Filesystem(APIView):
         filesystem[id][NAME] = new_name
 
         update_profile(profile, filesystem)
-        return Response(data=profile.filesystem[id], status=status.HTTP_200_OK)
+        return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_200_OK)
 
     @check_request_attr(REQUIRED_DELETE_PARAMS)
     @check_id
@@ -147,13 +148,7 @@ class Filesystem(APIView):
 
         id = request.data["id"]
 
-        parent = filesystem[id][PARENT]
-        filesystem[parent][CHILDREN].pop(id)
-        filesystem.pop(id)
-        if id in favourites:
-            favourites.pop(id)
-        if id in recent:
-            recent.pop(id)
+        recursive_delete(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
         return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
@@ -181,7 +176,7 @@ class Favourites(APIView):
         else:
             favourites.pop(id)
         update_profile(profile, filesystem, favourites)
-        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
+        return Response(data=profile.favourites, status=status.HTTP_200_OK)
 
 
 class Recent(APIView):

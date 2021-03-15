@@ -12,7 +12,7 @@ from user.models import Profile
 from .models import File
 from mysite.constants import *
 from mysite.decorators import *
-
+from mysite.utils import delete_by_id
 REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["id", "NAME"]
 REQUIRED_DELETE_PARAMS = ["id"]
@@ -67,13 +67,7 @@ class FileView(APIView):
         favourites = profile.favourites
         recent = profile.recent
         id = request.data["id"]
-        parent = filesystem[id][PARENT]
-        filesystem[parent][CHILDREN].pop(id)
-        filesystem.pop(id)
-        if id in favourites:
-            favourites.pop(id)
-        if id in recent:
-            recent.pop(id)
+        delete_by_id(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
         return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
