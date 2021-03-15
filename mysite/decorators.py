@@ -1,13 +1,16 @@
 import functools
-from .constants import FOLDER, PARENT
-from user.models import Profile
+import re
+
+# django imports
 from rest_framework.response import Response
 from rest_framework import status
-import re
+
+# local imports
+from user.models import Profile
 from .constants import *
 
 
-def check_parent(func):
+def parent_present_and_folder(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
@@ -17,6 +20,8 @@ def check_parent(func):
 
         if parent not in filesystem:
             return Response(data={"message": "Invalid parent"}, status=status.HTTP_400_BAD_REQUEST)
+        if filesystem[parent][TYPE] != FOLDER:
+            return Response(data={"message": "parent is not a folder"}, status=status.HTTP_400_BAD_REQUEST)
 
         result = func(self, request, args, **kwargs)
         return result
@@ -37,39 +42,6 @@ def check_id(func):
     return wrapper
 
 
-def check_already_present(func):
-
-    @functools.wraps(func)
-    def wrapper(self, request, *args, **kwargs):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        parent = request.data[PARENT]
-        children = filesystem[parent][CHILDREN]
-        name = request.FILES[file].name
-        for x in children:
-            already_present_name = children[x][NAME]
-            already_present_type = children[x][TYPE]
-            if(name == already_present_name and already_present_type == FILE):
-                return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
-        result = func(self, request, *args, **kwargs)
-        return result
-    return wrapper
-
-
-def check_parent_is_folder(func):
-
-    @functools.wraps(func)
-    def wrapper(self, request, *args, **kwargs):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        parent = request.data[PARENT]
-        if filesystem[parent][TYPE] != FOLDER:
-            return Response(data={"message": "parent is not a folder"}, status=status.HTTP_400_BAD_REQUEST)
-        result = func(self, request, *args, **kwargs)
-        return result
-    return wrapper
-
-
 def check_file_name_from_request_file(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
@@ -84,8 +56,8 @@ def check_file_name_from_request_file(func):
 def check_regex_file_name_from_request_body(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        new_name = request.data["name"]
-        if re.match(REGEX_NAME, new_name) is None:
+        name = request.data["NAME"]
+        if re.match(REGEX_NAME, name) is None:
             return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
@@ -95,7 +67,7 @@ def check_regex_file_name_from_request_body(func):
 def check_equality_old_new_name(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        new_name = request.data["name"]
+        new_name = request.data["NAME"]
         id = request.data["id"]
 
         profile = Profile.objects.get(user=request.user)
@@ -157,7 +129,7 @@ def check_already_present(to_check, type):
             children = filesystem[parent][CHILDREN]
 
             if(to_check == "req_data_name"):
-                name = request.data["name"]
+                name = request.data["NAME"]
             elif to_check == "req_file_name":
                 name = request.FILES['file'].name
 
@@ -175,9 +147,13 @@ def check_already_present(to_check, type):
 def check_id_present_in_params(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        id = self.request.query_params.get('id', None)
+        id = request.query_params.get('id', None)
         if id == None:
             return Response(data={"message": "Url param id required"}, status=status.HTTP_400_BAD_REQUEST)
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        if id not in filesystem:
+            return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper
@@ -203,20 +179,6 @@ def check_id_not_root(func):
         id = request.data["id"]
         if id == ROOT:
             return Response(data={"message": "id can't be ROOT"}, status=status.HTTP_400_BAD_REQUEST)
-        result = func(self, request, *args, **kwargs)
-        return result
-    return wrapper
-
-
-def check_parent(func):
-
-    @functools.wraps(func)
-    def wrapper(self, request, *args, **kwargs):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        parent = request.data[PARENT]
-        if parent not in filesystem:
-            return Response(data={"message": "Invalid Parent"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

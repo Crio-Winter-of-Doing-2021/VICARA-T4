@@ -1,17 +1,20 @@
 from varname import nameof
+import secrets
+
+# django imports
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import FileSerializer
-import secrets
-import re
+
+# local imports
 from user.models import Profile
 from .models import File
 from mysite.constants import *
 from mysite.decorators import *
+
 REQUIRED_POST_PARAMS = [PARENT, "file"]
-REQUIRED_PATCH_PARAMS = ["id", "name"]
+REQUIRED_PATCH_PARAMS = ["id", "NAME"]
 REQUIRED_DELETE_PARAMS = ["id"]
 REGEX_NAME = r"^[\w\-. ]+$"
 
@@ -26,8 +29,7 @@ class FileView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_POST_PARAMS)
-    @check_parent
-    @check_parent_is_folder
+    @parent_present_and_folder
     @check_file_name_from_request_file
     @check_already_present(to_check="req_file_name", type=FILE)
     def post(self, request, *args, **kwargs):
@@ -54,7 +56,7 @@ class FileView(APIView):
             FAVOURITE: False
         }
         update_profile(profile, filesystem)
-        return Response(data=filesystem, status=status.HTTP_200_OK)
+        return Response(data=filesystem[filesystem_id], status=status.HTTP_200_OK)
 
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_DELETE_PARAMS)
     @check_id
@@ -73,7 +75,7 @@ class FileView(APIView):
         if id in recent:
             recent.pop(id)
         update_profile(profile, filesystem, favourites, recent)
-        return Response(data=filesystem, status=status.HTTP_200_OK)
+        return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_PATCH_PARAMS)
     @check_id
@@ -83,7 +85,7 @@ class FileView(APIView):
     def patch(self, request, *args, **kwargs):
 
         id = request.data["id"]
-        new_name = request.data["name"]
+        new_name = request.data["NAME"]
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         parent = filesystem[id][PARENT]
@@ -95,4 +97,4 @@ class FileView(APIView):
         filesystem[parent][CHILDREN] = children
         filesystem[id][NAME] = new_name
         update_profile(profile, filesystem, children)
-        return Response(data=filesystem, status=status.HTTP_200_OK)
+        return Response(data=filesystem[id], status=status.HTTP_200_OK)
