@@ -25,6 +25,7 @@ REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
 REQUIRED_GET_PARAMS = ["id"]
 REQUIRED_RECENT_GET_PARAMS = ["id"]
+REQUIRED_PATH_GET_PARAMS = ["id"]
 
 
 class LoginView(ObtainAuthToken):
@@ -161,6 +162,7 @@ class Favourites(APIView):
 
     @check_request_attr(REQUIRED_FAV_POST_PARAMS)
     @check_id
+    @check_id_not_root
     @check_already_fav
     def post(self, request):
         profile = Profile.objects.get(user=request.user)
@@ -173,6 +175,7 @@ class Favourites(APIView):
         filesystem[parent][CHILDREN][id][FAVOURITE] = is_favourite
         if(is_favourite):
             favourites[id] = filesystem[id]
+            favourites[id].pop(CHILDREN)
         else:
             favourites.pop(id)
         update_profile(profile, filesystem, favourites)
@@ -197,10 +200,29 @@ class Recent(APIView):
         now = str(datetime.now().strftime(DATE_TIME_FORMAT))
         recent[id] = {
             TIMESTAMP: now,
-            NAME: filesystem[id][NAME]
+            NAME: filesystem[id][NAME],
+            TYPE: filesystem[id][TYPE],
         }
         if len(recent) >= 10:
             remove_oldest(recent)
 
         update_profile(profile, recent)
         return Response(data=profile.recent, status=status.HTTP_200_OK)
+
+
+class Path(APIView):
+
+    @check_request_attr(REQUIRED_PATH_GET_PARAMS)
+    @check_id
+    def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        id = request.data["id"]
+        path = []
+        while(filesystem[id][PARENT] != None):
+            name = filesystem[id][NAME]
+            path.append({NAME: name, "id": id})
+            id = filesystem[id][PARENT]
+        path.append({NAME: ROOT, "id": ROOT})
+        path.reverse()
+        return Response(data=path)

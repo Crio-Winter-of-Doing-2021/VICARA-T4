@@ -1,6 +1,7 @@
+from file.serializers import FileSerializer
 from varname import nameof
 import secrets
-
+import os
 # django imports
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -56,7 +57,9 @@ class FileView(APIView):
             FAVOURITE: False
         }
         update_profile(profile, filesystem)
-        return Response(data=filesystem[filesystem_id], status=status.HTTP_200_OK)
+        fileData = FileSerializer(file_obj).data
+        # print(fileData)
+        return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
 
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_DELETE_PARAMS)
     @check_id
@@ -87,8 +90,13 @@ class FileView(APIView):
         file_obj = File.objects.get(filesystem_id=id)
         file_obj.file.name = new_name
         file_obj.save()
+        # os.rename(File.file_obj.path, new_path)
+        # model.direct_file.name = new_name
+        # model.save()
         children[id][NAME] = new_name
         filesystem[parent][CHILDREN] = children
         filesystem[id][NAME] = new_name
+
         update_profile(profile, filesystem, children)
-        return Response(data=filesystem[id], status=status.HTTP_200_OK)
+        fileData = FileSerializer(file_obj).data
+        return Response(data={**fileData, **filesystem[id]}, status=status.HTTP_200_OK)
