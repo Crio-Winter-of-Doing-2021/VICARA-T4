@@ -1,129 +1,182 @@
+from django.contrib.auth.models import Permission
+from file.serializers import FileSerializer
+from varname import nameof
+import secrets
+import os
+# django imports
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import FileSerializer
-import secrets
-import re
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.contrib.auth.models import AnonymousUser
+# local imports
 from user.models import Profile
 from .models import File
-REQUIRED_POST_PARAMS = ["PARENT", "file"]
-REQUIRED_PATCH_PARAMS = ["file_id", "new_name"]
-REQUIRED_DELETE_PARAMS = ["file_id"]
+from mysite.constants import *
+from mysite.decorators import *
+from mysite.utils import delete_by_id
+REQUIRED_GET_PARAMS = ["id"]
+REQUIRED_POST_PARAMS = [PARENT, "file"]
+REQUIRED_PATCH_PARAMS = ["id"]
+REQUIRED_DELETE_PARAMS = ["id"]
+REQUIRED_SHARE_GET_PARAMS = ["id", CREATOR]
 REGEX_NAME = r"^[\w\-. ]+$"
+
+
+def update_profile(profile, *args):
+    for attr in args:
+        setattr(profile, nameof(attr), attr)
+    profile.save()
+
+
+def update_property(id, filesystem, recent, favourites, PROPERTY, new_value):
+    parent = filesystem[id][PARENT]
+    children = filesystem[parent][CHILDREN]
+    children[id][PROPERTY] = new_value
+    filesystem[parent][CHILDREN] = children
+    filesystem[id][PROPERTY] = new_value
+    if(id in recent):
+        recent[id][PROPERTY] = new_value
+    if(id in favourites):
+        favourites[id][PROPERTY] = new_value
 
 
 class FileView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
+    @check_request_attr(REQUIRED_PARAMS=REQUIRED_GET_PARAMS)
+    @check_id
+    @check_type_id(type_required=FILE)
+    def get(self, request):
+        id = request.data["id"]
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        file_obj = File.objects.get(filesystem_id=id)
+        fileData = FileSerializer(file_obj).data
+        return Response(data={**fileData, **filesystem[id]}, status=status.HTTP_200_OK)
+
+    @check_request_attr(REQUIRED_PARAMS=REQUIRED_POST_PARAMS)
+    @parent_present_and_folder
+    @check_file_name_from_request_file
+    @check_already_present(to_check="req_file_name", type=FILE)
     def post(self, request, *args, **kwargs):
 
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
-
-        if not all(attr in request.data for attr in REQUIRED_POST_PARAMS):
-            return Response(data={"message": f"Insufficient Post params req {REQUIRED_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-
-        parent = request.data["PARENT"]
+        parent = request.data[PARENT]
         name = request.FILES['file'].name
-
-        if parent not in filesystem:
-            return Response(data={"message": "Invalid parent"}, status=status.HTTP_400_BAD_REQUEST)
-        elif re.match(REGEX_NAME, name) is None:
-            return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
-        elif filesystem[parent]["TYPE"] != "FOLDER":
-            return Response(data={"message": "Parent is not a folder"}, status=status.HTTP_400_BAD_REQUEST)
-
-        children = filesystem[parent]["CHILDREN"]
-        for x in children:
-            already_present_name = children[x]["NAME"]
-            already_present_type = children[x]["TYPE"]
-            if(name == already_present_name and "FILE" == already_present_type):
-                return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
-
+        children = filesystem[parent][CHILDREN]
         filesystem_id = secrets.token_urlsafe(16)
         file_obj = File(
-            file=request.FILES['file'], filesystem_id=filesystem_id)
+            file=request.FILES['file'], filesystem_id=filesystem_id, creator=request.user)
         file_obj.save()
         children[filesystem_id] = {
-            "TYPE": "FILE",
-            "NAME": name,
-            "FAVOURITE": False
+            TYPE: FILE,
+            NAME: name,
+            FAVOURITE: False,
+            PRIVACY: PRIVATE
         }
-        filesystem[parent]["CHILDREN"] = children
+        filesystem[parent][CHILDREN] = children
         filesystem[filesystem_id] = {
-            "PARENT": parent,
-            "TYPE": "FILE",
-            "NAME": name,
-            "FAVOURITE": False
+            PARENT: parent,
+            TYPE: FILE,
+            NAME: name,
+            FAVOURITE: False,
+            PRIVACY: PRIVATE
         }
-        profile.filesystem = filesystem
-        profile.save()
-        return Response(data=filesystem, status=status.HTTP_200_OK)
+        update_profile(profile, filesystem)
+        fileData = FileSerializer(file_obj).data
+        # print(fileData)
+        return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
 
+    @check_request_attr(REQUIRED_PARAMS=REQUIRED_DELETE_PARAMS)
+    @check_id
+    @check_type_id(type_required=FILE)
     def delete(self, request, *args, **kwargs):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         favourites = profile.favourites
         recent = profile.recent
+        id = request.data["id"]
+        delete_by_id(id, filesystem, favourites, recent)
+        update_profile(profile, filesystem, favourites, recent)
+        return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
-        if not all(attr in request.data for attr in REQUIRED_DELETE_PARAMS):
-            return Response(data={"message": f"Insufficient Post params req {REQUIRED_DELETE_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-
-        file_id = request.data["file_id"]
-
-        if file_id not in filesystem:
-            return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif filesystem[file_id]["TYPE"] != "FILE":
-            return Response(data={"message": "id sent is not of a file"}, status=status.HTTP_400_BAD_REQUEST)
-
-        parent = filesystem[file_id]["PARENT"]
-        children = filesystem[parent]["CHILDREN"]
-
-        file_obj = File.objects.get(filesystem_id=file_id).delete()
-
-        filesystem[parent]["CHILDREN"].pop(file_id)
-        filesystem.pop(file_id)
-        if file_id in favourites:
-            favourites.pop(file_id)
-        if id in recent:
-            recent.pop(file_id)
-
-        profile.filesystem = filesystem
-        profile.favourites = favourites
-        profile.recent = recent
-        profile.save()
-        return Response(data=filesystem, status=status.HTTP_200_OK)
-
+    @check_request_attr(REQUIRED_PARAMS=REQUIRED_PATCH_PARAMS)
+    @check_id
+    @check_type_id(type_required=FILE)
+    @check_regex_file_name_from_request_body
+    @check_equality_old_new_name
+    @check_already_present(to_check="req_data_name", type=FILE)
+    @check_privacy_options
+    @check_users_valid
     def patch(self, request, *args, **kwargs):
+
+        id = request.data["id"]
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
+        recent = profile.recent
+        favourites = profile.favourites
+        file_obj = File.objects.get(filesystem_id=id)
 
-        if not all(attr in request.data for attr in REQUIRED_PATCH_PARAMS):
-            return Response(data={"message": f"Insufficient Post params req {REQUIRED_PATCH_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+        if(NAME in request.data):
+            new_name = request.data[NAME]
+            file_obj.file.name = new_name
+            update_property(id, filesystem, recent, favourites, NAME, new_name)
 
-        file_id = request.data["file_id"]
-        new_name = request.data["new_name"]
+        if(PRIVACY in request.data):
+            new_privacy = request.data[PRIVACY]
+            file_obj.privacy = new_privacy
+            update_property(id, filesystem, recent,
+                            favourites, PRIVACY, new_privacy)
 
-        if file_id not in filesystem:
-            return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif re.match(REGEX_NAME, new_name) is None:
-            return Response(data={"message": "Invalid New Name"}, status=status.HTTP_400_BAD_REQUEST)
+        if(USERS in request.data):
+            usernames = request.data[USERS]
+            users = [User.objects.get(username=username)
+                     for username in usernames]
+            file_obj.users.set(users)
 
-        parent = filesystem[file_id]["PARENT"]
-        children = filesystem[parent]["CHILDREN"]
-        for x in children:
-            already_present_name = children[x]["NAME"]
-            already_present_type = children[x]["TYPE"]
-            if(new_name == already_present_name and "FILE" == already_present_type):
-                return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
-
-        file_obj = File.objects.get(filesystem_id=file_id)
-        file_obj.file.name = new_name
         file_obj.save()
-        children[file_id]["NAME"] = new_name
-        filesystem[parent]["CHILDREN"] = children
-        filesystem[file_id]["NAME"] = new_name
-        profile.filesystem = filesystem
-        profile.save()
-        return Response(data=filesystem, status=status.HTTP_200_OK)
+        update_profile(profile, filesystem, recent, favourites)
+        fileData = FileSerializer(file_obj).data
+        return Response(data={**fileData, **filesystem[id]}, status=status.HTTP_200_OK)
+
+
+class Share(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    @check_request_attr(REQUIRED_PARAMS=REQUIRED_SHARE_GET_PARAMS)
+    def get(self, request):
+        creator = request.data[CREATOR]
+        try:
+            creator = User.objects.get(username=creator)
+        except:
+            creator = None
+        if(creator == None):
+            return Response(data={"message": "Invalid creator"}, status=status.HTTP_400_BAD_REQUEST)
+        id = request.data["id"]
+        try:
+            file_obj = File.objects.get(filesystem_id=id)
+        except:
+            file_obj = None
+
+        if(file_obj == None):
+            return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if(file_obj.creator != creator):
+            return Response(data={"message": "Bad creator & id combination"}, status=status.HTTP_400_BAD_REQUEST)
+
+        visitor = request.user
+
+        allowed = False
+        if(isinstance(visitor, AnonymousUser) and file_obj.privacy == PUBLIC):
+            allowed = True
+
+        if(visitor == file_obj.creator or visitor in file_obj.users.all()):
+            allowed = True
+        if(allowed):
+            fileData = FileSerializer(file_obj).data
+            return Response(data=fileData, status=status.HTTP_200_OK)
+        else:
+            return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
