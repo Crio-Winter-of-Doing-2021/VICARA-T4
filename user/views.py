@@ -1,23 +1,31 @@
+import secrets
+from datetime import datetime
+
+# django imports
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-import secrets
-from datetime import datetime, timedelta
 from rest_framework.views import APIView
-from rest_framework import serializers, status
-from .models import Profile
-from .serializers import ProfileSerializer
-import re
+from rest_framework import status
 
-ALLOWED_TYPES = ["FOLDER", "FILE"]
-REGEX_NAME = r"^[\w\-. ]+$"
-REQUIRED_POST_PARAMS = ["TYPE", "NAME", "PARENT"]
-REQUIRED_PATCH_PARAMS = ["id", "NAME"]
+# local imports
+from .models import Profile
+from .serializers import ProfileSerializer, UserSerializer
+from mysite.constants import *
+from mysite.decorators import *
+from .utils import update_profile, remove_oldest
+from mysite.utils import recursive_delete
+
+
+REQUIRED_POST_PARAMS = [NAME, PARENT]
+REQUIRED_PATCH_PARAMS = ["id", NAME]
 REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
-DATE_TIME_FORMAT = "%m/%d/%y %H:%M:%S"
+REQUIRED_GET_PARAMS = ["id"]
+REQUIRED_RECENT_GET_PARAMS = ["id"]
+REQUIRED_PATH_GET_PARAMS = ["id"]
 
 
 class LoginView(ObtainAuthToken):
@@ -73,81 +81,73 @@ class ProfileView(APIView):
 
 class Filesystem(APIView):
 
+    @check_request_attr(REQUIRED_GET_PARAMS)
+    @check_id
+    @check_type_id(type_required=FOLDER)
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
-        return Response(data=profile.filesystem)
+        filesystem = profile.filesystem
+        id = request.data["id"]
+        return Response(data={"id": id, **filesystem[id]})
 
-    def post(self, request):
+    @check_request_attr(REQUIRED_POST_PARAMS)
+    @parent_present_and_folder
+    @check_regex_file_name_from_request_body
+    @check_already_present(to_check="req_data_name", type=FOLDER)
+    def post(self, request, * args, **kwargs):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
 
-        if not all(attr in request.data for attr in REQUIRED_POST_PARAMS):
-            return Response(data={"message": f"Insufficient Post params req {REQUIRED_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-
-        type = request.data["TYPE"]
-        name = request.data["NAME"]
-        parent = request.data["PARENT"]
-
-        if parent not in filesystem:
-            return Response(data={"message": "Invalid parent"}, status=status.HTTP_400_BAD_REQUEST)
-        elif type not in ALLOWED_TYPES:
-            return Response(data={"message": "Invalid type"}, status=status.HTTP_400_BAD_REQUEST)
-        elif re.match(REGEX_NAME, name) is None:
-            return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
-        elif filesystem[parent]["TYPE"] != "FOLDER":
-            return Response(data={"message": "Parent is not a folder"}, status=status.HTTP_400_BAD_REQUEST)
-
-        children = filesystem[parent]["CHILDREN"]
-        for x in children:
-            already_present_name = children[x]["NAME"]
-            already_present_type = children[x]["TYPE"]
-            if(name == already_present_name and type == already_present_type):
-                return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
+        name = request.data[NAME]
+        parent = request.data[PARENT]
+        children = filesystem[parent][CHILDREN]
 
         id = secrets.token_urlsafe(16)
         children[id] = {
-            "TYPE": type,
-            "NAME": name,
-            "FAVOURITE": False
+            TYPE: FOLDER,
+            NAME: name,
+            FAVOURITE: False
         }
-        filesystem[parent]["CHILDREN"] = children
+        filesystem[parent][CHILDREN] = children
         filesystem[id] = {
-            "PARENT": parent,
-            "TYPE": type,
-            "NAME": name,
-            "FAVOURITE": False
+            PARENT: parent,
+            TYPE: FOLDER,
+            NAME: name,
+            FAVOURITE: False
         }
-        if(type == "FOLDER"):
-            filesystem[id]["CHILDREN"] = {}
-        profile.filesystem = filesystem
-        profile.save()
-        return Response(data=profile.filesystem, status=status.HTTP_201_CREATED)
 
+        filesystem[id][CHILDREN] = {}
+        update_profile(profile, filesystem)
+        return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_201_CREATED)
+
+    @check_request_attr(REQUIRED_PATCH_PARAMS)
+    @check_id_not_root
+    @check_id
+    @check_type_id(type_required=FOLDER)
+    @check_regex_file_name_from_request_body
     def patch(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
-
-        if not all(attr in request.data for attr in REQUIRED_PATCH_PARAMS):
-            return Response(data={"message": f"Insufficient patch params req {REQUIRED_PATCH_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+        favourites = profile.favourites
+        recent = profile.recent
 
         id = request.data["id"]
-        new_name = request.data["NAME"]
+        new_name = request.data[NAME]
+        parent = filesystem[id][PARENT]
+        filesystem[parent][CHILDREN][id][NAME] = new_name
+        filesystem[id][NAME] = new_name
+        if(id in recent):
+            recent[id][NAME] = new_name
+        if(id in favourites):
+            favourites[id][NAME] = new_name
 
-        if re.match(REGEX_NAME, new_name) is None:
-            return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
-        elif id not in filesystem:
-            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif id == "ROOT":
-            return Response(data={"message": "Renaming ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
+        update_profile(profile, filesystem)
+        return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_200_OK)
 
-        parent = filesystem[id]["PARENT"]
-        filesystem[parent]["CHILDREN"][id]["NAME"] = new_name
-        filesystem[id]["NAME"] = new_name
-
-        profile.filesystem = filesystem
-        profile.save()
-        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
-
+    @check_request_attr(REQUIRED_DELETE_PARAMS)
+    @check_id
+    @check_type_id(type_required=FOLDER)
+    @check_id_not_root
     def delete(self, request):
 
         profile = Profile.objects.get(user=request.user)
@@ -155,28 +155,11 @@ class Filesystem(APIView):
         favourites = profile.favourites
         recent = profile.recent
 
-        if not all(attr in request.data for attr in REQUIRED_DELETE_PARAMS):
-            return Response(data={"message": f"Insufficient delete params req {REQUIRED_DELETE_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-
         id = request.data["id"]
 
-        if id not in filesystem:
-            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif id == "ROOT":
-            return Response(data={"message": "Deleting ROOT not allowed"}, status=status.HTTP_400_BAD_REQUEST)
-
-        parent = filesystem[id]["PARENT"]
-        filesystem[parent]["CHILDREN"].pop(id)
-        filesystem.pop(id)
-        if id in favourites:
-            favourites.pop(id)
-        if id in recent:
-            recent.pop(id)
-        profile.filesystem = filesystem
-        profile.favourites = favourites
-        profile.recent = recent
-        profile.save()
-        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
+        recursive_delete(id, filesystem, favourites, recent)
+        update_profile(profile, filesystem, favourites, recent)
+        return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
 
 class Favourites(APIView):
@@ -185,72 +168,77 @@ class Favourites(APIView):
         profile = Profile.objects.get(user=request.user)
         return Response(data=profile.favourites, status=status.HTTP_200_OK)
 
+    @check_request_attr(REQUIRED_FAV_POST_PARAMS)
+    @check_id
+    @check_id_not_root
+    @check_already_fav
     def post(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         favourites = profile.favourites
-
-        if not all(attr in request.data for attr in REQUIRED_FAV_POST_PARAMS):
-            return Response(data={"message": f"Insufficient delete params req {REQUIRED_FAV_POST_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-
         id = request.data["id"]
         is_favourite = request.data["is_favourite"]
-        if id not in filesystem:
-            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
-        elif filesystem[id]["FAVOURITE"] == is_favourite:
-            return Response(data={"message": "Redundant request"}, status=status.HTTP_400_BAD_REQUEST)
-
-        parent = filesystem[id]["PARENT"]
-        filesystem[id]["FAVOURITE"] = is_favourite
-        filesystem[parent]["CHILDREN"][id]["FAVOURITE"] = is_favourite
+        parent = filesystem[id][PARENT]
+        filesystem[id][FAVOURITE] = is_favourite
+        filesystem[parent][CHILDREN][id][FAVOURITE] = is_favourite
         if(is_favourite):
             favourites[id] = filesystem[id]
+            favourites[id].pop(CHILDREN)
         else:
             favourites.pop(id)
-        profile.filesystem = filesystem
-        profile.favourites = favourites
-        profile.save()
-        return Response(data=profile.filesystem, status=status.HTTP_200_OK)
-
-
-def remove_oldest(recent):
-    presentday = datetime.now()
-    oldest_key = None
-    # tommorow
-    oldest_val = presentday + timedelta(1)
-    # smaller the date-time-object the older it is
-    for key, val in recent.items():
-        timestamp_string = val["TIMESTAMP"]
-        datetime_object = datetime.strptime(timestamp_string, DATE_TIME_FORMAT)
-        if(datetime_object < oldest_val):
-            oldest_key = key
-            oldest_val = datetime_object
-    recent.pop(oldest_key)
+        update_profile(profile, filesystem, favourites)
+        return Response(data=profile.favourites, status=status.HTTP_200_OK)
 
 
 class Recent(APIView):
+
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
         return Response(data=profile.recent, status=status.HTTP_200_OK)
 
+    @check_request_attr(REQUIRED_RECENT_GET_PARAMS)
+    @check_id
+    @check_id_not_root
     def post(self, request):
+        id = request.data["id"]
         profile = Profile.objects.get(user=request.user)
         recent = profile.recent
         filesystem = profile.filesystem
-        id = self.request.query_params.get('id', None)
-        if id == None:
-            return Response(data={"message": "Url param id required"}, status=status.HTTP_400_BAD_REQUEST)
-        elif id not in filesystem:
-            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
 
         now = str(datetime.now().strftime(DATE_TIME_FORMAT))
         recent[id] = {
-            "TIMESTAMP": now,
-            **filesystem[id]
+            TIMESTAMP: now,
+            NAME: filesystem[id][NAME],
+            TYPE: filesystem[id][TYPE],
         }
-        if len(recent) >= 2:
+        if len(recent) >= 10:
             remove_oldest(recent)
 
-        profile.recent = recent
-        profile.save()
+        update_profile(profile, recent)
         return Response(data=profile.recent, status=status.HTTP_200_OK)
+
+
+class Path(APIView):
+
+    @check_request_attr(REQUIRED_PATH_GET_PARAMS)
+    @check_id
+    def get(self, request):
+        profile = Profile.objects.get(user=request.user)
+        filesystem = profile.filesystem
+        id = request.data["id"]
+        path = []
+        while(filesystem[id][PARENT] != None):
+            name = filesystem[id][NAME]
+            path.append({NAME: name, "id": id})
+            id = filesystem[id][PARENT]
+        path.append({NAME: ROOT, "id": ROOT})
+        path.reverse()
+        return Response(data=path)
+
+
+class ListOfUsers(APIView):
+
+    def get(self, request):
+        data = UserSerializer(User.objects.all(), many=True).data
+        print(User.objects.all())
+        return Response(data=data, status=status.HTTP_200_OK)
