@@ -183,7 +183,8 @@ class Favourites(APIView):
         filesystem[parent][CHILDREN][id][FAVOURITE] = is_favourite
         if(is_favourite):
             favourites[id] = filesystem[id]
-            favourites[id].pop(CHILDREN)
+            if(CHILDREN in favourites[id]):
+                favourites[id].pop(CHILDREN)
         else:
             favourites.pop(id)
         update_profile(profile, filesystem, favourites)
