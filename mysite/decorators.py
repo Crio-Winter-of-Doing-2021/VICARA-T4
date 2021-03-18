@@ -34,13 +34,17 @@ def check_id(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        id = request.data["id"]
+        if(request.method == "GET"):
+            id = request.GET["id"]
+        else:
+            id = request.data["id"]
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         if id not in filesystem:
             return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
+
     return wrapper
 
 
@@ -95,7 +99,10 @@ def check_type_id(type_required):
         def wrapper(self, request, *args, **kwargs):
             profile = Profile.objects.get(user=request.user)
             filesystem = profile.filesystem
-            id = request.data["id"]
+            if(request.method == "GET"):
+                id = request.GET["id"]
+            else:
+                id = request.data["id"]
             if filesystem[id][TYPE] != type_required:
                 return Response(data={"message": "id is not of a {type_required}"}, status=status.HTTP_400_BAD_REQUEST)
             result = func(self, request, *args, **kwargs)

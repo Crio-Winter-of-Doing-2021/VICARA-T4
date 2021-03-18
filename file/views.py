@@ -16,11 +16,10 @@ from .models import File
 from mysite.constants import *
 from mysite.decorators import *
 from mysite.utils import delete_by_id
-REQUIRED_GET_PARAMS = ["id"]
+
 REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["id"]
 REQUIRED_DELETE_PARAMS = ["id"]
-REQUIRED_SHARE_GET_PARAMS = ["id", CREATOR]
 REGEX_NAME = r"^[\w\-. ]+$"
 
 
@@ -45,11 +44,10 @@ def update_property(id, filesystem, recent, favourites, PROPERTY, new_value):
 class FileView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
-    @check_request_attr(REQUIRED_PARAMS=REQUIRED_GET_PARAMS)
     @check_id
     @check_type_id(type_required=FILE)
     def get(self, request):
-        id = request.data["id"]
+        id = request.GET["id"]
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         file_obj = File.objects.get(filesystem_id=id)
@@ -146,16 +144,15 @@ class FileView(APIView):
 class Share(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    @check_request_attr(REQUIRED_PARAMS=REQUIRED_SHARE_GET_PARAMS)
     def get(self, request):
-        creator = request.data[CREATOR]
+        creator = request.GET[CREATOR]
         try:
             creator = User.objects.get(username=creator)
         except:
             creator = None
         if(creator == None):
             return Response(data={"message": "Invalid creator"}, status=status.HTTP_400_BAD_REQUEST)
-        id = request.data["id"]
+        id = request.GET["id"]
         try:
             file_obj = File.objects.get(filesystem_id=id)
         except:
@@ -167,8 +164,13 @@ class Share(APIView):
         if(file_obj.creator != creator):
             return Response(data={"message": "Bad creator & id combination"}, status=status.HTTP_400_BAD_REQUEST)
 
-        visitor = request.user
+        profile = Profile.objects.get(user=creator)
+        filesystem = profile.filesystem
 
+        if(filesystem[id][TYPE] != FILE):
+            return Response(data={"message": "id is not of a file"}, status=status.HTTP_400_BAD_REQUEST)
+
+        visitor = request.user
         allowed = False
         if(isinstance(visitor, AnonymousUser) and file_obj.privacy == PUBLIC):
             allowed = True
