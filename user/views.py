@@ -21,7 +21,6 @@ from mysite.utils import recursive_delete
 
 REQUIRED_POST_PARAMS = [NAME, PARENT]
 REQUIRED_PATCH_PARAMS = ["id", NAME]
-REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
 REQUIRED_RECENT_GET_PARAMS = ["id"]
 
@@ -141,7 +140,6 @@ class Filesystem(APIView):
         update_profile(profile, filesystem)
         return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_200_OK)
 
-    @check_request_attr(REQUIRED_DELETE_PARAMS)
     @check_id
     @check_type_id(type_required=FOLDER)
     @check_id_not_root
@@ -152,7 +150,7 @@ class Filesystem(APIView):
         favourites = profile.favourites
         recent = profile.recent
 
-        id = request.data["id"]
+        id = request.GET["id"]
 
         recursive_delete(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
