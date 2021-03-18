@@ -34,7 +34,7 @@ def check_id(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        if(request.method == "GET"):
+        if(request.method == "GET" or request.method == "DELETE"):
             id = request.GET["id"]
         else:
             id = request.data["id"]
@@ -99,7 +99,7 @@ def check_type_id(type_required):
         def wrapper(self, request, *args, **kwargs):
             profile = Profile.objects.get(user=request.user)
             filesystem = profile.filesystem
-            if(request.method == "GET"):
+            if(request.method == "GET" or request.method == "DELETE"):
                 id = request.GET["id"]
             else:
                 id = request.data["id"]
@@ -188,7 +188,11 @@ def check_already_fav(func):
 def check_id_not_root(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        id = request.data["id"]
+
+        if(request.method == "GET" or request.method == "DELETE"):
+            id = request.GET["id"]
+        else:
+            id = request.data["id"]
         if id == ROOT:
             return Response(data={"message": "id can't be ROOT"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
