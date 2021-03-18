@@ -4,76 +4,34 @@ import API from "../../axios";
 export const structureSlice = createSlice({
   name: "structure",
   initialState: {
-    currentFolderKey: "ROOT",
-    keyFolder: [{ key: "ROOT", name: "Home" }], //last index is current
-    fileStructure: {},
-    currentDisplay: {},
-    selected:[]
+    displayStructure:{},
+    sample:''
   },
   reducers: {
-    updateStructure: (state, action) => {
-      state.fileStructure = action.payload;
-    },
-    currentStructure: (state) => {
-      state.currentDisplay =
-        state.fileStructure[state.currentFolderKey].CHILDREN;
-    },
-    changeKey: (state, action) => {
-      if (state.currentFolderKey !== action.payload) {
-        state.currentFolderKey = action.payload;
-        function check(data) {
-          return data.key === state.currentFolderKey;
-        }
-        let currentKeyIndex = state.keyFolder.findIndex(check);
-        if (currentKeyIndex !== -1) {
-          state.keyFolder.splice(
-            currentKeyIndex,
-            state.keyFolder.length - currentKeyIndex
-          );
-        }
-
-        let newData = {
-          key: state.currentFolderKey,
-          name: state.currentFolderKey==='ROOT'?'Home':state.fileStructure[state.currentFolderKey].NAME,
-        };
-
-        state.keyFolder.push(newData);
-      }
-
-      state.currentFolderKey = action.payload;
-    },
+    updateStructure:(state,action)=>{
+        state.displayStructure=action.payload
+    }
   },
 });
 
 export const {
-  updateStructure,
-  currentStructure,
-  changeKey,
+  updateStructure
 } = structureSlice.actions;
 
-export const structureAsync = () => (dispatch) => {
-  API.get("/api/filesystem/")
-    .then((res) => {
-      dispatch(updateStructure(res.data));
-      dispatch(currentStructure());
+export const structureAsync = (uni_id) => (dispatch) => {
+    API.get(`/api/filesystem/`,{
+        params:{
+            id:uni_id
+        }
     })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-export const addFolderAsync = (data) => (dispatch) => {
-    API.post("/api/filesystem/",data)
       .then((res) => {
-        dispatch(structureAsync())
+        dispatch(updateStructure(res.data))
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
       });
 };
 
-export const selectStructure = (state) => state.structure.currentDisplay;
-export const navStructure = (state) => state.structure.keyFolder;
-export const currentKey = (state) => state.structure.currentFolderKey
+export const selectStructure = (state) => state.structure.displayStructure;
 
 export default structureSlice.reducer;
