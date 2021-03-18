@@ -23,9 +23,7 @@ REQUIRED_POST_PARAMS = [NAME, PARENT]
 REQUIRED_PATCH_PARAMS = ["id", NAME]
 REQUIRED_DELETE_PARAMS = ["id"]
 REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
-REQUIRED_GET_PARAMS = ["id"]
 REQUIRED_RECENT_GET_PARAMS = ["id"]
-REQUIRED_PATH_GET_PARAMS = ["id"]
 
 
 class LoginView(ObtainAuthToken):
@@ -81,13 +79,12 @@ class ProfileView(APIView):
 
 class Filesystem(APIView):
 
-    @check_request_attr(REQUIRED_GET_PARAMS)
     @check_id
     @check_type_id(type_required=FOLDER)
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
-        id = request.data["id"]
+        id = request.GET["id"]
         return Response(data={"id": id, **filesystem[id]})
 
     @check_request_attr(REQUIRED_POST_PARAMS)
@@ -221,12 +218,11 @@ class Recent(APIView):
 
 class Path(APIView):
 
-    @check_request_attr(REQUIRED_PATH_GET_PARAMS)
     @check_id
     def get(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
-        id = request.data["id"]
+        id = request.GET["id"]
         path = []
         while(filesystem[id][PARENT] != None):
             name = filesystem[id][NAME]
