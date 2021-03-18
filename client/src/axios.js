@@ -1,5 +1,4 @@
 import axios from "axios";
-import store from './store/index'
 
 export let baseURL = "http://localhost:8000";
 

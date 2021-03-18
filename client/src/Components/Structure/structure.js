@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import NavigationTabs from "../NavigationTabs/navigation";
+
+// import {Link} from 'react-router-dom'
+
 import {
   structureAsync,
   selectStructure
 } from "../../store/slices/structureSlice";
 
-// import AddFolder from '../../Buttons/addFolder'
+import AddFolder from '../Buttons/addFolder'
 // import Delete from '../../Buttons/delete'
 // import Update from '../../Buttons/update'
 
@@ -58,27 +61,28 @@ export default function Structure(props) {
   console.log(structureState)
 //   const selectedKeys=useSelector(selectCheckedKeys)
 
+let tableData = [];
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
-  }, []);
+  }, [unique_id]);
 
-  let tableData = [];
+  
 
-  // Object.keys(structureState).map((key, index) => {
-  //   let newData = {
-  //     key: key,
-  //     type: structureState[key].TYPE,
-  //     name: structureState[key].NAME,
-  //   };
-  //   tableData.push(newData);
-  // });
+  Object.keys(structureState).map((key, index) => {
+    let newData = {
+      key: key,
+      type: structureState[key].TYPE,
+      name: structureState[key].NAME,
+    };
+    tableData.push(newData);
+  });
 
   let updateFolder = (key) => {
     console.log("key clicked", key);
-    // dispatch(changeKey(key));
-    // dispatch(currentStructure());
-    // dispatch(emptykeys())
+    props.history.push(`/drive/${key}`)
+    dispatch(structureAsync(unique_id))
   };
 
   const [checked, setChecked] = React.useState(true);
@@ -123,12 +127,12 @@ export default function Structure(props) {
 
   return (
     <div>
-      {/* <div style={{display:"flex"}}>
-        <AddFolder />
-        <Delete/>
-        <Update/>
+      <div style={{display:"flex"}}>
+        <AddFolder id={unique_id}/>
+        {/* <Delete/>
+        <Update/> */}
       </div>
-      <NavigationTabs/> */}
+      {/* <NavigationTabs/> */}
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
