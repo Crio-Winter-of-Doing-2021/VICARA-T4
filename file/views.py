@@ -19,7 +19,7 @@ from mysite.utils import delete_by_id
 
 REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["id"]
-REQUIRED_DELETE_PARAMS = ["id"]
+
 REGEX_NAME = r"^[\w\-. ]+$"
 
 
@@ -88,7 +88,6 @@ class FileView(APIView):
         # print(fileData)
         return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
 
-    @check_request_attr(REQUIRED_PARAMS=REQUIRED_DELETE_PARAMS)
     @check_id
     @check_type_id(type_required=FILE)
     def delete(self, request, *args, **kwargs):
@@ -96,7 +95,7 @@ class FileView(APIView):
         filesystem = profile.filesystem
         favourites = profile.favourites
         recent = profile.recent
-        id = request.data["id"]
+        id = request.GET["id"]
         delete_by_id(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
         return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
