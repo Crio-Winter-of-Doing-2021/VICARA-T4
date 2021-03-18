@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import AuthReducer from '../store/slices/authSlice'
-import StructureReducer from '../store/slices/structureSlice'
+import authReducer from './slices/authSlice'
+import structureReducer from './slices/structureSlice'
 
 export default configureStore({
   reducer: {
-    Auth:AuthReducer,
-    Structure: StructureReducer
+    auth:authReducer,
+    structure: structureReducer
   },
 });

@@ -1,11 +1,10 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
 
 export const structureSlice = createSlice({
   name: "structure",
   initialState: {
-    displayStructure:{},
-    sample:''
+    currentDisplayStructure:{}
   },
   reducers: {
     updateStructure:(state,action)=>{
@@ -15,7 +14,7 @@ export const structureSlice = createSlice({
 });
 
 export const {
-  updateStructure
+  updateStructure,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -32,6 +31,6 @@ export const structureAsync = (uni_id) => (dispatch) => {
       });
 };
 
-export const selectStructure = (state) => state.structure.displayStructure;
+export const selectStructure = (state) => state;
 
 export default structureSlice.reducer;
