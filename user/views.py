@@ -154,7 +154,7 @@ class Filesystem(APIView):
 
         recursive_delete(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
-        return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
+        return Response(data={"id": id, "message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
 
 class Favourites(APIView):
