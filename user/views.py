@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime
-
+import copy
 # django imports
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -177,7 +177,7 @@ class Favourites(APIView):
         filesystem[id][FAVOURITE] = is_favourite
         filesystem[parent][CHILDREN][id][FAVOURITE] = is_favourite
         if(is_favourite):
-            favourites[id] = filesystem[id]
+            favourites[id] = copy.deepcopy(filesystem[id])
             if(CHILDREN in favourites[id]):
                 favourites[id].pop(CHILDREN)
         else:
