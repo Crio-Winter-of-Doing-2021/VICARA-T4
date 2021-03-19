@@ -10,8 +10,8 @@ import {
 } from "../../store/slices/structureSlice";
 
 import AddFolder from '../Buttons/addFolder'
-// import Delete from '../../Buttons/delete'
-// import Update from '../../Buttons/update'
+import Delete from '../Buttons/delete'
+import Update from '../Buttons/update'
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -27,7 +27,7 @@ import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
 import Checkbox from '@material-ui/core/Checkbox';
-// import {updateSelectedKeys,selectCheckedKeys,emptykeys} from '../../../store/slices/checkboxSlice'
+import {updateSelectedKeys,selectCheckedKeys,emptykeys} from '../../store/slices/checkBoxSlice'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -61,7 +61,7 @@ export default function Structure(props) {
   console.log(structureState)
 //   const selectedKeys=useSelector(selectCheckedKeys)
 
-let tableData = [];
+  let tableData = [];
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -75,6 +75,7 @@ let tableData = [];
       key: key,
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
+      favourite:structureState[key].FAVOURITE
     };
     tableData.push(newData);
   });
@@ -83,13 +84,14 @@ let tableData = [];
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`)
     dispatch(structureAsync(unique_id))
+    dispatch(emptykeys())
   };
 
   const [checked, setChecked] = React.useState(true);
 
   const handleCheckedChange = (key,e) => {
       console.log("checked")
-    //   dispatch(updateSelectedKeys(key))
+      dispatch(updateSelectedKeys(key))
   };
 
 
@@ -119,6 +121,7 @@ let tableData = [];
             >
               {data.name}
             </Link>
+            {data.}
           </div>
         </StyledTableCell>
       </StyledTableRow>
@@ -129,8 +132,8 @@ let tableData = [];
     <div>
       <div style={{display:"flex"}}>
         <AddFolder id={unique_id}/>
-        {/* <Delete/>
-        <Update/> */}
+        <Delete/>
+        <Update/>
       </div>
       {/* <NavigationTabs/> */}
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>

@@ -4,7 +4,8 @@ import API from "../../axios";
 export const structureSlice = createSlice({
   name: "structure",
   initialState: {
-    currentDisplayStructure:{}
+    currentDisplayStructure:{},
+    currentPath:''
   },
   reducers: {
     updateStructure:(state,action)=>{
@@ -18,13 +19,23 @@ export const structureSlice = createSlice({
         FAVOURITE:res.FAVOURITE
       }
 
+    },
+    updateStack:(state,action)=>{
+      let res=action.payload
+      state.currentDisplayStructure[res.id].NAME=res.NAME
+    },
+    popFromCurrentStack:(state,action)=>{
+      let res=action.payload;
+      delete state.currentDisplayStructure[res.id];
     }
   },
 });
 
 export const {
   updateStructure,
-  pushToCurrentStack
+  pushToCurrentStack,
+  updateStack,
+  popFromCurrentStack
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
