@@ -1,17 +1,20 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import NavigationTabs from "../NavigationTabs/navigation";
+import Path from '../Path/path'
 
 // import {Link} from 'react-router-dom'
 
 import {
   structureAsync,
-  selectStructure
+  selectStructure,
+  pathAsync,
+  addFavouriteAsync
 } from "../../store/slices/structureSlice";
 
 import AddFolder from '../Buttons/addFolder'
 import Delete from '../Buttons/delete'
 import Update from '../Buttons/update'
+import AddFile from '../Buttons/addFile'
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -70,6 +73,7 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
+    dispatch(pathAsync(unique_id))
   }, [unique_id]);
 
   
@@ -101,7 +105,7 @@ export default function Structure(props) {
   const handleFavouriteClick =(e,data)=>{
     e.preventDefault();
     console.log(data)
-    // dispatch(addFavouriteAsync(data))
+    dispatch(addFavouriteAsync(data))
   }
 
   let tableRenderer = tableData.map((data) => {
@@ -151,11 +155,12 @@ export default function Structure(props) {
   return (
     <div>
       <div style={{display:"flex"}}>
+        <AddFile/>
         <AddFolder id={unique_id}/>
         <Delete/>
         <Update/>
       </div>
-      {/* <NavigationTabs/> */}
+      <Path {...props}/>
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>

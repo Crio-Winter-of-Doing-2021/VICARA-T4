@@ -5,7 +5,10 @@ export const structureSlice = createSlice({
   name: "structure",
   initialState: {
     currentDisplayStructure:{},
-    currentPath:''
+    currentPath:[{
+      "NAME": "ROOT",
+      "id": "ROOT"
+  }]
   },
   reducers: {
     updateStructure:(state,action)=>{
@@ -32,6 +35,9 @@ export const structureSlice = createSlice({
     popFromCurrentStack:(state,action)=>{
       let res=action.payload;
       delete state.currentDisplayStructure[res.id];
+    },
+    updatePath:(state,action)=>{
+      state.currentPath=action.payload
     }
   },
 });
@@ -41,7 +47,8 @@ export const {
   pushToCurrentStack,
   updateFileName,
   popFromCurrentStack,
-  updateFav
+  updateFav,
+  updatePath
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -77,6 +84,15 @@ export const addFavouriteAsync =(data)=>(dispatch)=>{
   })
 }
 
+export const pathAsync =(data)=>(dispatch)=>{
+  API.get(`/api/path/?id=${data}`).then((res)=>{
+    dispatch(updatePath(res.data))
+  }).catch(err=>{
+    console.log(err)
+  })
+}
+
 export const selectStructure = (state) => state.structure.currentDisplayStructure;
+export const navStructure = (state) => state.structure.currentPath;
 
 export default structureSlice.reducer;

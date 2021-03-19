@@ -9,7 +9,7 @@ import FolderIcon from "@material-ui/icons/Folder";
 
 import {
   navStructure
-} from "../../../store/slices/structureSlice";
+} from "../../store/slices/structureSlice";
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -27,29 +27,31 @@ const StyledBreadcrumb = withStyles((theme) => ({
   },
 }))(Chip); // TypeScript only: need a type cast here because https://github.com/Microsoft/TypeScript/issues/26591
 
-export default function CustomizedBreadcrumbs() {
+export default function CustomizedBreadcrumbs(props) {
   const dispatch = useDispatch();
   const nav = useSelector(navStructure);
 
-  let updateFolder = (key) => {
+  let updateFolder = (e,key) => {
+    e.preventDefault()
     console.log("key called", key);
+    props.history.push(`/drive/${key}`)
   };
 
   let renderNav = nav.map((data) => {
     return (
       <StyledBreadcrumb
-        key={data.key}
+        key={data.id}
         component="a"
         href="#"
-        label={data.name}
+        label={data.NAME}
         icon={
-          data.key === "ROOT" ? (
+          data.id === "ROOT" ? (
             <HomeIcon fontSize="small" />
           ) : (
             <FolderIcon fontSize="small" />
           )
         }
-        onClick={() => updateFolder(data.key)}
+        onClick={(e) => updateFolder(e,data.id)}
       />
     );
   });
