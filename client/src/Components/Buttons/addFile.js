@@ -10,7 +10,7 @@ import UploadUtil from "../../store/slices/fileUpload";
 import { fileUploadLoader, fileLoading } from "../../store/slices/loaderSlice";
 
 import BackDropLoader from "../Loaders/fileUploadBackdrop";
-import API from "../../axios";
+import { baseURL, token } from "../../axios";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
@@ -47,9 +47,10 @@ export default function UploadButtons(props) {
       method: "post",
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: token,
       },
       data: formData,
-      url: "http://localhost:8000/api/file/",
+      url: `${baseURL}/api/file/`,
       onUploadProgress: (ev) => {
         const prog = (ev.loaded / ev.total) * 100;
         setProgress(Math.round(prog));
