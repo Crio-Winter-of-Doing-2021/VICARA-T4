@@ -1,6 +1,7 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
-import {structureAsync} from './structureSlice'
+import axios from 'axios'
+import {updateFileName,popFromCurrentStack} from './structureSlice'
 
 export const checkBoxSlice= createSlice({
   name: "checkbox",
@@ -32,20 +33,24 @@ export const {
 } = checkBoxSlice.actions;
 
 export const deleteAsync = (arr) => (dispatch) => {
+  
   let i;
+  let axi_data=[];
+
   for(i=0;i<arr.length;i++){
-    API.delete("/api/filesystem/",{
-        data:{
-            id:arr[i]
-        }
-    })
-    .then((res) => {
-        dispatch(structureAsync())
-    })
-    .catch((err) => {
-      console.log(err)
-    });
+    let new_data=API.delete(`/api/filesystem/?id=${arr[i]}`);
+    axi_data.push(new_data)
   }
+
+  axios.all(axi_data).then(axios.spread((...res)=>{
+    let k;
+    for(k=0;k<arr.length;k++){
+      dispatch(popFromCurrentStack(res[k].data))
+    }
+  })).catch(err=>{
+    console.log(err)
+  })
+  
   dispatch(emptykeys())
 };
 
@@ -54,7 +59,7 @@ export const updateAsync = (data) => (dispatch) => {
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
-        dispatch(structureAsync())
+        dispatch(updateFileName(res.data))
       })
       .catch((err) => {
         console.log(err)

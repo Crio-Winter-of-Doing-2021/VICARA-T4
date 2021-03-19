@@ -7,14 +7,9 @@ import HomeIcon from "@material-ui/icons/Home";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FolderIcon from "@material-ui/icons/Folder";
 
-import {emptykeys} from '../../../store/slices/checkboxSlice'
-
 import {
-  changeKey,
-  currentStructure,
-  navStructure,
-  currentKey
-} from "../../../store/slices/structureSlice";
+  navStructure
+} from "../../store/slices/structureSlice";
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -32,34 +27,31 @@ const StyledBreadcrumb = withStyles((theme) => ({
   },
 }))(Chip); // TypeScript only: need a type cast here because https://github.com/Microsoft/TypeScript/issues/26591
 
-export default function CustomizedBreadcrumbs() {
+export default function CustomizedBreadcrumbs(props) {
   const dispatch = useDispatch();
   const nav = useSelector(navStructure);
-  const currKey=useSelector(currentKey);
 
-  let updateFolder = (key) => {
+  let updateFolder = (e,key) => {
+    e.preventDefault()
     console.log("key called", key);
-    dispatch(changeKey(key));
-    dispatch(currentStructure());
-    if(key!==currKey){
-      dispatch(emptykeys())
-    }
+    props.history.push(`/drive/${key}`)
   };
 
   let renderNav = nav.map((data) => {
     return (
       <StyledBreadcrumb
+        key={data.id}
         component="a"
         href="#"
-        label={data.name}
+        label={data.NAME}
         icon={
-          data.key === "ROOT" ? (
+          data.id === "ROOT" ? (
             <HomeIcon fontSize="small" />
           ) : (
             <FolderIcon fontSize="small" />
           )
         }
-        onClick={() => updateFolder(data.key)}
+        onClick={(e) => updateFolder(e,data.id)}
       />
     );
   });

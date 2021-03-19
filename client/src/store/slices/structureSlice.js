@@ -1,79 +1,98 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
 
 export const structureSlice = createSlice({
   name: "structure",
   initialState: {
-    currentFolderKey: "ROOT",
-    keyFolder: [{ key: "ROOT", name: "Home" }], //last index is current
-    fileStructure: {},
-    currentDisplay: {},
-    selected:[]
+    currentDisplayStructure:{},
+    currentPath:[{
+      "NAME": "ROOT",
+      "id": "ROOT"
+  }]
   },
   reducers: {
-    updateStructure: (state, action) => {
-      state.fileStructure = action.payload;
+    updateStructure:(state,action)=>{
+        state.currentDisplayStructure=action.payload.CHILDREN
     },
-    currentStructure: (state) => {
-      state.currentDisplay =
-        state.fileStructure[state.currentFolderKey].CHILDREN;
-    },
-    changeKey: (state, action) => {
-      if (state.currentFolderKey !== action.payload) {
-        state.currentFolderKey = action.payload;
-        function check(data) {
-          return data.key === state.currentFolderKey;
-        }
-        let currentKeyIndex = state.keyFolder.findIndex(check);
-        if (currentKeyIndex !== -1) {
-          state.keyFolder.splice(
-            currentKeyIndex,
-            state.keyFolder.length - currentKeyIndex
-          );
-        }
-
-        let newData = {
-          key: state.currentFolderKey,
-          name: state.currentFolderKey==='ROOT'?'Home':state.fileStructure[state.currentFolderKey].NAME,
-        };
-
-        state.keyFolder.push(newData);
+    pushToCurrentStack:(state,action)=>{
+      let res=action.payload;
+      state.currentDisplayStructure[res.id]={
+        TYPE:res.TYPE,
+        NAME:res.NAME,
+        FAVOURITE:res.FAVOURITE
       }
 
-      state.currentFolderKey = action.payload;
     },
+    updateFileName:(state,action)=>{
+      let res=action.payload
+      state.currentDisplayStructure[res.id].NAME=res.NAME
+    },
+    updateFav:(state,action)=>{
+      let res=action.payload
+      state.currentDisplayStructure[res.id].FAVOURITE=res.is_favourite
+    }
+    ,
+    popFromCurrentStack:(state,action)=>{
+      let res=action.payload;
+      delete state.currentDisplayStructure[res.id];
+    },
+    updatePath:(state,action)=>{
+      state.currentPath=action.payload
+    }
   },
 });
 
 export const {
   updateStructure,
-  currentStructure,
-  changeKey,
+  pushToCurrentStack,
+  updateFileName,
+  popFromCurrentStack,
+  updateFav,
+  updatePath
 } = structureSlice.actions;
 
-export const structureAsync = () => (dispatch) => {
-  API.get("/api/filesystem/")
-    .then((res) => {
-      dispatch(updateStructure(res.data));
-      dispatch(currentStructure());
+export const structureAsync = (uni_id) => (dispatch) => {
+    API.get(`/api/filesystem/`,{
+        params:{
+            id:uni_id
+        }
     })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-export const addFolderAsync = (data) => (dispatch) => {
-    API.post("/api/filesystem/",data)
       .then((res) => {
-        dispatch(structureAsync())
+        dispatch(updateStructure(res.data))
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
       });
 };
 
-export const selectStructure = (state) => state.structure.currentDisplay;
-export const navStructure = (state) => state.structure.keyFolder;
-export const currentKey = (state) => state.structure.currentFolderKey
+export const addFolderAsync = (data) => (dispatch) => {
+  API.post("/api/filesystem/",data.body)
+    .then((res) => {
+      console.log(res)
+      dispatch(pushToCurrentStack(res.data))
+    })
+    .catch((err) => {
+      console.log(err)
+    });
+};
+
+export const addFavouriteAsync =(data)=>(dispatch)=>{
+  API.post('/api/favourites/',data).then((res)=>{
+    dispatch(updateFav(data))
+  }).catch(err=>{
+    console.log(err)
+  })
+}
+
+export const pathAsync =(data)=>(dispatch)=>{
+  API.get(`/api/path/?id=${data}`).then((res)=>{
+    dispatch(updatePath(res.data))
+  }).catch(err=>{
+    console.log(err)
+  })
+}
+
+export const selectStructure = (state) => state.structure.currentDisplayStructure;
+export const navStructure = (state) => state.structure.currentPath;
 
 export default structureSlice.reducer;

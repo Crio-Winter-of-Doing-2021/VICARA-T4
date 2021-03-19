@@ -8,14 +8,12 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 
-import {addFolderAsync,currentKey} from '../../store/slices/structureSlice'
+import {addFolderAsync} from '../../store/slices/structureSlice'
 import { useDispatch, useSelector } from "react-redux";
-import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
+// import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
 
-export default function FormDialog() {
+export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
-
-  const key = useSelector(currentKey)
 
   const dispatch=useDispatch();
 
@@ -35,7 +33,7 @@ export default function FormDialog() {
     setData({
         NAME:e.target.value,
         TYPE:'FOLDER',
-        PARENT:key
+        PARENT:props.id
     })
   };
 
@@ -45,7 +43,11 @@ export default function FormDialog() {
 
   const handleAdd =()=>{
       handleClose();
-      dispatch(addFolderAsync(data))
+      let new_Data={
+          body:data,
+          id:props.id
+      }
+      dispatch(addFolderAsync(new_Data))
   }
 
   return (
@@ -56,9 +58,9 @@ export default function FormDialog() {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add Folder</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          {/* <DialogContentText>
             Folder will be added to - <DisabledTabs/>
-          </DialogContentText>
+          </DialogContentText> */}
           <TextField
             autoFocus
             margin="dense"

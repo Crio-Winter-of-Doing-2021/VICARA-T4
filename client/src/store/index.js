@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../Components/counter/counterSlice';
-import checkBoxReducer from './slices/checkboxSlice';
+import authReducer from './slices/authSlice'
 import structureReducer from './slices/structureSlice'
+import checkboxReducer from './slices/checkBoxSlice'
 
 export default configureStore({
   reducer: {
-    counter: counterReducer,
-    structure : structureReducer,
-    checkbox: checkBoxReducer
+    auth:authReducer,
+    structure: structureReducer,
+    checkbox: checkboxReducer
   },
 });

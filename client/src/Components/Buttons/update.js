@@ -9,9 +9,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import EditIcon from '@material-ui/icons/Edit';
 
-import {updateAsync,selectCheckedKeys} from '../../store/slices/checkboxSlice'
+import {updateAsync,selectCheckedKeys} from '../../store/slices/checkBoxSlice'
 import { useDispatch, useSelector } from "react-redux";
-import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
+// import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
@@ -42,7 +42,6 @@ export default function FormDialog() {
           NAME:data
       }
       dispatch(updateAsync(newData))
-      console.log(checkedKeys)
   }
 
   let deactive= checkedKeys.length!==1?true:false;
@@ -55,9 +54,9 @@ export default function FormDialog() {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Update Name</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          {/* <DialogContentText>
             Location - <DisabledTabs/>
-          </DialogContentText>
+          </DialogContentText> */}
           <TextField
             autoFocus
             margin="dense"
