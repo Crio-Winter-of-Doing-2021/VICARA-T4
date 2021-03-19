@@ -43,7 +43,10 @@ export const deleteAsync = (arr) => (dispatch) => {
   }
 
   axios.all(axi_data).then(axios.spread((...res)=>{
-    console.log(res)
+    let k;
+    for(k=0;k<arr.length;k++){
+      dispatch(popFromCurrentStack(res[k].data))
+    }
   })).catch(err=>{
     console.log(err)
   })
