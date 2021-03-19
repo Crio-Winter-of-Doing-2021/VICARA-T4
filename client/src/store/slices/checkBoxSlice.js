@@ -33,8 +33,8 @@ export const {
 } = checkBoxSlice.actions;
 
 export const deleteAsync = (arr) => (dispatch) => {
+  
   let i;
-
   let axi_data=[];
 
   for(i=0;i<arr.length;i++){
