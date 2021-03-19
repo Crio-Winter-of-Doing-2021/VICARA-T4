@@ -155,7 +155,7 @@ export default function Structure(props) {
   return (
     <div>
       <div style={{display:"flex"}}>
-        <AddFile/>
+        <AddFile parent={unique_id}/>
         <AddFolder id={unique_id}/>
         <Delete/>
         <Update/>
