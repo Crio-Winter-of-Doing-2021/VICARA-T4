@@ -20,10 +20,15 @@ export const structureSlice = createSlice({
       }
 
     },
-    updateStack:(state,action)=>{
+    updateFileName:(state,action)=>{
       let res=action.payload
       state.currentDisplayStructure[res.id].NAME=res.NAME
     },
+    updateFav:(state,action)=>{
+      let res=action.payload
+      state.currentDisplayStructure[res.id].FAVOURITE=res.is_favourite
+    }
+    ,
     popFromCurrentStack:(state,action)=>{
       let res=action.payload;
       delete state.currentDisplayStructure[res.id];
@@ -34,8 +39,9 @@ export const structureSlice = createSlice({
 export const {
   updateStructure,
   pushToCurrentStack,
-  updateStack,
-  popFromCurrentStack
+  updateFileName,
+  popFromCurrentStack,
+  updateFav
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -63,6 +69,13 @@ export const addFolderAsync = (data) => (dispatch) => {
     });
 };
 
+export const addFavouriteAsync =(data)=>(dispatch)=>{
+  API.post('/api/favourites/',data).then((res)=>{
+    dispatch(updateFav(data))
+  }).catch(err=>{
+    console.log(err)
+  })
+}
 
 export const selectStructure = (state) => state.structure.currentDisplayStructure;
 

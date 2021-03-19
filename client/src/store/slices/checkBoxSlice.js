@@ -1,7 +1,7 @@
 import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
 import axios from 'axios'
-import {updateStack,popFromCurrentStack} from './structureSlice'
+import {updateFileName,popFromCurrentStack} from './structureSlice'
 
 export const checkBoxSlice= createSlice({
   name: "checkbox",
@@ -56,7 +56,7 @@ export const updateAsync = (data) => (dispatch) => {
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
-        dispatch(updateStack(res.data))
+        dispatch(updateFileName(res.data))
       })
       .catch((err) => {
         console.log(err)

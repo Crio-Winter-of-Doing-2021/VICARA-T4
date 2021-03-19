@@ -29,6 +29,10 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 import Checkbox from '@material-ui/core/Checkbox';
 import {updateSelectedKeys,selectCheckedKeys,emptykeys} from '../../store/slices/checkBoxSlice'
 
+import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
+import StarRoundedIcon from '@material-ui/icons/StarRounded';
+import IconButton from '@material-ui/core/IconButton';
+
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -83,7 +87,7 @@ export default function Structure(props) {
   let updateFolder = (key) => {
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`)
-    dispatch(structureAsync(unique_id))
+    // dispatch(structureAsync(key))
     dispatch(emptykeys())
   };
 
@@ -94,8 +98,19 @@ export default function Structure(props) {
       dispatch(updateSelectedKeys(key))
   };
 
+  const handleFavouriteClick =(e,data)=>{
+    e.preventDefault();
+    console.log(data)
+    // dispatch(addFavouriteAsync(data))
+  }
 
   let tableRenderer = tableData.map((data) => {
+
+    let favReverseData={
+      id:data.key,
+      is_favourite:!data.favourite
+    }
+
     return (
       <StyledTableRow key={data.key}>
         <StyledTableCell component="th" scope="row">
@@ -121,7 +136,12 @@ export default function Structure(props) {
             >
               {data.name}
             </Link>
-            {data.}
+            {data.favourite===true?<IconButton onClick={(e)=> handleFavouriteClick(e,favReverseData)} style={{margin:"0 10px"}} color="primary">
+              <StarRoundedIcon />
+            </IconButton>:
+            <IconButton onClick={(e)=> handleFavouriteClick(e,favReverseData)} style={{margin:"0 10px"}} color="primary">
+              <StarBorderRoundedIcon />
+            </IconButton>}
           </div>
         </StyledTableCell>
       </StyledTableRow>

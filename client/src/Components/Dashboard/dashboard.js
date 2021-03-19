@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import Structure from '../Structure/structure'
+import {sideNav} from '../../constants'
 
 const drawerWidth = 240;
 
@@ -42,6 +43,10 @@ const useStyles = makeStyles((theme) => ({
 export default function ClippedDrawer(props) {
   const classes = useStyles();
 
+  const handlePageChange=(e,data)=>{
+    console.log(data)
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -63,10 +68,10 @@ export default function ClippedDrawer(props) {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
+            {sideNav.map((data, index) => (
+              <ListItem button onClick={(e)=>handlePageChange(e,data.name)} key={data.name}>
+                <ListItemIcon>{data.icon}</ListItemIcon>
+                <ListItemText primary={data.name} />
               </ListItem>
             ))}
           </List>
