@@ -50,11 +50,11 @@ export default function UploadButtons(props) {
           "Content-Type": "multipart/form-data",
         },
       },
-      (event) => {
+      {onUploadProgress:(event) => {
         console.log("progress i was called");
         setProgress(Math.round((100 * event.loaded) / event.total));
         console.log("progress", progress);
-      }
+      }}
     )
       .then((res) => {
         // dispatch(fileUploadLoader());
