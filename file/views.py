@@ -98,7 +98,7 @@ class FileView(APIView):
         id = request.GET["id"]
         delete_by_id(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
-        return Response(data={"message": "Successfully deleted"}, status=status.HTTP_200_OK)
+        return Response(data={"id": id, "message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_PATCH_PARAMS)
     @check_id
