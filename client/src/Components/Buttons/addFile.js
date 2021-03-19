@@ -27,23 +27,17 @@ export default function UploadButtons(props) {
   let loading = useSelector(fileLoading)
   const dispatch = useDispatch();
 
-  const [selectedFiles, setSelectedFiles] = useState(undefined);
-  const [currentFile, setCurrentFile] = useState(undefined);
   const [progress, setProgress] = useState(0);
-  const [message, setMessage] = useState("");
-
-  const [fileInfos, setFileInfos] = useState([]);
 
   const selectFile = (event) => {
     // event.preventDefault();
-    setSelectedFiles(event.target.files);
+    let currentFile=event.target.files[0];
 
-    console.log(selectedFiles)
+    console.log(currentFile)
 
     // let currentFile = selectedFiles[0];
 
     // setProgress(0);
-    // setCurrentFile(currentFile);
 
     // UploadUtil.upload(currentFile,props.id,(event) => {
     //   setProgress(Math.round((100 * event.loaded) / event.total));
@@ -55,12 +49,7 @@ export default function UploadButtons(props) {
     //   .catch((err) => {
     //     dispatch(fileUploadLoader())
     //     console.log(err)
-    //     setCurrentFile(undefined);
     //   });
-
-    // setSelectedFiles(undefined);
-
-
   };
 
   return (
