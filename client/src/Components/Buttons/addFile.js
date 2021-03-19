@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
+import axios from "axios";
 
 import UploadUtil from "../../store/slices/fileUpload";
 
@@ -42,20 +43,19 @@ export default function UploadButtons(props) {
     formData.append("file", currentFile);
     formData.append("PARENT", props.parent);
 
-    API.post(
-      "/api/file/",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    axios({
+      method: "post",
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      (event) => {
-        console.log("progress i was called");
-        setProgress(Math.round((100 * event.loaded) / event.total));
-        console.log("progress", progress);
-      }
-    )
+      data: formData,
+      url: "http://localhost:8000/api/file/",
+      onUploadProgress: (ev) => {
+        const prog = (ev.loaded / ev.total) * 100;
+        setProgress(Math.round(prog));
+        console.log({ progress });
+      },
+    })
       .then((res) => {
         // dispatch(fileUploadLoader());
         console.log("res from upload ", res);
