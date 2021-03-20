@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import AnonymousUser
+from django.conf import settings
 # local imports
 from user.models import Profile
 from .models import File
@@ -96,6 +97,9 @@ class FileView(APIView):
         favourites = profile.favourites
         recent = profile.recent
         id = request.GET["id"]
+        file_obj = File.objects.get(filesystem_id=id)
+        initial_path = file_obj.file.path
+        os.remove(initial_path)
         delete_by_id(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
         return Response(data={"id": id, "message": "Successfully deleted"}, status=status.HTTP_200_OK)
@@ -119,6 +123,10 @@ class FileView(APIView):
 
         if(NAME in request.data):
             new_name = request.data[NAME]
+            """ will use this rename lines just before download"""
+            # new_path = os.path.join(settings.MEDIA_ROOT, new_name)
+            # initial_path = file_obj.file.path
+            # os.rename(initial_path, new_path)
             file_obj.file.name = new_name
             update_property(id, filesystem, recent, favourites, NAME, new_name)
 
