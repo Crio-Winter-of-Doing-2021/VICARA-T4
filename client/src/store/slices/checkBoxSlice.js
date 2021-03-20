@@ -6,23 +6,42 @@ import {updateFileName,popFromCurrentStack} from './structureSlice'
 export const checkBoxSlice= createSlice({
   name: "checkbox",
   initialState: {
-    selectedKeys:[]
+    selectedFolderKeys:[],
+    selectedFileKeys:[]
   },
   reducers: {
    updateSelectedKeys:(state,action)=>{
-        let data=action.payload;
-        function check(key) {
-            return data === key;
+        let type=action.payload.type
+        console.log(type)
+        if(type==='FOLDER'){
+          let data=action.payload.id;
+          console.log(data)
+          function check(key) {
+              return data === key;
+            }
+          let currentKeyIndex = state.selectedFolderKeys.findIndex(check);
+          if(currentKeyIndex===-1){
+              state.selectedFolderKeys.push(data);
+          }else{
+              state.selectedFolderKeys.splice(currentKeyIndex,1);
           }
-        let currentKeyIndex = state.selectedKeys.findIndex(check);
-        if(currentKeyIndex===-1){
-            state.selectedKeys.push(data);
         }else{
-            state.selectedKeys.splice(currentKeyIndex,1);
+          let data=action.payload.id;
+          console.log(data)
+          function check(key) {
+              return data === key;
+            }
+          let currentKeyIndex = state.selectedFileKeys.findIndex(check);
+          if(currentKeyIndex===-1){
+              state.selectedFileKeys.push(data);
+          }else{
+              state.selectedFileKeys.splice(currentKeyIndex,1);
+          }
         }
    },
    emptykeys:state=>{
-       state.selectedKeys=[]
+       state.selectedFolderKeys=[]
+       state.selectedFileKeys=[]
    }
   },
 });
@@ -32,30 +51,52 @@ export const {
   emptykeys
 } = checkBoxSlice.actions;
 
-export const deleteAsync = (arr) => (dispatch) => {
+export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
   
-  let i;
-  let axi_data=[];
+  if(folderArr.length!==0){
+    let i;
+    let axi_data=[];
 
-  for(i=0;i<arr.length;i++){
-    let new_data=API.delete(`/api/filesystem/?id=${arr[i]}`);
-    axi_data.push(new_data)
+    for(i=0;i<folderArr.length;i++){
+      let new_data=API.delete(`/api/filesystem/?id=${folderArr[i]}`);
+      axi_data.push(new_data)
+    }
+
+    axios.all(axi_data).then(axios.spread((...res)=>{
+      let k;
+      for(k=0;k<folderArr.length;k++){
+        dispatch(popFromCurrentStack(res[k].data))
+      }
+    })).catch(err=>{
+      console.log(err)
+    })
   }
 
-  axios.all(axi_data).then(axios.spread((...res)=>{
-    let k;
-    for(k=0;k<arr.length;k++){
-      dispatch(popFromCurrentStack(res[k].data))
+  if(fileArr.length!==0){
+    let i;
+    let axi_data=[];
+
+    for(i=0;i<fileArr.length;i++){
+      let new_data=API.delete(`/api/file/?id=${fileArr[i]}`);
+      axi_data.push(new_data)
     }
-  })).catch(err=>{
-    console.log(err)
-  })
+
+    axios.all(axi_data).then(axios.spread((...res)=>{
+      let k;
+      for(k=0;k<fileArr.length;k++){
+        dispatch(popFromCurrentStack(res[k].data))
+      }
+    })).catch(err=>{
+      console.log(err)
+    })
+  }
   
   dispatch(emptykeys())
 };
 
-export const updateAsync = (data) => (dispatch) => {
-    API.patch("/api/filesystem/",data)
+export const updateAsync = (fileData,folderData) => (dispatch) => {
+    if(Object.keys(folderData).length!==0){
+      API.patch("/api/filesystem/",folderData)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
@@ -64,8 +105,22 @@ export const updateAsync = (data) => (dispatch) => {
       .catch((err) => {
         console.log(err)
       });
+    }
+
+    if(Object.keys(fileData).length!==0){
+      API.patch("/api/file/",fileData)
+      .then((res) => {
+        console.log(res)
+        // dispatch(emptykeys())
+        dispatch(updateFileName(res.data))
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+    }
   };
 
-export const selectCheckedKeys = (state) => state.checkbox.selectedKeys;
+export const selectCheckedFolderKeys = (state) => state.checkbox.selectedFolderKeys;
+export const selectCheckedFileKeys = (state) => state.checkbox.selectedFileKeys;
 
 export default checkBoxSlice.reducer;
