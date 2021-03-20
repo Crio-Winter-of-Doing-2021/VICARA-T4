@@ -1,33 +1,90 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
+import axios from "axios";
 
+import UploadUtil from "../../store/slices/fileUpload";
+
+import { fileUploadLoader, fileLoading } from "../../store/slices/loaderSlice";
+
+import BackDropLoader from "../Loaders/fileUploadBackdrop";
+import { baseURL, token } from "../../axios";
 const useStyles = makeStyles((theme) => ({
   root: {
-    '& > *': {
-      margin: theme.spacing(1),
+    "& > *": {
+      marginRight: theme.spacing(1),
     },
   },
   input: {
-    display: 'none',
+    display: "none",
   },
 }));
 
-export default function UploadButtons() {
+export default function UploadButtons(props) {
   const classes = useStyles();
+
+  let loading = useSelector(fileLoading);
+  const dispatch = useDispatch();
+
+  const [progress, setProgress] = useState(0);
+
+  const selectFile = (event) => {
+    // event.preventDefault();
+    let currentFile = event.target.files[0];
+
+    console.log(currentFile);
+
+    setProgress(0);
+    dispatch(fileUploadLoader());
+    let formData = new FormData();
+
+    formData.append("file", currentFile);
+    formData.append("PARENT", props.parent);
+
+    axios({
+      method: "post",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: token,
+      },
+      data: formData,
+      url: `${baseURL}/api/file/`,
+      onUploadProgress: (ev) => {
+        const prog = (ev.loaded / ev.total) * 100;
+        setProgress(Math.round(prog));
+        console.log({ progress });
+      },
+    })
+      .then((res) => {
+        dispatch(fileUploadLoader());
+        console.log("res from upload ", res);
+      })
+      .catch((err) => {
+        dispatch(fileUploadLoader());
+        console.log(err);
+      });
+  };
 
   return (
     <div className={classes.root}>
+      
+      <BackDropLoader progress={progress} show={loading}/>
       <input
-        accept="image/*"
         className={classes.input}
         id="contained-button-file"
         multiple
         type="file"
+        onChange={selectFile}
       />
       <label htmlFor="contained-button-file">
-        <Button startIcon={<InsertDriveFileIcon/>} variant="contained" color="primary" component="span">
+        <Button
+          startIcon={<InsertDriveFileIcon />}
+          variant="contained"
+          color="primary"
+          component="span"
+        >
           Add File
         </Button>
       </label>

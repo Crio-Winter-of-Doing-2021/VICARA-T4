@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Path from '../Path/path'
+import Path from "../Path/path";
 
 // import {Link} from 'react-router-dom'
 
@@ -8,13 +8,13 @@ import {
   structureAsync,
   selectStructure,
   pathAsync,
-  addFavouriteAsync
+  addFavouriteAsync,
 } from "../../store/slices/structureSlice";
 
-import AddFolder from '../Buttons/addFolder'
-import Delete from '../Buttons/delete'
-import Update from '../Buttons/update'
-import AddFile from '../Buttons/addFile'
+import AddFolder from "../Buttons/addFolder";
+import Delete from "../Buttons/delete";
+import Update from "../Buttons/update";
+import AddFile from "../Buttons/addFile";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -29,12 +29,16 @@ import Link from "@material-ui/core/Link";
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
-import Checkbox from '@material-ui/core/Checkbox';
-import {updateSelectedKeys,selectCheckedKeys,emptykeys} from '../../store/slices/checkBoxSlice'
+import Checkbox from "@material-ui/core/Checkbox";
+import {
+  updateSelectedKeys,
+  selectCheckedKeys,
+  emptykeys,
+} from "../../store/slices/checkBoxSlice";
 
-import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
-import StarRoundedIcon from '@material-ui/icons/StarRounded';
-import IconButton from '@material-ui/core/IconButton';
+import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
+import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import IconButton from "@material-ui/core/IconButton";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -62,66 +66,63 @@ const useStyles = makeStyles({
 
 export default function Structure(props) {
   const classes = useStyles();
-  let unique_id=props.match.params.id
+  let unique_id = props.match.params.id;
 
   const structureState = useSelector(selectStructure);
-  console.log(structureState)
-//   const selectedKeys=useSelector(selectCheckedKeys)
+  console.log(structureState);
+  //   const selectedKeys=useSelector(selectCheckedKeys)
 
   let tableData = [];
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
-    dispatch(pathAsync(unique_id))
+    dispatch(pathAsync(unique_id));
   }, [unique_id]);
-
-  
 
   Object.keys(structureState).map((key, index) => {
     let newData = {
       key: key,
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
-      favourite:structureState[key].FAVOURITE
+      favourite: structureState[key].FAVOURITE,
     };
     tableData.push(newData);
   });
 
   let updateFolder = (key) => {
     console.log("key clicked", key);
-    props.history.push(`/drive/${key}`)
+    props.history.push(`/drive/${key}`);
     // dispatch(structureAsync(key))
-    dispatch(emptykeys())
+    dispatch(emptykeys());
   };
 
   const [checked, setChecked] = React.useState(true);
 
-  const handleCheckedChange = (key,e) => {
-      console.log("checked")
-      dispatch(updateSelectedKeys(key))
+  const handleCheckedChange = (key, e) => {
+    console.log("checked");
+    dispatch(updateSelectedKeys(key));
   };
 
-  const handleFavouriteClick =(e,data)=>{
+  const handleFavouriteClick = (e, data) => {
     e.preventDefault();
-    console.log(data)
-    dispatch(addFavouriteAsync(data))
-  }
+    console.log(data);
+    dispatch(addFavouriteAsync(data));
+  };
 
   let tableRenderer = tableData.map((data) => {
-
-    let favReverseData={
-      id:data.key,
-      is_favourite:!data.favourite
-    }
+    let favReverseData = {
+      id: data.key,
+      is_favourite: !data.favourite,
+    };
 
     return (
       <StyledTableRow key={data.key}>
         <StyledTableCell component="th" scope="row">
           <div style={{ display: "flex", alignItems: "center" }}>
             <Checkbox
-              onChange={(e)=> handleCheckedChange(data.key,e)}
-              inputProps={{ 'aria-label': 'primary checkbox' }}
+              onChange={(e) => handleCheckedChange(data.key, e)}
+              inputProps={{ "aria-label": "primary checkbox" }}
             />
             {data.type === "FOLDER" ? (
               <FolderOpenTwoToneIcon />
@@ -140,12 +141,23 @@ export default function Structure(props) {
             >
               {data.name}
             </Link>
-            {data.favourite===true?<IconButton onClick={(e)=> handleFavouriteClick(e,favReverseData)} style={{margin:"0 10px"}} color="primary">
-              <StarRoundedIcon />
-            </IconButton>:
-            <IconButton onClick={(e)=> handleFavouriteClick(e,favReverseData)} style={{margin:"0 10px"}} color="primary">
-              <StarBorderRoundedIcon />
-            </IconButton>}
+            {data.favourite === true ? (
+              <IconButton
+                onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                style={{ margin: "0 10px" }}
+                color="primary"
+              >
+                <StarRoundedIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                style={{ margin: "0 10px" }}
+                color="primary"
+              >
+                <StarBorderRoundedIcon />
+              </IconButton>
+            )}
           </div>
         </StyledTableCell>
       </StyledTableRow>
@@ -154,13 +166,13 @@ export default function Structure(props) {
 
   return (
     <div>
-      <div style={{display:"flex"}}>
-        <AddFile/>
-        <AddFolder id={unique_id}/>
-        <Delete/>
-        <Update/>
+      <div style={{ display: "flex" }}>
+        <AddFile parent={unique_id} />
+        <AddFolder id={unique_id} />
+        <Delete />
+        <Update />
       </div>
-      <Path {...props}/>
+      <Path {...props} />
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
