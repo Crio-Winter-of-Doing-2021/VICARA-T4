@@ -14,7 +14,7 @@ import { baseURL, token } from "../../axios";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      margin: theme.spacing(1),
+      marginRight: theme.spacing(1),
     },
   },
   input: {
@@ -37,7 +37,7 @@ export default function UploadButtons(props) {
     console.log(currentFile);
 
     setProgress(0);
-    // dispatch(fileUploadLoader());
+    dispatch(fileUploadLoader());
     let formData = new FormData();
 
     formData.append("file", currentFile);
@@ -58,19 +58,19 @@ export default function UploadButtons(props) {
       },
     })
       .then((res) => {
-        // dispatch(fileUploadLoader());
+        dispatch(fileUploadLoader());
         console.log("res from upload ", res);
       })
       .catch((err) => {
-        // dispatch(fileUploadLoader());
+        dispatch(fileUploadLoader());
         console.log(err);
       });
   };
 
   return (
     <div className={classes.root}>
-      {progress}
-      {/* <BackDropLoader show={loading}/> */}
+      
+      <BackDropLoader progress={progress} show={loading}/>
       <input
         className={classes.input}
         id="contained-button-file"
