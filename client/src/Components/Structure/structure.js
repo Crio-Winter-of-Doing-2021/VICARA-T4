@@ -116,12 +116,17 @@ export default function Structure(props) {
       is_favourite: !data.favourite,
     };
 
+    let keyData={
+      id:data.key,
+      type:data.type
+    }
+
     return (
       <StyledTableRow key={data.key}>
         <StyledTableCell component="th" scope="row">
           <div style={{ display: "flex", alignItems: "center" }}>
             <Checkbox
-              onChange={(e) => handleCheckedChange(data.key, e)}
+              onChange={(e) => handleCheckedChange(keyData, e)}
               inputProps={{ "aria-label": "primary checkbox" }}
             />
             {data.type === "FOLDER" ? (

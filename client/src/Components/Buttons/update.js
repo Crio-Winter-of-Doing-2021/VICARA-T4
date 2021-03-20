@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import EditIcon from '@material-ui/icons/Edit';
 
-import {updateAsync,selectCheckedKeys} from '../../store/slices/checkBoxSlice'
+import {updateAsync,selectCheckedFolderKeys,selectCheckedFileKeys} from '../../store/slices/checkBoxSlice'
 import { useDispatch, useSelector } from "react-redux";
 // import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
 
@@ -22,7 +22,8 @@ export default function FormDialog() {
     setOpen(true);
   };
 
-  const checkedKeys=useSelector(selectCheckedKeys)
+  const checkedFolderKeys=useSelector(selectCheckedFolderKeys)
+  const checkedFileKeys=useSelector(selectCheckedFileKeys)
 
   const [data,setData]=React.useState('')
 
@@ -37,14 +38,31 @@ export default function FormDialog() {
 
   const handleUpdate =()=>{
       handleClose();
-      let newData={
-          id:checkedKeys[0],
+
+      console.log("Files",checkedFileKeys)
+      console.log("Folders",checkedFolderKeys)
+
+      let newFileData={}
+      let newFolderData={}
+
+      if(checkedFileKeys.length!==0){
+        newFileData={
+          id:checkedFileKeys[0],
           NAME:data
+        }
       }
-      dispatch(updateAsync(newData))
+
+      if(checkedFolderKeys.length!==0){
+        newFolderData={
+          id:checkedFolderKeys[0],
+          NAME:data
+        }
+      }
+
+      dispatch(updateAsync(newFileData,newFolderData))
   }
 
-  let deactive= checkedKeys.length!==1?true:false;
+  let deactive= (checkedFolderKeys.length + checkedFileKeys.length)!==1 ?true:false;
 
   return (
     <div>
