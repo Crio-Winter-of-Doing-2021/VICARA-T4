@@ -2,6 +2,7 @@ import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
 import axios from 'axios'
 import {updateFileName,popFromCurrentStack} from './structureSlice'
+import {normalLoader} from './loaderSlice'
 
 export const checkBoxSlice= createSlice({
   name: "checkbox",
@@ -53,7 +54,9 @@ export const {
 
 export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
   
+  
   if(folderArr.length!==0){
+    dispatch(normalLoader())
     let i;
     let axi_data=[];
 
@@ -67,12 +70,15 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
       for(k=0;k<folderArr.length;k++){
         dispatch(popFromCurrentStack(res[k].data))
       }
+      dispatch(normalLoader())
     })).catch(err=>{
       console.log(err)
+      dispatch(normalLoader())
     })
   }
 
   if(fileArr.length!==0){
+    dispatch(normalLoader())
     let i;
     let axi_data=[];
 
@@ -86,8 +92,10 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
       for(k=0;k<fileArr.length;k++){
         dispatch(popFromCurrentStack(res[k].data))
       }
+      dispatch(normalLoader())
     })).catch(err=>{
       console.log(err)
+      dispatch(normalLoader())
     })
   }
   
@@ -96,26 +104,32 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
 
 export const updateAsync = (fileData,folderData) => (dispatch) => {
     if(Object.keys(folderData).length!==0){
+      dispatch(normalLoader())
       API.patch("/api/filesystem/",folderData)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
         dispatch(updateFileName(res.data))
+        dispatch(normalLoader())
       })
       .catch((err) => {
         console.log(err)
+        dispatch(normalLoader())
       });
     }
 
     if(Object.keys(fileData).length!==0){
+      dispatch(normalLoader())
       API.patch("/api/file/",fileData)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
         dispatch(updateFileName(res.data))
+        dispatch(normalLoader())
       })
       .catch((err) => {
         console.log(err)
+        dispatch(normalLoader())
       });
     }
   };

@@ -1,5 +1,6 @@
 import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
+import {normalLoader} from './loaderSlice'
 
 export const structureSlice = createSlice({
   name: "structure",
@@ -66,13 +67,16 @@ export const structureAsync = (uni_id) => (dispatch) => {
 };
 
 export const addFolderAsync = (data) => (dispatch) => {
+  dispatch(normalLoader())
   API.post("/api/filesystem/",data.body)
     .then((res) => {
       console.log(res)
       dispatch(pushToCurrentStack(res.data))
+      dispatch(normalLoader())
     })
     .catch((err) => {
       console.log(err)
+      dispatch(normalLoader())
     });
 };
 

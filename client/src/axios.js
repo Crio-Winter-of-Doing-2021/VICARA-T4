@@ -2,7 +2,7 @@ import axios from "axios";
 
 export let baseURL = "http://localhost:8000";
 
-export const token = "Token 3eaac4c78b7b6b43664b270d416e9e8f874539cb";
+export const token = "Token 8df98e1fa0a87ef81fe9e87afb1bdabf3982597a";
 
 export default axios.create({
   baseURL,

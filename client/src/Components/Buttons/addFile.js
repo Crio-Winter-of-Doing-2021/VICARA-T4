@@ -5,9 +5,9 @@ import Button from "@material-ui/core/Button";
 import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
 import axios from "axios";
 
-import UploadUtil from "../../store/slices/fileUpload";
-
 import { fileUploadLoader, fileLoading } from "../../store/slices/loaderSlice";
+
+import {pushToCurrentStack} from '../../store/slices/structureSlice'
 
 import BackDropLoader from "../Loaders/fileUploadBackdrop";
 import { baseURL, token } from "../../axios";
@@ -58,8 +58,8 @@ export default function UploadButtons(props) {
       },
     })
       .then((res) => {
-        dispatch(fileUploadLoader());
-        console.log("res from upload ", res);
+        dispatch(pushToCurrentStack(res.data))
+        dispatch(fileUploadLoader());  
       })
       .catch((err) => {
         dispatch(fileUploadLoader());
