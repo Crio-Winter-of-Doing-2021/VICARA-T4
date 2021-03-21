@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Permission
 from file.serializers import FileSerializer
 from varname import nameof
 import secrets
@@ -10,13 +9,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
+import boto3
 # local imports
 from user.models import Profile
 from .models import File
 from mysite.constants import *
 from mysite.decorators import *
 from mysite.utils import delete_by_id
+from mysite.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME, AWS_LOCATION
 
 REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["id"]
@@ -42,6 +42,17 @@ def update_property(id, filesystem, recent, favourites, PROPERTY, new_value):
         favourites[id][PROPERTY] = new_value
 
 
+def s3_upload(fileToUpload):
+    # fileToUpload = request.FILES.get('fileToUpload')
+    cloudFilename = AWS_LOCATION + fileToUpload.name
+
+    session = boto3.session.Session(aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    s3 = session.resource('s3')
+    s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(
+        Key=cloudFilename, Body=fileToUpload)
+
+
 class FileView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
@@ -55,10 +66,10 @@ class FileView(APIView):
         fileData = FileSerializer(file_obj).data
         return Response(data={**fileData, **filesystem[id]}, status=status.HTTP_200_OK)
 
-    @check_request_attr(REQUIRED_PARAMS=REQUIRED_POST_PARAMS)
-    @parent_present_and_folder
-    @check_file_name_from_request_file
-    @check_already_present(to_check="req_file_name", type=FILE)
+    # @check_request_attr(REQUIRED_PARAMS=REQUIRED_POST_PARAMS)
+    # @parent_present_and_folder
+    # @check_file_name_from_request_file
+    # @check_already_present(to_check="req_file_name", type=FILE)
     def post(self, request, *args, **kwargs):
 
         profile = Profile.objects.get(user=request.user)
@@ -70,6 +81,7 @@ class FileView(APIView):
         file_obj = File(
             file=request.FILES['file'], filesystem_id=filesystem_id, creator=request.user)
         file_obj.save()
+        s3_upload(request.FILES['file'])
         children[filesystem_id] = {
             TYPE: FILE,
             NAME: name,
@@ -85,9 +97,11 @@ class FileView(APIView):
             PRIVACY: PRIVATE
         }
         update_profile(profile, filesystem)
-        fileData = FileSerializer(file_obj).data
+        # fileData = FileSerializer(file_obj).data
+        return Response(data="done", status=status.HTTP_200_OK)
+
         # print(fileData)
-        return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
+        # return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
 
     @check_id
     @check_type_id(type_required=FILE)
