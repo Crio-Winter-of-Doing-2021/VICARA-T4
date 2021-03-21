@@ -12,7 +12,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = File
-        fields = ('file', 'id', PRIVACY, USERS, CREATOR, TIMESTAMP)
+        fields = ('id', PRIVACY, USERS, CREATOR, TIMESTAMP)
 
     def get_id(self, obj):
         return obj.filesystem_id

@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Permission
 from file.serializers import FileSerializer
 from varname import nameof
 import secrets
@@ -10,13 +9,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
+
 # local imports
 from user.models import Profile
 from .models import File
 from mysite.constants import *
 from mysite.decorators import *
 from mysite.utils import delete_by_id
+from .utils import get_presigned_url
 
 REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["id"]
@@ -86,7 +86,6 @@ class FileView(APIView):
         }
         update_profile(profile, filesystem)
         fileData = FileSerializer(file_obj).data
-        # print(fileData)
         return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
 
     @check_id
@@ -98,8 +97,7 @@ class FileView(APIView):
         recent = profile.recent
         id = request.GET["id"]
         file_obj = File.objects.get(filesystem_id=id)
-        initial_path = file_obj.file.path
-        os.remove(initial_path)
+        file_obj.file.delete(save=False)
         delete_by_id(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
         return Response(data={"id": id, "message": "Successfully deleted"}, status=status.HTTP_200_OK)
@@ -186,6 +184,9 @@ class Share(APIView):
             allowed = True
         if(allowed):
             fileData = FileSerializer(file_obj).data
+            s3_key = file_obj.get_s3_key()
+            signed_url = get_presigned_url(s3_key)
+            fileData[URL] = signed_url
             return Response(data=fileData, status=status.HTTP_200_OK)
         else:
             return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
