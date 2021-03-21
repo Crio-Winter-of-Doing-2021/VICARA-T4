@@ -98,7 +98,7 @@ class Filesystem(APIView):
         parent = request.data[PARENT]
         children = filesystem[parent][CHILDREN]
 
-        id = secrets.token_urlsafe(16)
+        id = secrets.token_hex(16)
         children[id] = {
             TYPE: FOLDER,
             NAME: name,
