@@ -31,7 +31,7 @@ export default function UploadButtons(props) {
   const [progress, setProgress] = useState(0);
 
   const selectFile = (event) => {
-    // event.preventDefault();
+    event.preventDefault();
     let currentFile = event.target.files[0];
 
     console.log(currentFile);

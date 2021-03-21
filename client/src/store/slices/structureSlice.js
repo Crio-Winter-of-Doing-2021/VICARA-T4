@@ -28,6 +28,10 @@ export const structureSlice = createSlice({
       let res=action.payload
       state.currentDisplayStructure[res.id].NAME=res.NAME
     },
+    updatePrivacy:(state,action)=>{
+      let res=action.payload
+      state.currentDisplayStructure[res.id].PRIVACY=res.PRIVACY
+    },
     updateFav:(state,action)=>{
       let res=action.payload
       state.currentDisplayStructure[res.id].FAVOURITE=res.is_favourite
@@ -49,7 +53,8 @@ export const {
   updateFileName,
   popFromCurrentStack,
   updateFav,
-  updatePath
+  updatePath,
+  updatePrivacy
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -83,6 +88,14 @@ export const addFolderAsync = (data) => (dispatch) => {
 export const addFavouriteAsync =(data)=>(dispatch)=>{
   API.post('/api/favourites/',data).then((res)=>{
     dispatch(updateFav(data))
+  }).catch(err=>{
+    console.log(err)
+  })
+}
+
+export const privacyAsync =(data)=>(dispatch)=>{
+  API.patch('/api/file/',data).then((res)=>{
+    dispatch(updatePrivacy(data))
   }).catch(err=>{
     console.log(err)
   })

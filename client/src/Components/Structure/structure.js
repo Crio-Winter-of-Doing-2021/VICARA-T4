@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect,Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "../Path/path";
-
-// import {Link} from 'react-router-dom'
-
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
   structureAsync,
   selectStructure,
   pathAsync,
   addFavouriteAsync,
+  privacyAsync
 } from "../../store/slices/structureSlice";
 
 import AddFolder from "../Buttons/addFolder";
@@ -24,7 +25,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import Link from "@material-ui/core/Link";
+import {default as UILink} from "@material-ui/core/Link";
+
+import {Link} from 'react-router-dom'
 
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
@@ -86,6 +89,7 @@ export default function Structure(props) {
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
       favourite: structureState[key].FAVOURITE,
+      privacy:structureState[key].PRIVACY
     };
     tableData.push(newData);
   });
@@ -110,16 +114,37 @@ export default function Structure(props) {
     dispatch(addFavouriteAsync(data));
   };
 
+  const handlePrivacy = (e,data)=>{
+    e.preventDefault();
+    dispatch(privacyAsync(data))
+
+  }
+
+  let privOpp =(privacy)=>{
+    if(privacy==="PUBLIC") return "PRIVATE";
+    return "PUBLIC"
+  }
+
   let tableRenderer = tableData.map((data) => {
+
     let favReverseData = {
       id: data.key,
       is_favourite: !data.favourite,
     };
 
+
+
+    let privReverse={
+      id:data.key,
+      PRIVACY:privOpp(data.privacy)
+    }
+
     let keyData={
       id:data.key,
       type:data.type
     }
+
+    console.log(data.privacy)
 
     return (
       <StyledTableRow key={data.key}>
@@ -134,18 +159,21 @@ export default function Structure(props) {
             ) : (
               <DescriptionTwoToneIcon />
             )}
-            <Link
+
+            {data.type==="FOLDER"?<UILink
               component="button"
               variant="body2"
               style={{ marginLeft: "5px" }}
-              onClick={() => {
-                if (data.type === "FOLDER") {
-                  updateFolder(data.key);
-                }
-              }}
+              onClick={() => {updateFolder(data.key)}}
             >
               {data.name}
-            </Link>
+            </UILink>:<Link
+              target="_blank"
+              to='/favourites'
+            >
+              {data.name}
+            </Link>}
+
             {data.favourite === true ? (
               <IconButton
                 onClick={(e) => handleFavouriteClick(e, favReverseData)}
@@ -165,6 +193,19 @@ export default function Structure(props) {
             )}
           </div>
         </StyledTableCell>
+        <StyledTableCell component="th" scope="row">
+          {data.privacy===undefined?"---":data.privacy==='PRIVATE'?
+          <Tooltip title="File is Private">
+            <IconButton
+              onClick={(e) => handlePrivacy(e, privReverse)}
+            ><VisibilityOffIcon/></IconButton>
+          </Tooltip>:
+          <Tooltip title="File is Public">
+            <IconButton 
+            onClick={(e) => handlePrivacy(e, privReverse)}
+            color="primary"><VisibilityIcon/></IconButton>
+          </Tooltip>}
+        </StyledTableCell>
       </StyledTableRow>
     );
   });
@@ -183,6 +224,7 @@ export default function Structure(props) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Privacy</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>{tableRenderer}</TableBody>
