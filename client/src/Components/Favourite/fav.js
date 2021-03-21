@@ -4,18 +4,20 @@ import Path from "../Path/path";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Tooltip from '@material-ui/core/Tooltip';
+import {pathParse} from '../../Utilities/pathParser'
+
 import {
-  structureAsync,
-  selectStructure,
+  favStructureAsync,
+  selectFavStructure,
   pathAsync,
   addFavouriteAsync,
   privacyAsync
-} from "../../store/slices/structureSlice";
+} from "../../store/slices/favSlice"
 
-import AddFolder from "../Buttons/addFolder";
+// import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
-import AddFile from "../Buttons/addFile";
+// import AddFile from "../Buttons/addFile";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -35,8 +37,7 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 import Checkbox from "@material-ui/core/Checkbox";
 import {
   updateSelectedKeys,
-  selectCheckedFileKeys,
-  selectCheckedFolderKeys,
+  selectCheckedKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
@@ -71,11 +72,8 @@ const useStyles = makeStyles({
 
 export default function Structure(props) {
   const classes = useStyles();
-  let unique_id = props.match.params.id;
 
-  const structureState = useSelector(selectStructure);
-  const fileKeys=useSelector(selectCheckedFileKeys)
-  const folderKeys=useSelector(selectCheckedFolderKeys)
+  const structureState = useSelector(selectFavStructure);
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -83,9 +81,8 @@ export default function Structure(props) {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(structureAsync(unique_id));
-    dispatch(pathAsync(unique_id));
-  }, [unique_id]);
+    dispatch(favStructureAsync());
+  }, []);
 
   Object.keys(structureState).map((key, index) => {
     let newData = {
@@ -93,7 +90,8 @@ export default function Structure(props) {
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
       favourite: structureState[key].FAVOURITE,
-      privacy:structureState[key].PRIVACY
+      privacy:structureState[key].PRIVACY,
+      path:"Loading..."
     };
     tableData.push(newData);
   });
@@ -128,6 +126,8 @@ export default function Structure(props) {
     if(privacy==="PUBLIC") return "PRIVATE";
     return "PUBLIC"
   }
+
+  console.log(tableData)
 
   let tableRenderer = tableData.map((data) => {
 
@@ -197,6 +197,9 @@ export default function Structure(props) {
             )}
           </div>
         </StyledTableCell>
+        <StyledTableCell>
+              {data.path}
+        </StyledTableCell>
         <StyledTableCell component="th" scope="row">
           {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
             <IconButton><RemoveIcon/></IconButton>
@@ -219,17 +222,18 @@ export default function Structure(props) {
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <AddFile parent={unique_id} />
-        <AddFolder id={unique_id} />
+        {/* <AddFile parent={unique_id} />
+        <AddFolder id={unique_id} /> */}
         <Delete />
         <Update />
       </div>
-      <Path {...props} />
+      {/* <Path {...props} /> */}
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Location</StyledTableCell>
               <StyledTableCell>Privacy</StyledTableCell>
             </TableRow>
           </TableHead>

@@ -1,4 +1,5 @@
 import React from "react";
+import {useDispatch} from 'react-redux'
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -13,6 +14,11 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import { sideNav } from "../../constants";
+
+import {Link} from 'react-router-dom'
+
+import {emptykeys } from '../../store/slices/checkBoxSlice'
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -41,8 +47,11 @@ const useStyles = makeStyles((theme) => ({
 export default function ClippedDrawer(props) {
   const classes = useStyles();
 
+  const dispatch=useDispatch()
+
   const handlePageChange = (e, data) => {
     console.log(data);
+    dispatch(emptykeys())
   };
 
   return (
@@ -66,14 +75,16 @@ export default function ClippedDrawer(props) {
         <div className={classes.drawerContainer}>
           <List>
             {sideNav.map((data, index) => (
-              <ListItem
+              <Link style={{textDecoration:"none"}} to={data.name==="Home"?"/drive/ROOT":`/${data.name}`}>
+                <ListItem
                 button
                 onClick={(e) => handlePageChange(e, data.name)}
                 key={data.name}
-              >
-                <ListItemIcon>{data.icon}</ListItemIcon>
-                <ListItemText primary={data.name} />
-              </ListItem>
+                >
+                  <ListItemIcon>{data.icon}</ListItemIcon>
+                  <ListItemText primary={data.name} />
+                </ListItem>
+              </Link>
             ))}
           </List>
           <Divider />

@@ -2,8 +2,8 @@ import { createSlice} from "@reduxjs/toolkit";
 import API from "../../axios";
 import {normalLoader} from './loaderSlice'
 
-export const structureSlice = createSlice({
-  name: "structure",
+export const favStructureSlice = createSlice({
+  name: "fav",
   initialState: {
     currentDisplayStructure:{},
     currentPath:[{
@@ -13,26 +13,9 @@ export const structureSlice = createSlice({
   },
   reducers: {
     updateStructure:(state,action)=>{
-        state.currentDisplayStructure=action.payload.CHILDREN
+        state.currentDisplayStructure=action.payload
     },
-    pushToCurrentStack:(state,action)=>{
-      let res=action.payload;
-
-      state.currentDisplayStructure[res.id]={
-        TYPE:res.TYPE,
-        NAME:res.NAME,
-        FAVOURITE:res.FAVOURITE
-      }
-
-      if(res.PRIVACY!==undefined){
-        state.currentDisplayStructure[res.id]={
-          ...state.currentDisplayStructure[res.id],
-          PRIVACY:res.PRIVACY
-        }
-      }
-
-    },
-    updateFileName:(state,action)=>{
+    updateFavFileName:(state,action)=>{
       let res=action.payload
       state.currentDisplayStructure[res.id].NAME=res.NAME
     },
@@ -45,9 +28,10 @@ export const structureSlice = createSlice({
       state.currentDisplayStructure[res.id].FAVOURITE=res.is_favourite
     }
     ,
-    popFromCurrentStack:(state,action)=>{
+    popFromCurrentFavStack:(state,action)=>{
       let res=action.payload;
       delete state.currentDisplayStructure[res.id];
+        console.log(res)
     },
     updatePath:(state,action)=>{
       state.currentPath=action.payload
@@ -57,45 +41,27 @@ export const structureSlice = createSlice({
 
 export const {
   updateStructure,
-  pushToCurrentStack,
-  updateFileName,
-  popFromCurrentStack,
+  updateFavFileName,
+  popFromCurrentFavStack,
   updateFav,
   updatePath,
   updatePrivacy
-} = structureSlice.actions;
+} = favStructureSlice.actions;
 
-export const structureAsync = (uni_id) => (dispatch) => {
-    API.get(`/api/filesystem/`,{
-        params:{
-            id:uni_id
-        }
-    })
+export const favStructureAsync = () => (dispatch) => {
+    API.get(`/api/favourites/`)
       .then((res) => {
         dispatch(updateStructure(res.data))
       })
-      .catch((err) => {
+      .catch((err)=> {
         console.log(err);
       });
 };
 
-export const addFolderAsync = (data) => (dispatch) => {
-  dispatch(normalLoader())
-  API.post("/api/filesystem/",data.body)
-    .then((res) => {
-      console.log(res)
-      dispatch(pushToCurrentStack(res.data))
-      dispatch(normalLoader())
-    })
-    .catch((err) => {
-      console.log(err)
-      dispatch(normalLoader())
-    });
-};
-
 export const addFavouriteAsync =(data)=>(dispatch)=>{
   API.post('/api/favourites/',data).then((res)=>{
-    dispatch(updateFav(data))
+    console.log(data)
+    dispatch(popFromCurrentFavStack(data))
   }).catch(err=>{
     console.log(err)
   })
@@ -117,7 +83,6 @@ export const pathAsync =(data)=>(dispatch)=>{
   })
 }
 
-export const selectStructure = (state) => state.structure.currentDisplayStructure;
-export const navStructure = (state) => state.structure.currentPath;
+export const selectFavStructure = (state) => state.fav.currentDisplayStructure;
 
-export default structureSlice.reducer;
+export default favStructureSlice.reducer;
