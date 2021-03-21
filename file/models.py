@@ -29,3 +29,6 @@ class File(models.Model):
 
     def get_s3_key(self):
         return os.path.join(self.file.storage.location, self.file.name)
+
+    def make_key(self, name):
+        return os.path.join(self.file.storage.location, name)
