@@ -111,7 +111,7 @@ export const privacyAsync =(data)=>(dispatch)=>{
 
 export const pathAsync =(data)=>(dispatch)=>{
   API.get(`/api/path/?id=${data}`).then((res)=>{
-    dispatch(updatePath(res.data))
+    dispatch(updatePath(res.data.PATH))
   }).catch(err=>{
     console.log(err)
   })

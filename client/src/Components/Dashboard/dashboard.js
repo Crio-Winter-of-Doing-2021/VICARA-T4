@@ -3,6 +3,7 @@ import DashUtil from './dashboardUitl'
 import { Route, Redirect, Switch } from "react-router-dom";
 import Favourite from "../Favourite/fav";
 import Structure from "../Structure/structure";
+import PrivateRoute from "../../Utilities/protectedRoute"
 
 export default function Dashboard() {
   return (
@@ -14,11 +15,8 @@ export default function Dashboard() {
                 exact
                 component={() => <Redirect to="/drive/ROOT" />}
               />
-              <Route path="/drive/:id" component={Structure} />
-              <Route path="/favourites" component={Favourite} />
-              <Route path="*">
-                <div>404 not found</div>
-              </Route>
+              <PrivateRoute exact path="/drive/:id" component={Structure} />
+              <PrivateRoute exact path="/favourites" component={Favourite} />
             </Switch>
       </DashUtil>
     </div>
