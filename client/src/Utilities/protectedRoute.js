@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 const PrivateRoute = ({ component: Component, ...rest }) => {
   let [isAuthenticated, setIsAuthenticated] = useState(null)  
   useEffect(() => {
-    let token = window.localStorage.getItem('lol')
+    let token = window.localStorage.getItem('session')
     if(token===null) setIsAuthenticated(false);
     else setIsAuthenticated(true)
     // eslint-disable-next-line

@@ -4,7 +4,6 @@ import Path from "../Path/path";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Tooltip from '@material-ui/core/Tooltip';
-import {pathParse} from '../../Utilities/pathParser'
 
 import {
   favStructureAsync,
@@ -85,13 +84,20 @@ export default function Structure(props) {
   }, []);
 
   Object.keys(structureState).map((key, index) => {
+
+    let location="Loading";
+    
+    if(structureState[key]!==undefined){
+      location=structureState[key].PATH
+    }
+
     let newData = {
       key: key,
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
       favourite: structureState[key].FAVOURITE,
       privacy:structureState[key].PRIVACY,
-      path:"Loading..."
+      path:location
     };
     tableData.push(newData);
   });
@@ -198,7 +204,9 @@ export default function Structure(props) {
           </div>
         </StyledTableCell>
         <StyledTableCell>
-              {data.path}
+          <div style={{fontStyle:"italic",color:"grey"}}>
+            {data.path}
+          </div>
         </StyledTableCell>
         <StyledTableCell component="th" scope="row">
           {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
