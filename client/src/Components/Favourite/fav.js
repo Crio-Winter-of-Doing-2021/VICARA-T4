@@ -4,13 +4,15 @@ import Path from "../Path/path";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Tooltip from '@material-ui/core/Tooltip';
+import {pathParse} from '../../Utilities/pathParser'
+
 import {
-  structureAsync,
-  selectStructure,
+  favStructureAsync,
+  selectFavStructure,
   pathAsync,
   addFavouriteAsync,
   privacyAsync
-} from "../../store/slices/structureSlice";
+} from "../../store/slices/favSlice"
 
 // import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
@@ -41,6 +43,7 @@ import {
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from "@material-ui/core/IconButton";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -69,9 +72,8 @@ const useStyles = makeStyles({
 
 export default function Structure(props) {
   const classes = useStyles();
-  let unique_id = props.match.params.id;
 
-  const structureState = useSelector(selectStructure);
+  const structureState = useSelector(selectFavStructure);
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -79,9 +81,8 @@ export default function Structure(props) {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(structureAsync(unique_id));
-    dispatch(pathAsync(unique_id));
-  }, [unique_id]);
+    dispatch(favStructureAsync());
+  }, []);
 
   Object.keys(structureState).map((key, index) => {
     let newData = {
@@ -89,7 +90,8 @@ export default function Structure(props) {
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
       favourite: structureState[key].FAVOURITE,
-      privacy:structureState[key].PRIVACY
+      privacy:structureState[key].PRIVACY,
+      path:"Loading..."
     };
     tableData.push(newData);
   });
@@ -124,6 +126,8 @@ export default function Structure(props) {
     if(privacy==="PUBLIC") return "PRIVATE";
     return "PUBLIC"
   }
+
+  console.log(tableData)
 
   let tableRenderer = tableData.map((data) => {
 
@@ -193,8 +197,13 @@ export default function Structure(props) {
             )}
           </div>
         </StyledTableCell>
+        <StyledTableCell>
+              {data.path}
+        </StyledTableCell>
         <StyledTableCell component="th" scope="row">
-          {data.privacy===undefined?"---":data.privacy==='PRIVATE'?
+          {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
+            <IconButton><RemoveIcon/></IconButton>
+          </Tooltip>:data.privacy==='PRIVATE'?
           <Tooltip title="File is Private">
             <IconButton
               onClick={(e) => handlePrivacy(e, privReverse)}
@@ -224,6 +233,7 @@ export default function Structure(props) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Location</StyledTableCell>
               <StyledTableCell>Privacy</StyledTableCell>
             </TableRow>
           </TableHead>

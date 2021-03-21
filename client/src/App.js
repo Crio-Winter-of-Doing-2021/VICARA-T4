@@ -3,10 +3,10 @@ import Dashboard from "./Components/Dashboard/dashboard";
 import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import NormalLoader from './Components/Loaders/normalBackdrop'
 
-function App() {
+function App(props) {
   return (
     <div style={{ padding: "0 !important" }} className="App">
-      <Dashboard />
+      <Dashboard/>
       <NormalLoader/>
     </div>
   );

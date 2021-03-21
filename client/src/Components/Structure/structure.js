@@ -35,12 +35,14 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 import Checkbox from "@material-ui/core/Checkbox";
 import {
   updateSelectedKeys,
-  selectCheckedKeys,
+  selectCheckedFileKeys,
+  selectCheckedFolderKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from "@material-ui/core/IconButton";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -72,6 +74,8 @@ export default function Structure(props) {
   let unique_id = props.match.params.id;
 
   const structureState = useSelector(selectStructure);
+  const fileKeys=useSelector(selectCheckedFileKeys)
+  const folderKeys=useSelector(selectCheckedFolderKeys)
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -194,7 +198,9 @@ export default function Structure(props) {
           </div>
         </StyledTableCell>
         <StyledTableCell component="th" scope="row">
-          {data.privacy===undefined?"---":data.privacy==='PRIVATE'?
+          {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
+            <IconButton><RemoveIcon/></IconButton>
+          </Tooltip>:data.privacy==='PRIVATE'?
           <Tooltip title="File is Private">
             <IconButton
               onClick={(e) => handlePrivacy(e, privReverse)}
