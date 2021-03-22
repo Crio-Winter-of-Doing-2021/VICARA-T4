@@ -17,7 +17,8 @@ class File(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="creator", null=True)
-    users = models.ManyToManyField(User, blank=True)
+    users = models.ManyToManyField(
+        User, blank=True, related_name="shared_files")
     privacy = models.CharField(
         max_length=10,
         choices=PRIVACY_CHOICES,
