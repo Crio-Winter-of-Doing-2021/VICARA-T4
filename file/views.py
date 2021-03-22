@@ -1,7 +1,6 @@
-from django.contrib.auth.models import Permission
-from file.serializers import FileSerializer
 from varname import nameof
 import secrets
+import datetime
 import os
 # django imports
 from rest_framework.views import APIView
@@ -10,13 +9,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
+
 # local imports
+from file.serializers import FileSerializer
 from user.models import Profile
 from .models import File
 from mysite.constants import *
 from mysite.decorators import *
 from mysite.utils import delete_by_id
+from .utils import get_presigned_url, get_s3_filename, rename_s3
 
 REQUIRED_POST_PARAMS = [PARENT, "file"]
 REQUIRED_PATCH_PARAMS = ["id"]
@@ -66,7 +67,7 @@ class FileView(APIView):
         parent = request.data[PARENT]
         name = request.FILES['file'].name
         children = filesystem[parent][CHILDREN]
-        filesystem_id = secrets.token_urlsafe(16)
+        filesystem_id = secrets.token_hex(16)
         file_obj = File(
             file=request.FILES['file'], filesystem_id=filesystem_id, creator=request.user)
         file_obj.save()
@@ -86,7 +87,6 @@ class FileView(APIView):
         }
         update_profile(profile, filesystem)
         fileData = FileSerializer(file_obj).data
-        # print(fileData)
         return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
 
     @check_id
@@ -98,8 +98,7 @@ class FileView(APIView):
         recent = profile.recent
         id = request.GET["id"]
         file_obj = File.objects.get(filesystem_id=id)
-        initial_path = file_obj.file.path
-        os.remove(initial_path)
+        file_obj.file.delete(save=False)
         delete_by_id(id, filesystem, favourites, recent)
         update_profile(profile, filesystem, favourites, recent)
         return Response(data={"id": id, "message": "Successfully deleted"}, status=status.HTTP_200_OK)
@@ -122,13 +121,19 @@ class FileView(APIView):
         file_obj = File.objects.get(filesystem_id=id)
 
         if(NAME in request.data):
-            new_name = request.data[NAME]
+            new_name_file_system = request.data[NAME]
             """ will use this rename lines just before download"""
             # new_path = os.path.join(settings.MEDIA_ROOT, new_name)
             # initial_path = file_obj.file.path
             # os.rename(initial_path, new_path)
-            file_obj.file.name = new_name
-            update_property(id, filesystem, recent, favourites, NAME, new_name)
+            old_file_key = file_obj.get_s3_key()
+            s3_new_filename = get_s3_filename(new_name_file_system)
+            new_file_key = file_obj.make_key(s3_new_filename)
+
+            rename_s3(old_file_key, new_file_key)
+            file_obj.file.name = s3_new_filename
+            update_property(id, filesystem, recent, favourites,
+                            NAME, new_name_file_system)
 
         if(PRIVACY in request.data):
             new_privacy = request.data[PRIVACY]
@@ -141,7 +146,7 @@ class FileView(APIView):
             users = [User.objects.get(username=username)
                      for username in usernames]
             file_obj.users.set(users)
-
+        file_obj.timestamp = datetime.datetime.now()
         file_obj.save()
         update_profile(profile, filesystem, recent, favourites)
         fileData = FileSerializer(file_obj).data
@@ -186,6 +191,18 @@ class Share(APIView):
             allowed = True
         if(allowed):
             fileData = FileSerializer(file_obj).data
+            s3_key = file_obj.get_s3_key()
+            signed_url = get_presigned_url(s3_key)
+            print(f"{signed_url=}")
+            fileData[URL] = signed_url
             return Response(data=fileData, status=status.HTTP_200_OK)
         else:
             return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class SharedWithMe(APIView):
+
+    def get(self, request):
+        shared_files = request.user.shared_files.all()
+        data = FileSerializer(shared_files, many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
