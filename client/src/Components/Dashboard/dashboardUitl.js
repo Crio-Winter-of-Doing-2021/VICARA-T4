@@ -13,6 +13,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
+import Button from '@material-ui/core/Button';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { sideNav } from "../../constants";
 
 import {Link} from 'react-router-dom'
@@ -54,14 +56,24 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys())
   };
 
+  const handleLogout=()=>{
+    window.localStorage.removeItem('session')
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h6" noWrap>
+          <Typography style={{fontWeight:"bold"}} variant="h6">
             Vicara-T4
           </Typography>
+          <div style={{display:"flex",justifyContent:"flex-end",width:"90%"}}>
+            <Link style={{textDecoration:"none",color:"white"}} to='/login'>
+              <Button onClick={handleLogout} startIcon={<ExitToAppIcon/>} style={{fontWeight:"bold"}} color="inherit">Logout</Button>
+            </Link>
+          </div>
+          
         </Toolbar>
       </AppBar>
       <Drawer

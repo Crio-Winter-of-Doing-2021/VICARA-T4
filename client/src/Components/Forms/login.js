@@ -1,4 +1,5 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
+import {useDispatch} from 'react-redux'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,6 +16,8 @@ import Container from '@material-ui/core/Container';
 import {baseURL} from '../../axios'
 
 import {Link as RouteLink} from 'react-router-dom'
+
+import {loginAsync} from '../../store/slices/authSlice'
 
 function Copyright() {
   return (
@@ -49,12 +52,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function SignIn(props) {
   const classes = useStyles();
+
+  const dispatch=useDispatch();
+
+  
+  // window.localStorage.removeItem('session')
+  
+  let [state,setState]=useState({
+    username:'',
+    password:''
+  })
+  
+
+  let inputChangeHandler = (e) => {
+    setState({
+      ...state,
+      [e.target.name]:e.target.value
+    })
+  };
+
+  let handleLogin=(data)=>{
+    dispatch(loginAsync(data,props))
+  }
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
+      {console.log(state)}
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -68,11 +94,12 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
             autoFocus
+            onChange={inputChangeHandler}
           />
           <TextField
             variant="outlined"
@@ -83,6 +110,7 @@ export default function SignIn() {
             label="Password"
             type="password"
             id="password"
+            onChange={inputChangeHandler}
             autoComplete="current-password"
           />
           <FormControlLabel
@@ -95,6 +123,7 @@ export default function SignIn() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={()=>handleLogin(state)}
           >
             Sign In
           </Button>

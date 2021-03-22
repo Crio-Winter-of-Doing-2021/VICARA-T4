@@ -10,7 +10,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     else setIsAuthenticated(true)
     // eslint-disable-next-line
   }, [])
-
+  
   if(isAuthenticated === null){
     return <></>
   }
