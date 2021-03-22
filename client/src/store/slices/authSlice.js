@@ -1,5 +1,6 @@
 import { createSlice, configureStore } from "@reduxjs/toolkit";
-import API from "../../axios";
+import {baseURL} from "../../axios";
+import axios from 'axios'
 
 export const authSlice = createSlice({
   name: "auth",
@@ -26,7 +27,7 @@ export const { login } = authSlice.actions;
 export const signupAsync = (data) => (dispatch) => {};
 
 export const loginAsync = (data, props) => (dispatch) => {
-  API.post("/api/auth/login/", data)
+  axios.post(`${baseURL}/api/auth/login/`, data)
     .then((res) => {
       console.log(res);
       let token = res.data.token;
