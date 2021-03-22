@@ -1,4 +1,3 @@
-from file.serializers import FileSerializer
 from varname import nameof
 import secrets
 import datetime
@@ -12,6 +11,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import AnonymousUser
 
 # local imports
+from file.serializers import FileSerializer
 from user.models import Profile
 from .models import File
 from mysite.constants import *
@@ -198,3 +198,11 @@ class Share(APIView):
             return Response(data=fileData, status=status.HTTP_200_OK)
         else:
             return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class SharedWithMe(APIView):
+
+    def get(self, request):
+        shared_files = request.user.shared_files.all()
+        data = FileSerializer(shared_files, many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
