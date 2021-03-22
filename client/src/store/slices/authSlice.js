@@ -30,7 +30,7 @@ export const loginAsync = (data, props) => (dispatch) => {
     .then((res) => {
       console.log(res);
       let token = res.data.token;
-      window.localStorage.setItem("session", `Token ${token}`);
+      window.localStorage.setItem("session", token);
       props.history.push("/drive/ROOT");
     })
     .catch((err) => {
