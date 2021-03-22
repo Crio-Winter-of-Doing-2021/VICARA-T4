@@ -7,9 +7,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FolderIcon from "@material-ui/icons/Folder";
 
-import {
-  navStructure
-} from "../../store/slices/structureSlice";
+import { navStructure } from "../../store/slices/structureSlice";
 
 const StyledBreadcrumb = withStyles((theme) => ({
   root: {
@@ -29,12 +27,13 @@ const StyledBreadcrumb = withStyles((theme) => ({
 
 export default function CustomizedBreadcrumbs(props) {
   const dispatch = useDispatch();
-  const nav = useSelector(navStructure);
+  let nav = [];
+  nav = useSelector(navStructure);
 
-  let updateFolder = (e,key) => {
-    e.preventDefault()
+  let updateFolder = (e, key) => {
+    e.preventDefault();
     console.log("key called", key);
-    props.history.push(`/drive/${key}`)
+    props.history.push(`/drive/${key}`);
   };
 
   let renderNav = nav.map((data) => {
@@ -51,10 +50,14 @@ export default function CustomizedBreadcrumbs(props) {
             <FolderIcon fontSize="small" />
           )
         }
-        onClick={(e) => updateFolder(e,data.id)}
+        onClick={(e) => updateFolder(e, data.id)}
       />
     );
   });
 
-  return <Breadcrumbs style={{margin:"10px 0"}} aria-label="breadcrumb">{renderNav}</Breadcrumbs>;
+  return (
+    <Breadcrumbs style={{ margin: "10px 0" }} aria-label="breadcrumb">
+      {renderNav}
+    </Breadcrumbs>
+  );
 }

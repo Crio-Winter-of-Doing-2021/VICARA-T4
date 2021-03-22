@@ -118,6 +118,7 @@ export const pathAsync = (data) => (dispatch) => {
   console.log("");
   API.get(`/api/path/?id=${data}`)
     .then((res) => {
+      console.log("updating path for id = ", data, " with ", res);
       dispatch(updatePath(res.data.PATH));
     })
     .catch((err) => {
