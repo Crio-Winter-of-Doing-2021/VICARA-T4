@@ -5,6 +5,7 @@ import NormalLoader from "./Components/Loaders/normalBackdrop";
 import Login from "./Components/Forms/login";
 import SignUp from "./Components/Forms/signup";
 
+
 function App(props) {
   return (
     <div style={{ padding: "0 !important" }} className="App">
@@ -15,9 +16,6 @@ function App(props) {
         {/* <Route path="/" component={SignUp}>
           <Dashboard />
         </Route> */}
-        <Route path="*">
-          <div>404 not found</div>
-        </Route>
         <NormalLoader />
       </Switch>
     </div>

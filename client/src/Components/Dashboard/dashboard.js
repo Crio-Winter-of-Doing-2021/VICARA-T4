@@ -17,6 +17,11 @@ export default function Dashboard() {
               />
               <PrivateRoute exact path="/drive/:id" component={Structure} />
               <PrivateRoute exact path="/favourites" component={Favourite} />
+              <Route path="*">
+                <div style={{fontSize:"30px",position:"absolute",top:"40%",left:"40%"}}>
+                  404 not found
+                </div>
+              </Route>
             </Switch>
       </DashUtil>
     </div>
