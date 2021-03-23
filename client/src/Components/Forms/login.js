@@ -57,7 +57,7 @@ export default function SignIn(props) {
 
   const dispatch = useDispatch();
 
-  // window.localStorage.removeItem('session')
+  window.localStorage.removeItem('session')
 
   let [state, setState] = useState({
     username: "",

@@ -13,6 +13,8 @@ import {
   privacyAsync
 } from "../../store/slices/favSlice"
 
+import {selectStructure} from '../../store/slices/structureSlice'
+
 // import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
@@ -72,7 +74,10 @@ const useStyles = makeStyles({
 export default function Structure(props) {
   const classes = useStyles();
 
-  const structureState = useSelector(selectFavStructure);
+  let structureState = useSelector(selectFavStructure);
+  
+  let temp=useSelector(selectStructure)
+
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -229,6 +234,7 @@ export default function Structure(props) {
 
   return (
     <div>
+      {console.log("temp",temp)}
       <div style={{ display: "flex" }}>
         {/* <AddFile parent={unique_id} />
         <AddFolder id={unique_id} /> */}
