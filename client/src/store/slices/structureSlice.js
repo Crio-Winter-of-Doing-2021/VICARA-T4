@@ -115,7 +115,8 @@ export const privacyAsync = (data) => (dispatch) => {
 };
 
 export const pathAsync = (data) => (dispatch) => {
-  console.log("");
+  console.log("asking for path ");
+  console.log("token now = ", window.localStorage.getItem("session"));
   API.get(`/api/path/?id=${data}`)
     .then((res) => {
       console.log("updating path for id = ", data, " with ", res);
