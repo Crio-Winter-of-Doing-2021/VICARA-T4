@@ -65,7 +65,7 @@ export default function FormDialog() {
   let deactive= (checkedFolderKeys.length + checkedFileKeys.length)!==1 ?true:false;
 
   return (
-    <div>
+    <div style={{margin:"0 10px 0 5px"}}>
       <Button startIcon={<EditIcon/>} disabled={deactive} variant="outlined" color="primary" onClick={handleClickOpen}>
         Update
       </Button>

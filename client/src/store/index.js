@@ -4,6 +4,7 @@ import structureReducer from './slices/structureSlice'
 import checkboxReducer from './slices/checkBoxSlice'
 import loaderReducer from './slices/loaderSlice'
 import favReducer from './slices/favSlice'
+import shareReducer from './slices/shareSlice'
 
 export default configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export default configureStore({
     structure: structureReducer,
     checkbox: checkboxReducer,
     loader:loaderReducer,
-    fav:favReducer
+    fav:favReducer,
+    share:shareReducer
   },
 });

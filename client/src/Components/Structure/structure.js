@@ -40,6 +40,9 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
+import {selectUser} from '../../store/slices/authSlice'
+import {shareAsync} from '../../store/slices/shareSlice'
+
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import RemoveIcon from '@material-ui/icons/Remove';
@@ -73,6 +76,8 @@ export default function Structure(props) {
   const classes = useStyles();
   let unique_id = props.match.params.id;
 
+  const creator =window.localStorage.getItem('author')
+  console.log(creator)
   const structureState = useSelector(selectStructure);
   const fileKeys=useSelector(selectCheckedFileKeys)
   const folderKeys=useSelector(selectCheckedFolderKeys)
@@ -136,7 +141,12 @@ export default function Structure(props) {
       is_favourite: !data.favourite,
     };
 
+    let userDetails={
+      CREATOR:creator,
+      id:data.key
+    }
 
+    // console.log(userDetails)
 
     let privReverse={
       id:data.key,
@@ -147,8 +157,6 @@ export default function Structure(props) {
       id:data.key,
       type:data.type
     }
-
-    console.log(data.privacy)
 
     return (
       <StyledTableRow key={data.key}>
@@ -171,12 +179,14 @@ export default function Structure(props) {
               onClick={() => {updateFolder(data.key)}}
             >
               {data.name}
-            </UILink>:<Link
-              target="_blank"
-              to='/favourites'
+            </UILink>:<UILink
+              component="button"
+              variant="body2"
+              style={{ marginLeft: "5px" }}
+              onClick={() => dispatch(shareAsync(userDetails))}
             >
               {data.name}
-            </Link>}
+            </UILink>}
 
             {data.favourite === true ? (
               <IconButton
