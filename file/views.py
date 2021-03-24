@@ -186,7 +186,8 @@ class Share(APIView):
         allowed = False
         if(isinstance(visitor, AnonymousUser) and file_obj.privacy == PUBLIC):
             allowed = True
-
+        if(file_obj.privacy == PUBLIC):
+            allowed = True
         if(visitor == file_obj.creator or visitor in file_obj.users.all()):
             allowed = True
         if(allowed):
