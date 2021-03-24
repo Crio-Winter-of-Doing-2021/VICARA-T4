@@ -13,6 +13,9 @@ import {
   privacyAsync
 } from "../../store/slices/favSlice"
 
+import {selectStructure} from '../../store/slices/structureSlice'
+import {shareAsync} from '../../store/slices/shareSlice'
+
 // import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
@@ -72,7 +75,11 @@ const useStyles = makeStyles({
 export default function Structure(props) {
   const classes = useStyles();
 
-  const structureState = useSelector(selectFavStructure);
+  const creator =window.localStorage.getItem('author')
+  let structureState = useSelector(selectFavStructure);
+  
+  let temp=useSelector(selectStructure)
+
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -142,7 +149,10 @@ export default function Structure(props) {
       is_favourite: !data.favourite,
     };
 
-
+    let userDetails={
+      CREATOR:creator,
+      id:data.key
+    }
 
     let privReverse={
       id:data.key,
@@ -177,12 +187,14 @@ export default function Structure(props) {
               onClick={() => {updateFolder(data.key)}}
             >
               {data.name}
-            </UILink>:<Link
-              target="_blank"
-              to='/favourites'
+            </UILink>:<UILink
+              component="button"
+              variant="body2"
+              style={{ marginLeft: "5px" }}
+              onClick={() => dispatch(shareAsync(userDetails))}
             >
               {data.name}
-            </Link>}
+            </UILink>}
 
             {data.favourite === true ? (
               <IconButton
@@ -229,6 +241,7 @@ export default function Structure(props) {
 
   return (
     <div>
+      {console.log("temp",temp)}
       <div style={{ display: "flex" }}>
         {/* <AddFile parent={unique_id} />
         <AddFolder id={unique_id} /> */}

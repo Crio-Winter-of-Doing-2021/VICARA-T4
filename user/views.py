@@ -221,6 +221,7 @@ class Path(APIView):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         id = request.GET["id"]
+        main_id=id
         path = []
         while(filesystem[id][PARENT] != None):
             name = filesystem[id][NAME]
@@ -228,7 +229,11 @@ class Path(APIView):
             id = filesystem[id][PARENT]
         path.append({NAME: ROOT, "id": ROOT})
         path.reverse()
-        return Response(data=path)
+        result={
+            "KEY":main_id,
+            "PATH":path
+        }
+        return Response(data=result)
 
 
 class ListOfUsers(APIView):

@@ -18,7 +18,9 @@ export const favStructureSlice = createSlice({
     },
     updateFavFileName:(state,action)=>{
       let res=action.payload
-      state.currentDisplayStructure[res.id].NAME=res.NAME
+      if(state.currentDisplayStructure[res.id]!==undefined){
+        state.currentDisplayStructure[res.id].NAME=res.NAME
+      }
     },
     updatePrivacy:(state,action)=>{
       let res=action.payload

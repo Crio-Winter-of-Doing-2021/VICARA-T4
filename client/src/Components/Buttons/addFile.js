@@ -7,7 +7,7 @@ import axios from "axios";
 
 import { fileUploadLoader, fileLoading } from "../../store/slices/loaderSlice";
 
-import {pushToCurrentStack} from '../../store/slices/structureSlice'
+import { pushToCurrentStack } from "../../store/slices/structureSlice";
 
 import BackDropLoader from "../Loaders/fileUploadBackdrop";
 import { baseURL, token } from "../../axios";
@@ -47,7 +47,7 @@ export default function UploadButtons(props) {
       method: "post",
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: token,
+        Authorization: `Token ${token}`,
       },
       data: formData,
       url: `${baseURL}/api/file/`,
@@ -58,8 +58,8 @@ export default function UploadButtons(props) {
       },
     })
       .then((res) => {
-        dispatch(pushToCurrentStack(res.data))
-        dispatch(fileUploadLoader());  
+        dispatch(pushToCurrentStack(res.data));
+        dispatch(fileUploadLoader());
       })
       .catch((err) => {
         dispatch(fileUploadLoader());
@@ -69,8 +69,7 @@ export default function UploadButtons(props) {
 
   return (
     <div className={classes.root}>
-      
-      <BackDropLoader progress={progress} show={loading}/>
+      <BackDropLoader progress={progress} show={loading} />
       <input
         className={classes.input}
         id="contained-button-file"

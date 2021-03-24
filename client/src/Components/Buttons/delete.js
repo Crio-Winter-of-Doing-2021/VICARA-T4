@@ -28,7 +28,7 @@ export default function OutlinedButtons() {
   let deactive= checkedFileKeys.length+checkedFolderKeys.length!==0?false:true;
 
   return (
-    <div style={{margin:"0 10px"}}>
+    <div style={{margin:"0 5px 0 10"}}>
       <Button disabled={deactive} startIcon={<DeleteIcon/>} onClick={()=>deleteSelected(checkedFileKeys,checkedFolderKeys)} variant="outlined" color="secondary">
         Delete
       </Button>
