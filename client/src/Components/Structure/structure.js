@@ -29,6 +29,8 @@ import {default as UILink} from "@material-ui/core/Link";
 
 import {Link} from 'react-router-dom'
 
+import RightClickUtil from '../RightClickMenu/rightClickUtil'
+
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
@@ -160,7 +162,9 @@ export default function Structure(props) {
 
     return (
       <StyledTableRow key={data.key}>
+      
         <StyledTableCell component="th" scope="row">
+        <RightClickUtil>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Checkbox
               onChange={(e) => handleCheckedChange(keyData, e)}
@@ -206,7 +210,9 @@ export default function Structure(props) {
               </IconButton>
             )}
           </div>
+          </RightClickUtil>
         </StyledTableCell>
+        
         <StyledTableCell component="th" scope="row">
           {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
             <IconButton><RemoveIcon/></IconButton>

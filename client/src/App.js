@@ -6,9 +6,10 @@ import Login from "./Components/Forms/login";
 import SignUp from "./Components/Forms/signup";
 import PrivateRoute from './Utilities/protectedRoute'
 
-function App(props) {
+function App() {
   return (
     <div style={{ padding: "0 !important" }} className="App">
+      <NormalLoader/>
       <Switch>
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={SignUp} />
@@ -19,7 +20,6 @@ function App(props) {
         {/* <Route path="/" component={SignUp}>
           <Dashboard />
         </Route> */}
-        <NormalLoader />
       </Switch>
     </div>
   );

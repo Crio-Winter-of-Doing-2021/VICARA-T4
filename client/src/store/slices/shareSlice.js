@@ -5,11 +5,12 @@ import {normalLoader} from './loaderSlice'
 export const shareSlice= createSlice({
   name: "share",
   initialState: {
-    link:null
+    fileData:{}
   },
   reducers: {
-      updateShareData:(state,action)=>{
-
+      updatefileData:(state,action)=>{
+        let res=action.payload
+        state.fileData=res;
       }
   },
 });
@@ -33,6 +34,10 @@ export const shareAsync =(data)=>(dispatch)=>{
         console.log(err)
         dispatch(normalLoader())
     })
+}
+
+export const fileAsync =(data)=>(dispatch)=>{
+    
 }
 
 export default shareSlice.reducer;
