@@ -21,7 +21,18 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+
+
+
+
+
+
+
 # Django #
+
+temp_download_files/
 *.log
 *.pot
 *.pyc
