@@ -28,6 +28,8 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import {privacyAsync} from '../../store/slices/structureSlice'
 import {privOpp} from '../Structure/structure'
 
+import AddUser from '../Buttons/addUser/addUser'
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -231,16 +233,9 @@ export default function FullScreenDialog(props) {
                 <Typography className={classes.heading}>
                     Users Shared With
                 </Typography>
-                <Typography className={classes.secondaryHeading}>
+                <Typography style={{display:"flex"}} className={classes.secondaryHeading}>
                     {userRender}
-                    <Button 
-                        size="small"
-                        variant="contained" 
-                        color="secondary"
-                        style={{marginLeft:"5px",fontWeight:"bold"}}
-                    >
-                        Add User
-                    </Button>
+                    <AddUser author={fileData.CREATOR} id={fileData.id}/>
                 </Typography>
             </ListItem>
         </List>

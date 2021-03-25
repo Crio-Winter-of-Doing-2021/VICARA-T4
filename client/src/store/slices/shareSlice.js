@@ -18,7 +18,8 @@ export const shareSlice= createSlice({
         id: "Loading...",
     },
     path:"Loading...",
-    userList:[]
+    userList:[],
+    patchUsers:[]
   },
   reducers: {
       updatefileData:(state,action)=>{
@@ -45,6 +46,25 @@ export const shareSlice= createSlice({
       },
       setUsers:(state,action)=>{
         state.userList=action.payload
+      },
+      setFileUsers:(state,action)=>{
+        state.fileData.USERS=action.payload
+      },
+      updatePatchUsers:(state,action)=>{
+        let value=action.payload
+        function check(user) {
+          return value === user;
+        }
+
+        let index=state.patchUsers.findIndex(check);
+        if(index===-1){
+          state.patchUsers.push(value)
+        }else{
+          state.patchUsers.splice(index,1)
+        }
+      },
+      setPatchUsersDefault:(state,action)=>{
+        state.patchUsers=state.fileData.USERS
       }
   },
 });
@@ -53,7 +73,10 @@ export const {
     updatefileData,
     updateSharePrivacy,
     updateSharePath,
-    setUsers
+    setUsers,
+    setFileUsers,
+    updatePatchUsers,
+    setPatchUsersDefault
 } = shareSlice.actions;
 
 export const shareAsync =(data)=>(dispatch)=>{
@@ -89,11 +112,26 @@ export const fileAsync =(data)=>(dispatch)=>{
         }
     }).then(res=>{
         dispatch(updatefileData(res.data))
+        let k;
+        for(k=0;k<res.data.USERS.length;k++){
+          dispatch(updatePatchUsers(res.data.USERS[k]))
+        }
+        dispatch(setPatchUsersDefault())
         dispatch(normalLoader())
     }).catch(err=>{
         console.log(err)
         dispatch(normalLoader())
     })
+}
+
+export const userAsyncPatch =(data)=>(dispatch)=>{
+  dispatch(normalLoader());
+  API.patch('/api/file/',data).then(res=>{
+    dispatch(normalLoader());
+    dispatch(setFileUsers(res.data.USERS))
+  }).catch(err=>{
+    console.log(err)
+  })
 }
 
 export const pathAsync = (data) => (dispatch) => {
@@ -108,5 +146,7 @@ export const pathAsync = (data) => (dispatch) => {
 
 export const selectFileData = (state)=> state.share.fileData
 export const selectPath = (state) => state.share.path
+export const selectUsers=(state)=> state.share.userList
+export const selectPatchUsers =(state)=>state.share.patchUsers
 
 export default shareSlice.reducer;
