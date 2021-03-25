@@ -1,4 +1,4 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { baseURL } from "../../axios";
 import axios from "axios";
 import API from "../../axios";
@@ -13,14 +13,13 @@ export const authSlice = createSlice({
   },
   reducers: {
     login: (state, action) => {
-      let res=action.payload
-      console.log(res.username)
+      let res = action.payload;
+      console.log(res.username);
       state.username = res.username;
       state.firstname = res.first_name;
       state.lastname = res.last_name;
       state.token = res.token;
       state.rootStructure = res.filesystem;
-      
     },
   },
 });
@@ -35,7 +34,7 @@ export const loginAsync = (data, props) => (dispatch) => {
     .then((res) => {
       console.log(res.data);
       let token = res.data.token;
-      dispatch(login(res.data))
+      dispatch(login(res.data));
       window.localStorage.setItem("session", token);
       window.localStorage.setItem("author", res.data.username);
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
@@ -47,6 +46,6 @@ export const loginAsync = (data, props) => (dispatch) => {
     });
 };
 
-export const selectUser=(state)=> state.auth.username;
+export const selectUser = (state) => state.auth.username;
 
 export default authSlice.reducer;
