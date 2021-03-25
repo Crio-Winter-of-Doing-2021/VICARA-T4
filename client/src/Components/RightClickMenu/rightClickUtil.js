@@ -1,4 +1,5 @@
 import React from 'react';
+import {useDispatch} from 'react-redux'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
@@ -48,10 +49,10 @@ export default function ContextMenu(props) {
             <ListItemIcon><EditIcon color="primary"/></ListItemIcon>
             <ListItemText style={{paddingRight:"15px"}}>Rename</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        {props.data.type==='FILE'?<MenuItem onClick={handleClose}>
             <ListItemIcon><ShareIcon color="primary"/></ListItemIcon>
-            <Share/>
-        </MenuItem>
+            <Share data={props.data.id}/>
+        </MenuItem>:null}
         <MenuItem onClick={handleClose}>
             <ListItemIcon><DeleteOutlineIcon color="secondary"/></ListItemIcon>
             <ListItemText style={{paddingRight:"15px"}}>Remove</ListItemText>

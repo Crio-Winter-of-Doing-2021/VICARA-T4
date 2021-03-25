@@ -74,6 +74,11 @@ const useStyles = makeStyles({
   },
 });
 
+export let privOpp = (privacy) => {
+  if (privacy === "PUBLIC") return "PRIVATE";
+  return "PUBLIC";
+};
+
 export default function Structure(props) {
   const classes = useStyles();
   let unique_id = props.match.params.id;
@@ -130,11 +135,6 @@ export default function Structure(props) {
     dispatch(privacyAsync(data));
   };
 
-  let privOpp = (privacy) => {
-    if (privacy === "PUBLIC") return "PRIVATE";
-    return "PUBLIC";
-  };
-
   let tableRenderer = tableData.map((data) => {
     let favReverseData = {
       id: data.key,
@@ -158,11 +158,16 @@ export default function Structure(props) {
       type: data.type,
     };
 
+    let typeData={
+      type:data.type,
+      id:data.key
+    }
+
     return (
       <StyledTableRow key={data.key}>
       
         <StyledTableCell component="th" scope="row">
-        <RightClickUtil>
+        <RightClickUtil data={typeData}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Checkbox
               onChange={(e) => handleCheckedChange(keyData, e)}

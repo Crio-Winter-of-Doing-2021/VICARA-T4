@@ -1,5 +1,11 @@
 import React from 'react';
+import {useSelector,useDispatch} from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
+
+import {selectFileData,selectPath} from '../../store/slices/shareSlice'
+import {fileAsync,pathAsync,userAsync} from '../../store/slices/shareSlice'
+import {dateParser} from '../../Utilities/dateParser'
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -12,6 +18,15 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
+import Chip from '@material-ui/core/Chip';
+import FaceIcon from '@material-ui/icons/Face';
+
+import Tooltip from "@material-ui/core/Tooltip";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+
+import {privacyAsync} from '../../store/slices/structureSlice'
+import {privOpp} from '../Structure/structure'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -21,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
+        fontWeight:"bold",
+        marginLeft:"5px"
       },
       secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
@@ -39,9 +56,50 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog() {
+export default function FullScreenDialog(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+
+  const dispatch=useDispatch();
+
+  let fileGetData=props.data
+
+  let fileData=useSelector(selectFileData)
+  let path=useSelector(selectPath)
+
+
+  const handleDelete = () => {
+    console.info('You clicked the delete icon.');
+  };
+
+  let userRender=fileData.USERS.map(user=>{
+
+        return(
+            <Chip
+                icon={<FaceIcon />}
+                label={user}
+                onDelete={handleDelete}
+                
+            />
+        )
+  })
+
+  let time=fileData.TIMESTAMP
+
+  if(fileData.TIMESTAMP!=="Loading..."){
+    let res=dateParser(fileData.TIMESTAMP)
+    time=res.date + '-' + res.month + '-' + res.year
+  }
+
+  let privReverse = {
+    id: fileData.id,
+    PRIVACY: privOpp(fileData.PRIVACY),
+  };
+
+  const handlePrivacy = (e, data) => {
+    e.preventDefault();
+    dispatch(privacyAsync(data));
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -53,7 +111,9 @@ export default function FullScreenDialog() {
 
   return (
     <div>
-      <ListItemText style={{paddingRight:"15px"}} variant="outlined" color="primary" onClick={handleClickOpen}>
+      <ListItemText style={{paddingRight:"15px"}} variant="outlined" color="primary" onClick={()=>{
+          handleClickOpen();dispatch(fileAsync(fileGetData));dispatch(pathAsync(fileGetData));dispatch(userAsync())
+        }}>
         Share
       </ListItemText>
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
@@ -70,20 +130,121 @@ export default function FullScreenDialog() {
             </Button>
           </Toolbar>
         </AppBar>
+        <Typography style={{margin:"20px",fontWeight:"bold"}} variant="h6">
+            Details:-
+        </Typography>
+        <Divider light/>
         <List>
           <ListItem >
             <Typography className={classes.heading}>
                 Name
             </Typography>
             <Typography className={classes.secondaryHeading}>
-                Pratik
+                {fileData.NAME}
             </Typography>
           </ListItem>
-          <Divider />
-          <ListItem button>
-            <ListItemText primary="Default notification ringtone" secondary="Tethys" />
+          {/* <Divider light /> */}
+          <ListItem >
+            <Typography className={classes.heading}>
+                Creator
+            </Typography>
+            <Typography className={classes.secondaryHeading}>
+                {fileData.CREATOR}
+            </Typography>
           </ListItem>
+          {/* <Divider light/> */}
+          <ListItem >
+            <Typography className={classes.heading}>
+                Date Created
+            </Typography>
+            <Typography className={classes.secondaryHeading}>
+                {time}
+            </Typography>
+          </ListItem>
+          {/* <Divider light/> */}
+          <ListItem >
+            <Typography className={classes.heading}>
+                Favourite
+            </Typography>
+            <Typography className={classes.secondaryHeading}>
+                {fileData.FAVOURITE===true?"Yes":"No"}
+            </Typography>
+          </ListItem>
+          {/* <Divider light/> */}
+          <ListItem >
+            <Typography className={classes.heading}>
+                Privacy
+            </Typography>
+            <Typography className={classes.secondaryHeading}>
+                {fileData.PRIVACY === "PRIVATE" ? (
+                <Tooltip title="File is Private">
+                <Button 
+                    size="small" 
+                    variant="contained" 
+                    startIcon={<VisibilityOffIcon />} 
+                    onClick={(e) => handlePrivacy(e, privReverse)}
+                    style={{fontWeight:"bold"}}
+                >
+                    {fileData.PRIVACY}
+                </Button>
+                </Tooltip>
+            ) : (
+                <Tooltip title="File is Public">
+                <Button
+                    size="small"
+                    variant="contained"
+                    startIcon={<VisibilityIcon />}
+                    onClick={(e) => handlePrivacy(e, privReverse)}
+                    color="primary"
+                    style={{fontWeight:"bold"}}
+                >
+                    {fileData.PRIVACY}
+                </Button>
+                </Tooltip>
+            )}
+            </Typography>
+          </ListItem>
+          {/* <Divider light/> */}
+          <ListItem >
+            <Typography className={classes.heading}>
+                Type
+            </Typography>
+            <Typography className={classes.secondaryHeading}>
+                {fileData.TYPE}
+            </Typography>
+          </ListItem>
+          <Divider light/>
         </List>
+        <Typography style={{margin:"20px",fontWeight:"bold"}} variant="h6">
+            Share Options:-
+        </Typography>
+        <List>
+            <ListItem >
+                <Typography className={classes.heading}>
+                    Location
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                    {path}
+                </Typography>
+            </ListItem>
+            <ListItem >
+                <Typography className={classes.heading}>
+                    Users Shared With
+                </Typography>
+                <Typography className={classes.secondaryHeading}>
+                    {userRender}
+                    <Button 
+                        size="small"
+                        variant="contained" 
+                        color="secondary"
+                        style={{marginLeft:"5px",fontWeight:"bold"}}
+                    >
+                        Add User
+                    </Button>
+                </Typography>
+            </ListItem>
+        </List>
+        <Divider light/>
       </Dialog>
     </div>
   );

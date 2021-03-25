@@ -57,7 +57,8 @@ export default function ClippedDrawer(props) {
   };
 
   const handleLogout=()=>{
-    window.localStorage.removeItem('session')
+    window.localStorage.removeItem("session");
+    window.localStorage.removeItem("author");
   }
 
   return (
