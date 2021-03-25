@@ -1,10 +1,10 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { emphasize, withStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Chip from "@material-ui/core/Chip";
 import HomeIcon from "@material-ui/icons/Home";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+// import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FolderIcon from "@material-ui/icons/Folder";
 
 import { navStructure } from "../../store/slices/structureSlice";
@@ -26,7 +26,7 @@ const StyledBreadcrumb = withStyles((theme) => ({
 }))(Chip); // TypeScript only: need a type cast here because https://github.com/Microsoft/TypeScript/issues/26591
 
 export default function CustomizedBreadcrumbs(props) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   let nav = [];
   nav = useSelector(navStructure);
 

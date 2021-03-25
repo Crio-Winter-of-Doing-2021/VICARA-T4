@@ -1,20 +1,20 @@
-import React, { useEffect,Fragment } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Path from "../Path/path";
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import Tooltip from '@material-ui/core/Tooltip';
+// import Path from "../Path/path";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import {
   favStructureAsync,
   selectFavStructure,
-  pathAsync,
+  // pathAsync,
   addFavouriteAsync,
-  privacyAsync
-} from "../../store/slices/favSlice"
+  privacyAsync,
+} from "../../store/slices/favSlice";
 
-import {selectStructure} from '../../store/slices/structureSlice'
-import {shareAsync} from '../../store/slices/shareSlice'
+import { selectStructure } from "../../store/slices/structureSlice";
+import { shareAsync } from "../../store/slices/shareSlice";
 
 // import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
@@ -29,9 +29,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import {default as UILink} from "@material-ui/core/Link";
+import { default as UILink } from "@material-ui/core/Link";
 
-import {Link} from 'react-router-dom'
+// import {Link} from 'react-router-dom'
 
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
@@ -39,13 +39,13 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 import Checkbox from "@material-ui/core/Checkbox";
 import {
   updateSelectedKeys,
-  selectCheckedKeys,
+  // selectCheckedKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import RemoveIcon from '@material-ui/icons/Remove';
+import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -75,10 +75,10 @@ const useStyles = makeStyles({
 export default function Structure(props) {
   const classes = useStyles();
 
-  const creator =window.localStorage.getItem('author')
+  const creator = window.localStorage.getItem("author");
   let structureState = useSelector(selectFavStructure);
-  
-  let temp=useSelector(selectStructure)
+
+  let temp = useSelector(selectStructure);
 
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
@@ -88,14 +88,13 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(favStructureAsync());
-  }, []);
+  }, [dispatch]);
 
-  Object.keys(structureState).map((key, index) => {
+  Object.keys(structureState).forEach((key, index) => {
+    let location = "Loading";
 
-    let location="Loading";
-    
-    if(structureState[key]!==undefined){
-      location=structureState[key].PATH
+    if (structureState[key] !== undefined) {
+      location = structureState[key].PATH;
     }
 
     let newData = {
@@ -103,8 +102,8 @@ export default function Structure(props) {
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
       favourite: structureState[key].FAVOURITE,
-      privacy:structureState[key].PRIVACY,
-      path:location
+      privacy: structureState[key].PRIVACY,
+      path: location,
     };
     tableData.push(newData);
   });
@@ -116,7 +115,7 @@ export default function Structure(props) {
     dispatch(emptykeys());
   };
 
-  const [checked, setChecked] = React.useState(true);
+  // const [checked, setChecked] = React.useState(true);
 
   const handleCheckedChange = (key, e) => {
     console.log("checked");
@@ -129,42 +128,40 @@ export default function Structure(props) {
     dispatch(addFavouriteAsync(data));
   };
 
-  const handlePrivacy = (e,data)=>{
+  const handlePrivacy = (e, data) => {
     e.preventDefault();
-    dispatch(privacyAsync(data))
+    dispatch(privacyAsync(data));
+  };
 
-  }
+  let privOpp = (privacy) => {
+    if (privacy === "PUBLIC") return "PRIVATE";
+    return "PUBLIC";
+  };
 
-  let privOpp =(privacy)=>{
-    if(privacy==="PUBLIC") return "PRIVATE";
-    return "PUBLIC"
-  }
-
-  console.log(tableData)
+  console.log(tableData);
 
   let tableRenderer = tableData.map((data) => {
-
     let favReverseData = {
       id: data.key,
       is_favourite: !data.favourite,
     };
 
-    let userDetails={
-      CREATOR:creator,
-      id:data.key
-    }
+    let userDetails = {
+      CREATOR: creator,
+      id: data.key,
+    };
 
-    let privReverse={
-      id:data.key,
-      PRIVACY:privOpp(data.privacy)
-    }
+    let privReverse = {
+      id: data.key,
+      PRIVACY: privOpp(data.privacy),
+    };
 
-    let keyData={
-      id:data.key,
-      type:data.type
-    }
+    let keyData = {
+      id: data.key,
+      type: data.type,
+    };
 
-    console.log(data.privacy)
+    console.log(data.privacy);
 
     return (
       <StyledTableRow key={data.key}>
@@ -180,21 +177,27 @@ export default function Structure(props) {
               <DescriptionTwoToneIcon />
             )}
 
-            {data.type==="FOLDER"?<UILink
-              component="button"
-              variant="body2"
-              style={{ marginLeft: "5px" }}
-              onClick={() => {updateFolder(data.key)}}
-            >
-              {data.name}
-            </UILink>:<UILink
-              component="button"
-              variant="body2"
-              style={{ marginLeft: "5px" }}
-              onClick={() => dispatch(shareAsync(userDetails))}
-            >
-              {data.name}
-            </UILink>}
+            {data.type === "FOLDER" ? (
+              <UILink
+                component="button"
+                variant="body2"
+                style={{ marginLeft: "5px" }}
+                onClick={() => {
+                  updateFolder(data.key);
+                }}
+              >
+                {data.name}
+              </UILink>
+            ) : (
+              <UILink
+                component="button"
+                variant="body2"
+                style={{ marginLeft: "5px" }}
+                onClick={() => dispatch(shareAsync(userDetails))}
+              >
+                {data.name}
+              </UILink>
+            )}
 
             {data.favourite === true ? (
               <IconButton
@@ -216,24 +219,31 @@ export default function Structure(props) {
           </div>
         </StyledTableCell>
         <StyledTableCell>
-          <div style={{fontStyle:"italic",color:"grey"}}>
-            {data.path}
-          </div>
+          <div style={{ fontStyle: "italic", color: "grey" }}>{data.path}</div>
         </StyledTableCell>
         <StyledTableCell component="th" scope="row">
-          {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
-            <IconButton><RemoveIcon/></IconButton>
-          </Tooltip>:data.privacy==='PRIVATE'?
-          <Tooltip title="File is Private">
-            <IconButton
-              onClick={(e) => handlePrivacy(e, privReverse)}
-            ><VisibilityOffIcon/></IconButton>
-          </Tooltip>:
-          <Tooltip title="File is Public">
-            <IconButton 
-            onClick={(e) => handlePrivacy(e, privReverse)}
-            color="primary"><VisibilityIcon/></IconButton>
-          </Tooltip>}
+          {data.privacy === undefined ? (
+            <Tooltip title="Privacy cannot be set for folders">
+              <IconButton>
+                <RemoveIcon />
+              </IconButton>
+            </Tooltip>
+          ) : data.privacy === "PRIVATE" ? (
+            <Tooltip title="File is Private">
+              <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
+                <VisibilityOffIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Tooltip title="File is Public">
+              <IconButton
+                onClick={(e) => handlePrivacy(e, privReverse)}
+                color="primary"
+              >
+                <VisibilityIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </StyledTableCell>
       </StyledTableRow>
     );
@@ -241,7 +251,7 @@ export default function Structure(props) {
 
   return (
     <div>
-      {console.log("temp",temp)}
+      {console.log("temp", temp)}
       <div style={{ display: "flex" }}>
         {/* <AddFile parent={unique_id} />
         <AddFolder id={unique_id} /> */}
