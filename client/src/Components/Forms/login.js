@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -57,7 +57,7 @@ export default function SignIn(props) {
 
   const dispatch = useDispatch();
 
-  window.localStorage.removeItem('session')
+  window.localStorage.removeItem("session");
 
   let [state, setState] = useState({
     username: "",

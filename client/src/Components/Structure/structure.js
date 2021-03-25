@@ -1,15 +1,15 @@
-import React, { useEffect,Fragment } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "../Path/path";
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import Tooltip from '@material-ui/core/Tooltip';
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import Tooltip from "@material-ui/core/Tooltip";
 import {
   structureAsync,
   selectStructure,
   pathAsync,
   addFavouriteAsync,
-  privacyAsync
+  privacyAsync,
 } from "../../store/slices/structureSlice";
 
 import AddFolder from "../Buttons/addFolder";
@@ -25,9 +25,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import {default as UILink} from "@material-ui/core/Link";
+import { default as UILink } from "@material-ui/core/Link";
 
-import {Link} from 'react-router-dom'
+// import { Link } from "react-router-dom";
 
 import RightClickUtil from '../RightClickMenu/rightClickUtil'
 
@@ -37,17 +37,17 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 import Checkbox from "@material-ui/core/Checkbox";
 import {
   updateSelectedKeys,
-  selectCheckedFileKeys,
-  selectCheckedFolderKeys,
+  // selectCheckedFileKeys,
+  // selectCheckedFolderKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
-import {selectUser} from '../../store/slices/authSlice'
-import {shareAsync} from '../../store/slices/shareSlice'
+// import { selectUser } from "../../store/slices/authSlice";
+import { shareAsync } from "../../store/slices/shareSlice";
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import RemoveIcon from '@material-ui/icons/Remove';
+import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -78,11 +78,11 @@ export default function Structure(props) {
   const classes = useStyles();
   let unique_id = props.match.params.id;
 
-  const creator =window.localStorage.getItem('author')
-  console.log(creator)
+  const creator = window.localStorage.getItem("author");
+  console.log(creator);
   const structureState = useSelector(selectStructure);
-  const fileKeys=useSelector(selectCheckedFileKeys)
-  const folderKeys=useSelector(selectCheckedFolderKeys)
+  // const fileKeys = useSelector(selectCheckedFileKeys);
+  // const folderKeys = useSelector(selectCheckedFolderKeys);
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -92,15 +92,15 @@ export default function Structure(props) {
   useEffect(() => {
     dispatch(structureAsync(unique_id));
     dispatch(pathAsync(unique_id));
-  }, [unique_id]);
+  }, [unique_id, dispatch]);
 
-  Object.keys(structureState).map((key, index) => {
+  Object.keys(structureState).forEach((key, index) => {
     let newData = {
       key: key,
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
       favourite: structureState[key].FAVOURITE,
-      privacy:structureState[key].PRIVACY
+      privacy: structureState[key].PRIVACY,
     };
     tableData.push(newData);
   });
@@ -112,7 +112,7 @@ export default function Structure(props) {
     dispatch(emptykeys());
   };
 
-  const [checked, setChecked] = React.useState(true);
+  // const [checked, setChecked] = React.useState(true);
 
   const handleCheckedChange = (key, e) => {
     console.log("checked");
@@ -125,40 +125,38 @@ export default function Structure(props) {
     dispatch(addFavouriteAsync(data));
   };
 
-  const handlePrivacy = (e,data)=>{
+  const handlePrivacy = (e, data) => {
     e.preventDefault();
-    dispatch(privacyAsync(data))
+    dispatch(privacyAsync(data));
+  };
 
-  }
-
-  let privOpp =(privacy)=>{
-    if(privacy==="PUBLIC") return "PRIVATE";
-    return "PUBLIC"
-  }
+  let privOpp = (privacy) => {
+    if (privacy === "PUBLIC") return "PRIVATE";
+    return "PUBLIC";
+  };
 
   let tableRenderer = tableData.map((data) => {
-
     let favReverseData = {
       id: data.key,
       is_favourite: !data.favourite,
     };
 
-    let userDetails={
-      CREATOR:creator,
-      id:data.key
-    }
+    let userDetails = {
+      CREATOR: creator,
+      id: data.key,
+    };
 
     // console.log(userDetails)
 
-    let privReverse={
-      id:data.key,
-      PRIVACY:privOpp(data.privacy)
-    }
+    let privReverse = {
+      id: data.key,
+      PRIVACY: privOpp(data.privacy),
+    };
 
-    let keyData={
-      id:data.key,
-      type:data.type
-    }
+    let keyData = {
+      id: data.key,
+      type: data.type,
+    };
 
     return (
       <StyledTableRow key={data.key}>
@@ -176,21 +174,27 @@ export default function Structure(props) {
               <DescriptionTwoToneIcon />
             )}
 
-            {data.type==="FOLDER"?<UILink
-              component="button"
-              variant="body2"
-              style={{ marginLeft: "5px" }}
-              onClick={() => {updateFolder(data.key)}}
-            >
-              {data.name}
-            </UILink>:<UILink
-              component="button"
-              variant="body2"
-              style={{ marginLeft: "5px" }}
-              onClick={() => dispatch(shareAsync(userDetails))}
-            >
-              {data.name}
-            </UILink>}
+            {data.type === "FOLDER" ? (
+              <UILink
+                component="button"
+                variant="body2"
+                style={{ marginLeft: "5px" }}
+                onClick={() => {
+                  updateFolder(data.key);
+                }}
+              >
+                {data.name}
+              </UILink>
+            ) : (
+              <UILink
+                component="button"
+                variant="body2"
+                style={{ marginLeft: "5px" }}
+                onClick={() => dispatch(shareAsync(userDetails))}
+              >
+                {data.name}
+              </UILink>
+            )}
 
             {data.favourite === true ? (
               <IconButton
@@ -214,19 +218,28 @@ export default function Structure(props) {
         </StyledTableCell>
         
         <StyledTableCell component="th" scope="row">
-          {data.privacy===undefined?<Tooltip title="Privacy cannot be set for folders">
-            <IconButton><RemoveIcon/></IconButton>
-          </Tooltip>:data.privacy==='PRIVATE'?
-          <Tooltip title="File is Private">
-            <IconButton
-              onClick={(e) => handlePrivacy(e, privReverse)}
-            ><VisibilityOffIcon/></IconButton>
-          </Tooltip>:
-          <Tooltip title="File is Public">
-            <IconButton 
-            onClick={(e) => handlePrivacy(e, privReverse)}
-            color="primary"><VisibilityIcon/></IconButton>
-          </Tooltip>}
+          {data.privacy === undefined ? (
+            <Tooltip title="Privacy cannot be set for folders">
+              <IconButton>
+                <RemoveIcon />
+              </IconButton>
+            </Tooltip>
+          ) : data.privacy === "PRIVATE" ? (
+            <Tooltip title="File is Private">
+              <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
+                <VisibilityOffIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Tooltip title="File is Public">
+              <IconButton
+                onClick={(e) => handlePrivacy(e, privReverse)}
+                color="primary"
+              >
+                <VisibilityIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </StyledTableCell>
       </StyledTableRow>
     );

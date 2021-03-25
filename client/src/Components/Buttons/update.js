@@ -1,75 +1,90 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import EditIcon from '@material-ui/icons/Edit';
+import React from "react";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+// import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from "@material-ui/core/DialogTitle";
+// import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import EditIcon from "@material-ui/icons/Edit";
 
-import {updateAsync,selectCheckedFolderKeys,selectCheckedFileKeys} from '../../store/slices/checkBoxSlice'
+import {
+  updateAsync,
+  selectCheckedFolderKeys,
+  selectCheckedFileKeys,
+} from "../../store/slices/checkBoxSlice";
 import { useDispatch, useSelector } from "react-redux";
 // import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
 
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const checkedFolderKeys=useSelector(selectCheckedFolderKeys)
-  const checkedFileKeys=useSelector(selectCheckedFileKeys)
+  const checkedFolderKeys = useSelector(selectCheckedFolderKeys);
+  const checkedFileKeys = useSelector(selectCheckedFileKeys);
 
-  const [data,setData]=React.useState('')
+  const [data, setData] = React.useState("");
 
   let inputChangeHandler = (e) => {
     e.preventDefault();
-    setData(e.target.value)
+    setData(e.target.value);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleUpdate =()=>{
-      handleClose();
+  const handleUpdate = () => {
+    handleClose();
 
-      console.log("Files",checkedFileKeys)
-      console.log("Folders",checkedFolderKeys)
+    console.log("Files", checkedFileKeys);
+    console.log("Folders", checkedFolderKeys);
 
-      let newFileData={}
-      let newFolderData={}
+    let newFileData = {};
+    let newFolderData = {};
 
-      if(checkedFileKeys.length!==0){
-        newFileData={
-          id:checkedFileKeys[0],
-          NAME:data
-        }
-      }
+    if (checkedFileKeys.length !== 0) {
+      newFileData = {
+        id: checkedFileKeys[0],
+        NAME: data,
+      };
+    }
 
-      if(checkedFolderKeys.length!==0){
-        newFolderData={
-          id:checkedFolderKeys[0],
-          NAME:data
-        }
-      }
+    if (checkedFolderKeys.length !== 0) {
+      newFolderData = {
+        id: checkedFolderKeys[0],
+        NAME: data,
+      };
+    }
 
-      dispatch(updateAsync(newFileData,newFolderData))
-  }
+    dispatch(updateAsync(newFileData, newFolderData));
+  };
 
-  let deactive= (checkedFolderKeys.length + checkedFileKeys.length)!==1 ?true:false;
+  let deactive =
+    checkedFolderKeys.length + checkedFileKeys.length !== 1 ? true : false;
 
   return (
-    <div style={{margin:"0 10px 0 5px"}}>
-      <Button startIcon={<EditIcon/>} disabled={deactive} variant="outlined" color="primary" onClick={handleClickOpen}>
+    <div style={{ margin: "0 10px 0 5px" }}>
+      <Button
+        startIcon={<EditIcon />}
+        disabled={deactive}
+        variant="outlined"
+        color="primary"
+        onClick={handleClickOpen}
+      >
         Update
       </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
         <DialogTitle id="form-dialog-title">Update Name</DialogTitle>
         <DialogContent>
           {/* <DialogContentText>

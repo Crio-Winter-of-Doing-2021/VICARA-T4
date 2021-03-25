@@ -1,10 +1,10 @@
 import React from "react";
 import Dashboard from "./Components/Dashboard/dashboard";
-import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import NormalLoader from "./Components/Loaders/normalBackdrop";
 import Login from "./Components/Forms/login";
 import SignUp from "./Components/Forms/signup";
-import PrivateRoute from './Utilities/protectedRoute'
+import PrivateRoute from "./Utilities/protectedRoute";
 
 function App() {
   return (
