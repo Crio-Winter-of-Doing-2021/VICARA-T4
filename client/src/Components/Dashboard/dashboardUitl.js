@@ -20,8 +20,15 @@ import { sideNav } from "../../constants";
 import {Link} from 'react-router-dom'
 
 import {emptykeys } from '../../store/slices/checkBoxSlice'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
+
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: 'Nunito'
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +69,8 @@ export default function ClippedDrawer(props) {
   }
 
   return (
-    <div className={classes.root}>
+    <ThemeProvider theme={theme}>
+      <div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -118,5 +126,6 @@ export default function ClippedDrawer(props) {
         {props.children}
       </main>
     </div>
+    </ThemeProvider>
   );
 }
