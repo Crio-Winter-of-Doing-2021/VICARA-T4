@@ -21,7 +21,18 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+
+
+
+
+
+
+
 # Django #
+
+temp_download_files/
 *.log
 *.pot
 *.pyc
@@ -164,3 +175,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *pem
+credentials.json
+client_secret_575084088742-1b1ggmoo17invamaesa5gr5sb5erbira.apps.googleusercontent.com.json
+token.pickle
