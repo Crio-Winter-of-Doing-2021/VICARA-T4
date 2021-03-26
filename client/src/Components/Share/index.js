@@ -3,7 +3,7 @@ import {useSelector,useDispatch} from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 
 import {selectFileData,selectPath} from '../../store/slices/shareSlice'
-import {fileAsync,pathAsync,userAsync} from '../../store/slices/shareSlice'
+import {fileAsync,pathAsync,userAsync,updatePatchUsers,selectPatchUsers,userAsyncPatch} from '../../store/slices/shareSlice'
 import {dateParser} from '../../Utilities/dateParser'
 
 import Button from '@material-ui/core/Button';
@@ -29,6 +29,7 @@ import {privacyAsync} from '../../store/slices/structureSlice'
 import {privOpp} from '../Structure/structure'
 
 import AddUser from '../Buttons/addUser/addUser'
+import CopytoClipboard from './copyClipboard'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -51,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginLeft: theme.spacing(2),
     flex: 1,
+    fontWeight:"bold"
   },
 }));
 
@@ -64,14 +66,26 @@ export default function FullScreenDialog(props) {
 
   const dispatch=useDispatch();
 
-  let fileGetData=props.data
+  let patchUsers=useSelector(selectPatchUsers)
+
+  console.log(patchUsers)
+
+  let file_id=props.data
 
   let fileData=useSelector(selectFileData)
   let path=useSelector(selectPath)
 
 
-  const handleDelete = () => {
-    console.info('You clicked the delete icon.');
+  let patchData={
+      id:fileData.id,
+      USERS:patchUsers
+  }
+
+  const handleDelete = (e,value) => {
+    e.preventDefault()
+    dispatch(updatePatchUsers(value))
+    console.log(patchData)
+    dispatch(userAsyncPatch(patchData))
   };
 
   let userRender=fileData.USERS.map(user=>{
@@ -80,7 +94,7 @@ export default function FullScreenDialog(props) {
             <Chip
                 icon={<FaceIcon />}
                 label={user}
-                onDelete={handleDelete}
+                onDelete={(e)=>handleDelete(e,user)}
                 
             />
         )
@@ -114,7 +128,7 @@ export default function FullScreenDialog(props) {
   return (
     <div>
       <ListItemText style={{paddingRight:"15px"}} variant="outlined" color="primary" onClick={()=>{
-          handleClickOpen();dispatch(fileAsync(fileGetData));dispatch(pathAsync(fileGetData));dispatch(userAsync())
+          handleClickOpen();dispatch(fileAsync(file_id));dispatch(pathAsync(file_id));dispatch(userAsync())
         }}>
         Share
       </ListItemText>
@@ -127,7 +141,7 @@ export default function FullScreenDialog(props) {
             <Typography variant="h6" className={classes.title}>
               Share
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleClose}>
+            <Button style={{fontWeight:"bold"}} autoFocus color="inherit" onClick={handleClose}>
               Done
             </Button>
           </Toolbar>
@@ -236,6 +250,14 @@ export default function FullScreenDialog(props) {
                 <Typography style={{display:"flex"}} className={classes.secondaryHeading}>
                     {userRender}
                     <AddUser author={fileData.CREATOR} id={fileData.id}/>
+                </Typography>
+            </ListItem>
+            <ListItem >
+                <Typography className={classes.heading}>
+                    Sharing Link
+                </Typography>
+                <Typography style={{display:"flex"}} className={classes.secondaryHeading}>
+                    <CopytoClipboard author={fileData.CREATOR} id={fileData.id}/>
                 </Typography>
             </ListItem>
         </List>

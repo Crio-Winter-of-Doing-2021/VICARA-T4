@@ -70,8 +70,6 @@ export default function CustomizedDialogs(props) {
     USERS:patchUsers
   }
 
-  console.log(patchData)
-
   const handleClose = () => {
     setOpen(false);
     

@@ -40,8 +40,6 @@ export default function CheckboxListSecondary(props) {
   let fileData=useSelector(selectFileData)
   let selectedUsers=fileData.USERS
 
-  console.log(selectedUsers)
-
   let author=props.author
   
 

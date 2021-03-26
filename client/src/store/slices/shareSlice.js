@@ -57,13 +57,15 @@ export const shareSlice= createSlice({
         }
 
         let index=state.patchUsers.findIndex(check);
+        console.log("index is",index)
         if(index===-1){
           state.patchUsers.push(value)
         }else{
           state.patchUsers.splice(index,1)
         }
+        console.log("update ended with size",state.patchUsers.length)
       },
-      setPatchUsersDefault:(state,action)=>{
+      setPatchUsersDefault:(state)=>{
         state.patchUsers=state.fileData.USERS
       }
   },
@@ -112,10 +114,10 @@ export const fileAsync =(data)=>(dispatch)=>{
         }
     }).then(res=>{
         dispatch(updatefileData(res.data))
-        let k;
-        for(k=0;k<res.data.USERS.length;k++){
-          dispatch(updatePatchUsers(res.data.USERS[k]))
-        }
+        // let k;
+        // for(k=0;k<res.data.USERS.length;k++){
+        //   dispatch(updatePatchUsers(res.data.USERS[k]))
+        // }
         dispatch(setPatchUsersDefault())
         dispatch(normalLoader())
     }).catch(err=>{
@@ -126,9 +128,11 @@ export const fileAsync =(data)=>(dispatch)=>{
 
 export const userAsyncPatch =(data)=>(dispatch)=>{
   dispatch(normalLoader());
+  console.log("API started with",data)
   API.patch('/api/file/',data).then(res=>{
     dispatch(normalLoader());
     dispatch(setFileUsers(res.data.USERS))
+    dispatch(setPatchUsersDefault())
   }).catch(err=>{
     console.log(err)
   })
