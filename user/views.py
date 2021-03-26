@@ -102,14 +102,16 @@ class Filesystem(APIView):
         children[id] = {
             TYPE: FOLDER,
             NAME: name,
-            FAVOURITE: False
+            FAVOURITE: False,
+            TRASH: False
         }
         filesystem[parent][CHILDREN] = children
         filesystem[id] = {
             PARENT: parent,
             TYPE: FOLDER,
             NAME: name,
-            FAVOURITE: False
+            FAVOURITE: False,
+            TRASH: False
         }
 
         filesystem[id][CHILDREN] = {}
@@ -121,6 +123,7 @@ class Filesystem(APIView):
     @check_id
     @check_type_id(type_required=FOLDER)
     @check_regex_file_name_from_request_body
+    @check_already_present(to_check="req_data_name", type=FOLDER)
     def patch(self, request):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
@@ -221,7 +224,7 @@ class Path(APIView):
         profile = Profile.objects.get(user=request.user)
         filesystem = profile.filesystem
         id = request.GET["id"]
-        main_id=id
+        main_id = id
         path = []
         while(filesystem[id][PARENT] != None):
             name = filesystem[id][NAME]
@@ -229,9 +232,9 @@ class Path(APIView):
             id = filesystem[id][PARENT]
         path.append({NAME: ROOT, "id": ROOT})
         path.reverse()
-        result={
-            "KEY":main_id,
-            "PATH":path
+        result = {
+            "KEY": main_id,
+            "PATH": path
         }
         return Response(data=result)
 

@@ -18,11 +18,13 @@ def filesystem_default_value():
     }
     return default_filesystem
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     filesystem = models.JSONField(default=filesystem_default_value)
     recent = models.JSONField(default=dict)
     favourites = models.JSONField(default=dict)
+    trash = models.JSONField(default=dict)
 
 
 @receiver(post_save, sender=User)

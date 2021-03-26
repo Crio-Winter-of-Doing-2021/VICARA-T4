@@ -77,7 +77,8 @@ class FileView(APIView):
             TYPE: FILE,
             NAME: name,
             FAVOURITE: False,
-            PRIVACY: PRIVATE
+            PRIVACY: PRIVATE,
+            TRASH: False
         }
         filesystem[parent][CHILDREN] = children
         filesystem[filesystem_id] = {
@@ -85,7 +86,8 @@ class FileView(APIView):
             TYPE: FILE,
             NAME: name,
             FAVOURITE: False,
-            PRIVACY: PRIVATE
+            PRIVACY: PRIVATE,
+            TRASH: False
         }
         update_profile(profile, filesystem)
         fileData = FileSerializer(file_obj).data

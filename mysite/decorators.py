@@ -148,7 +148,8 @@ def check_already_present(to_check, type):
                 for id in children:
                     already_present_name = children[id][NAME]
                     already_present_type = children[id][TYPE]
-                    if(name == already_present_name and already_present_type == type):
+                    already_present_trash = children[id][TRASH]
+                    if(name == already_present_name and already_present_type == type and already_present_trash == False):
                         return Response(data={"message": "Such a file/folder is already present"}, status=status.HTTP_400_BAD_REQUEST)
             result = func(self, request, *args, **kwargs)
             return result
