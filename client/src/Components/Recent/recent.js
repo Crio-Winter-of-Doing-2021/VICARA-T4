@@ -1,21 +1,19 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Path from "../Path/path";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-import Tooltip from "@material-ui/core/Tooltip";
-import {
-  structureAsync,
-  selectStructure,
-  pathAsync,
-  addFavouriteAsync,
-  privacyAsync,
-} from "../../store/slices/structureSlice";
+// import Path from "../Path/path";
 
-import AddFolder from "../Buttons/addFolder";
+import {
+  recentStructureAsync,
+  selectRecentStructure,
+} from "../../store/slices/recentSlice";
+
+// import { selectStructure } from "../../store/slices/structureSlice";
+import { shareAsync } from "../../store/slices/shareSlice";
+
+// import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
-import AddFile from "../Buttons/addFile";
+// import AddFile from "../Buttons/addFile";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -27,11 +25,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import{addRecentAsync} from '../../store/slices/recentSlice'
-
-// import { Link } from "react-router-dom";
-
-import RightClickUtil from '../RightClickMenu/rightClickUtil'
+// import {Link} from 'react-router-dom'
 
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
@@ -39,18 +33,10 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 import Checkbox from "@material-ui/core/Checkbox";
 import {
   updateSelectedKeys,
-  // selectCheckedFileKeys,
-  // selectCheckedFolderKeys,
+  // selectCheckedKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
-// import { selectUser } from "../../store/slices/authSlice";
-import { shareAsync } from "../../store/slices/shareSlice";
-
-import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import RemoveIcon from "@material-ui/icons/Remove";
-import IconButton from "@material-ui/core/IconButton";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -76,20 +62,14 @@ const useStyles = makeStyles({
   },
 });
 
-export let privOpp = (privacy) => {
-  if (privacy === "PUBLIC") return "PRIVATE";
-  return "PUBLIC";
-};
-
 export default function Structure(props) {
   const classes = useStyles();
-  let unique_id = props.match.params.id;
 
   const creator = window.localStorage.getItem("author");
-  console.log(creator);
-  const structureState = useSelector(selectStructure);
-  // const fileKeys = useSelector(selectCheckedFileKeys);
-  // const folderKeys = useSelector(selectCheckedFolderKeys);
+  let structureState = useSelector(selectRecentStructure);
+
+//   let temp = useSelector(selectStructure);
+
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
@@ -97,17 +77,22 @@ export default function Structure(props) {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(structureAsync(unique_id));
-    dispatch(pathAsync(unique_id));
-  }, [unique_id, dispatch]);
+    dispatch(recentStructureAsync());
+  }, [dispatch]);
 
   Object.keys(structureState).forEach((key, index) => {
+    let location = "Loading";
+
+    if (structureState[key] !== undefined) {
+      location = structureState[key].PATH;
+    }
+
     let newData = {
       key: key,
       type: structureState[key].TYPE,
       name: structureState[key].NAME,
-      favourite: structureState[key].FAVOURITE,
-      privacy: structureState[key].PRIVACY,
+      path: location,
+      time:structureState[key].TIMESTAMP
     };
     tableData.push(newData);
   });
@@ -126,33 +111,14 @@ export default function Structure(props) {
     dispatch(updateSelectedKeys(key));
   };
 
-  const handleFavouriteClick = (e, data) => {
-    e.preventDefault();
-    console.log(data);
-    dispatch(addFavouriteAsync(data));
-  };
 
-  const handlePrivacy = (e, data) => {
-    e.preventDefault();
-    dispatch(privacyAsync(data));
-  };
+  console.log(tableData);
 
   let tableRenderer = tableData.map((data) => {
-    let favReverseData = {
-      id: data.key,
-      is_favourite: !data.favourite,
-    };
 
     let userDetails = {
       CREATOR: creator,
       id: data.key,
-    };
-
-    // console.log(userDetails)
-
-    let privReverse = {
-      id: data.key,
-      PRIVACY: privOpp(data.privacy),
     };
 
     let keyData = {
@@ -160,16 +126,9 @@ export default function Structure(props) {
       type: data.type,
     };
 
-    let typeData={
-      type:data.type,
-      id:data.key
-    }
-
     return (
       <StyledTableRow key={data.key}>
-      
         <StyledTableCell component="th" scope="row">
-        <RightClickUtil data={typeData}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Checkbox
               onChange={(e) => handleCheckedChange(keyData, e)}
@@ -197,56 +156,18 @@ export default function Structure(props) {
                 component="button"
                 variant="body2"
                 style={{ marginLeft: "5px" }}
-                onClick={() => {dispatch(shareAsync(userDetails));dispatch(addRecentAsync(data.key))}}
+                onClick={() => dispatch(shareAsync(userDetails))}
               >
                 {data.name}
               </UILink>
             )}
-
-            {data.favourite === true ? (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarRoundedIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarBorderRoundedIcon />
-              </IconButton>
-            )}
           </div>
-          </RightClickUtil>
         </StyledTableCell>
-        
+        <StyledTableCell>
+          <div style={{ fontStyle: "italic", color: "grey" }}>{data.path}</div>
+        </StyledTableCell>
         <StyledTableCell component="th" scope="row">
-          {data.privacy === undefined ? (
-            <Tooltip title="Privacy cannot be set for folders">
-              <IconButton>
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          ) : data.privacy === "PRIVATE" ? (
-            <Tooltip title="File is Private">
-              <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
-                <VisibilityOffIcon />
-              </IconButton>
-            </Tooltip>
-          ) : (
-            <Tooltip title="File is Public">
-              <IconButton
-                onClick={(e) => handlePrivacy(e, privReverse)}
-                color="primary"
-              >
-                <VisibilityIcon />
-              </IconButton>
-            </Tooltip>
-          )}
+        <div style={{ fontStyle: "italic", color: "grey" }}>{data.time}</div>
         </StyledTableCell>
       </StyledTableRow>
     );
@@ -254,19 +175,21 @@ export default function Structure(props) {
 
   return (
     <div>
+      {/* {console.log("temp", temp)} */}
       <div style={{ display: "flex" }}>
-        <AddFile parent={unique_id} />
-        <AddFolder id={unique_id} />
+        {/* <AddFile parent={unique_id} />
+        <AddFolder id={unique_id} /> */}
         <Delete />
         <Update />
       </div>
-      <Path {...props} />
+      {/* <Path {...props} /> */}
       <TableContainer style={{ marginTop: "20px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Privacy</StyledTableCell>
+              <StyledTableCell>Location</StyledTableCell>
+              <StyledTableCell>Last Visited</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>{tableRenderer}</TableBody>

@@ -6,7 +6,7 @@ export default function AuthorizationCheck(props) {
     let author=props.match.params.user;
     let key=props.match.params.key;
 
-    let [success,setSuccess]=useState(false)
+    let [success,setSuccess]=useState(null)
 
     useEffect(()=>{
         API.get('/api/share/',{
@@ -20,14 +20,13 @@ export default function AuthorizationCheck(props) {
             window.open(link)
         }).catch(err=>{
             console.log(err)
+            setSuccess(false)
         })
-    },[])
-
-    if(success) return null;    
+    },[])   
 
     return (
         <div>
-            UnAuthorizedAccess
+            {success===null?"Checking Authorizaton...":success?"Access granted. Reload page to download again...":"403 Access Denied"}
         </div>
     )
 }

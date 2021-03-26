@@ -98,6 +98,11 @@ export const shareAsync =(data)=>(dispatch)=>{
     })
 }
 
+export const updateAndThenGet = (value,data) => async (dispatch) => {
+  await dispatch(updatePatchUsers(value))
+  return await dispatch(userAsyncPatch(data))
+}
+
 export const userAsync=()=>(dispatch)=>{
   API.get('api/auth/users/').then(res=>{
     dispatch(setUsers(res.data));

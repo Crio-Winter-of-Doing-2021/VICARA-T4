@@ -2,7 +2,7 @@ import React from 'react';
 import {useSelector,useDispatch} from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 
-import {selectFileData,selectPath} from '../../store/slices/shareSlice'
+import {selectFileData,selectPath,updateAndThenGet} from '../../store/slices/shareSlice'
 import {fileAsync,pathAsync,userAsync,updatePatchUsers,selectPatchUsers,userAsyncPatch} from '../../store/slices/shareSlice'
 import {dateParser} from '../../Utilities/dateParser'
 
@@ -81,11 +81,10 @@ export default function FullScreenDialog(props) {
       USERS:patchUsers
   }
 
+ 
+
   const handleDelete = (e,value) => {
-    e.preventDefault()
-    dispatch(updatePatchUsers(value))
-    console.log(patchData)
-    dispatch(userAsyncPatch(patchData))
+    dispatch(updateAndThenGet(value,patchData))
   };
 
   let userRender=fileData.USERS.map(user=>{
