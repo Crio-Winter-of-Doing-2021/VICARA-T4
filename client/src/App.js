@@ -5,6 +5,7 @@ import NormalLoader from "./Components/Loaders/normalBackdrop";
 import Login from "./Components/Forms/login";
 import SignUp from "./Components/Forms/signup";
 import PrivateRoute from "./Utilities/protectedRoute";
+import AuthorizationCheck from "./Utilities/authorizationCheck";
 
 function App() {
   return (
@@ -13,9 +14,7 @@ function App() {
       <Switch>
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={SignUp} />
-        <PrivateRoute exact path="/share/:user/:key">
-          <div>hello</div>
-        </PrivateRoute>
+        <PrivateRoute exact path="/share/:user/:key" component={AuthorizationCheck}/>
         <Dashboard />
         {/* <Route path="/" component={SignUp}>
           <Dashboard />
