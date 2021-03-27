@@ -1,4 +1,4 @@
-from .views import LoginView, Logout, Recent, Register, ListOfUsers, ProfileView, Path, Favourites, Trash
+from .views import LoginView, Logout, Recent, Register, ListOfUsers, ProfileView, Path, Favourites, Trash, SharedWithMe
 from django.urls import path
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('favourites/',  Favourites.as_view(), name="favourites"),
     path('recent/',  Recent.as_view(), name="recent"),
     path('trash/',  Trash.as_view(), name="trash"),
+    path('shared-with-me/',  SharedWithMe.as_view(), name="shared-with-me"),
 ]

@@ -62,15 +62,29 @@ class FileView(APIView):
             updated = True
             file.favourite = request.data["favourite"]
         if("shared_among" in request.data):
-            usernames = request.data["shared_among"]
-            users = [User.objects.get(username=username)
-                     for username in usernames]
+            updated = True
+            ids = request.data["shared_among"]
+
+            # make unique & discard owner
+            ids.discard(file.owner.id)
+            ids = list(ids)
+
+            users = [User.objects.get(pk=id)
+                     for id in ids]
+            file.shared_among.set(users)
+        if("trash" in request.data):
+            if(request.data["trash"] == False):
+                updated = True
+                file.trash = False
+                file.save()
+            else:
+                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
             file.shared_among.set(users)
 
         if(updated):
             file.save()
-
-        return Response(data={"message": "wrong patch params"}, status=status.HTTP_200_OK)
+        data = FileSerializer(file).data
+        return Response(data=data, status=status.HTTP_200_OK)
 
     @check_id_file
     @check_is_owner_file

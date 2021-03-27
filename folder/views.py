@@ -62,21 +62,31 @@ class Filesystem(APIView):
             updated = True
             folder.favourite = request.data["favourite"]
         if("shared_among" in request.data):
-            usernames = request.data["shared_among"]
-            users = [User.objects.get(username=username)
-                     for username in usernames]
+            updated = True
+            ids = request.data["shared_among"]
+
+            # make unique & discard owner
+            ids = set(ids)
+            ids.discard(folder.owner.id)
+            ids = list(ids)
+
+            users = [User.objects.get(pk=id)
+                     for id in ids]
+            folder.shared_among.set(users)
+        if("trash" in request.data):
+            if(request.data["trash"] == False):
+                updated = True
+                folder.trash = False
+                folder.save()
+            else:
+                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
             folder.shared_among.set(users)
 
         if(updated):
             folder.save()
 
-        # serializer = FolderSerializer(
-        #     folder, data=request.data, partial=True)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-        return Response(data={"message": "wrong patch params"}, status=status.HTTP_200_OK)
+        data = FolderSerializer(folder).data
+        return Response(data=data, status=status.HTTP_200_OK)
 
     @check_id_folder
     @check_id_not_root

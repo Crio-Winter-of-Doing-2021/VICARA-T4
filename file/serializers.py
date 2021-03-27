@@ -8,6 +8,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
+    shared_among = serializers.SerializerMethodField()
 
     class Meta:
         model = File
@@ -19,3 +20,12 @@ class FileSerializer(serializers.ModelSerializer):
 
     def get_last_modified(self, obj):
         return humanize.naturaltime(obj.last_modified)
+
+    def get_shared_among(self, obj):
+        shared_among = []
+        for user in obj.shared_among.all():
+            shared_among.append({
+                "username": user.username,
+                "id": id
+            })
+        return shared_among
