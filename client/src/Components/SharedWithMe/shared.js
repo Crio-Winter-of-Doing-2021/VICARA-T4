@@ -5,6 +5,8 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 
+import {dateParser} from '../../Utilities/dateParser'
+
 import {
   
   selectSharedStructure,
@@ -94,6 +96,13 @@ export default function Structure(props) {
   Object.keys(structureState).forEach((key, index) => {
     let location = "Loading";
 
+    let newtime=''
+
+    if(structureState[key].TIMESTAMP!==undefined){
+      let res=dateParser(structureState[key].TIMESTAMP)
+      newtime=res.date + '-' + res.month + '-' + res.year
+    }
+
     if (structureState[key] !== undefined) {
       location = structureState[key].PATH;
     }
@@ -105,7 +114,7 @@ export default function Structure(props) {
       privacy: structureState[key].PRIVACY,
       author:structureState[key].CREATOR,
       path: location,
-      time:structureState[key].TIMESTAMP
+      time:newtime
     };
     tableData.push(newData);
   });
@@ -139,7 +148,7 @@ export default function Structure(props) {
     if (privacy === "PUBLIC") return "PRIVATE";
     return "PUBLIC";
   };
-
+  
   console.log(tableData);
 
   let tableRenderer = tableData.map((data) => {
@@ -147,6 +156,8 @@ export default function Structure(props) {
     //   id: data.key,
     //   is_favourite: !data.favourite,
     // };
+
+    
 
     let userDetails = {
       CREATOR: creator,
@@ -178,6 +189,8 @@ export default function Structure(props) {
             ) : (
               <DescriptionTwoToneIcon />
             )}
+
+            
 
             {data.type === "FOLDER" ? (
               <UILink
