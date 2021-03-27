@@ -16,13 +16,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(
         source="user.first_name", read_only=True)
     last_name = serializers.CharField(source="user.last_name", read_only=True)
-    # auth_token = serializers.SerializerMethodField()
-    filesystem = serializers.SerializerMethodField()
+    root_id = serializers.CharField(source="root.id", read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['filesystem', 'first_name',
-                  'last_name', 'id', 'username']
+        fields = ['first_name',
+                  'last_name', 'id', 'username', 'root_id']
 
     def get_auth_token(self, obj):
         user = User.objects.get(profile=obj)

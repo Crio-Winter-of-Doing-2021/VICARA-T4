@@ -14,9 +14,10 @@ class File(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now_add=True)
-    owner = models.OneToOneField(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="files")
     shared_among = models.ForeignKey(
         User, related_name="shared_files", on_delete=models.DO_NOTHING, null=True)
-    privacy = models.BooleanField(default=False)
+    privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)

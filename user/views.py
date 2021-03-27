@@ -10,6 +10,8 @@ from rest_framework import status
 # local imports
 from .models import Profile
 from .serializers import ProfileSerializer
+from folder.models import Folder
+from .serializers import ProfileSerializer, UserSerializer
 
 
 class LoginView(ObtainAuthToken):
@@ -36,12 +38,17 @@ class Register(APIView):
         user.save()
         token, created = Token.objects.get_or_create(user=user)
         profile = Profile.objects.get(user=user)
+        root_folder = Folder(name="ROOT", owner=user)
+        root_folder.save()
+        profile.root = root_folder
+        profile.save()
         data = ProfileSerializer(profile).data
         return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
 
 
 class Logout(APIView):
-    def post(self, request, format=None):
+    def post(self, request, *args, **kwargs):
+        print(request.user)
         request.user.auth_token.delete()
         return Response({"message": "logged out"}, status=status.HTTP_200_OK)
 
@@ -61,3 +68,10 @@ class ProfileView(APIView):
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListOfUsers(APIView):
+
+    def get(self, request):
+        data = UserSerializer(User.objects.all(), many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
