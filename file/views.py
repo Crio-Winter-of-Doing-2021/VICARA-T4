@@ -1,3 +1,68 @@
-from django.shortcuts import render
 
-# Create your views here.
+
+# django imports
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+# local imports
+from user.models import Profile
+from .decorators import *
+from folder.decorators import check_is_owner_parent_folder, check_id_parent_folder, check_request_attr, check_valid_name
+from .serializers import FileSerializer
+POST_FILE = ["file", "PARENT"]
+PATCH_FILE = ["id"]
+
+
+class FileView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    @check_id_file
+    @check_has_access_file
+    def get(self, request, * args, **kwargs):
+        id = request.GET["id"]
+        file = File.objects.get(id=id)
+        data = FileSerializer(file).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    @check_request_attr(POST_FILE)
+    @check_valid_name_request_file
+    @check_id_parent_folder
+    @check_is_owner_parent_folder
+    @check_duplicate_file_exists
+    def post(self, request, * args, **kwargs):
+        parent_id = request.data["PARENT"]
+        parent = Folder.objects.get(id=parent_id)
+        req_file = request.FILES['file']
+        req_file_name = request.FILES['file'].name
+
+        new_file = File(owner=request.user, file=req_file,
+                        parent=parent, name=req_file_name)
+        new_file.save()
+
+        data = FileSerializer(new_file).data
+        return Response(data=data, status=status.HTTP_201_CREATED)
+
+    @check_valid_name
+    @check_id_file
+    @check_is_owner_file
+    @check_duplicate_file_exists
+    def patch(self, request, * args, **kwargs):
+        id = request.data["id"]
+        folder = Folder.objects.get(id=id)
+
+        serializer = FileSerializer(
+            folder, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        return Response(data={"message": "wrong patch params"}, status=status.HTTP_200_OK)
+
+    @check_id_file
+    @check_is_owner_file
+    def delete(self, request, * args, **kwargs):
+        id = get_id(request)
+        file = File.objects.get(id=id)
+        file.delete()
+        return Response(data={"id": id}, status=status.HTTP_200_OK)

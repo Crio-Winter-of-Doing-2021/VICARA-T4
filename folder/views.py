@@ -26,7 +26,7 @@ class Filesystem(APIView):
         id = request.GET["id"]
         folder = Folder.objects.get(id=id)
         data = FolderSerializer(folder).data
-        return Response(data=data)
+        return Response(data=data, status=status.HTTP_200_CREATED)
 
     @check_request_attr(POST_FOLDER)
     @check_valid_name
@@ -58,7 +58,7 @@ class Filesystem(APIView):
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-        return Response(data={"message": "wrong patch params"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={"message": "wrong patch params"}, status=status.HTTP_200_OK)
 
     @check_id_folder
     @check_id_not_root
@@ -67,4 +67,4 @@ class Filesystem(APIView):
         id = get_id(request)
         folder = Folder.objects.get(id=id)
         folder.delete()
-        return Response(data={"id": id}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={"id": id}, status=status.HTTP_200_OK)

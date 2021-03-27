@@ -4,10 +4,6 @@ from folder.models import Folder
 
 
 class File(models.Model):
-    pass
-
-
-class File(models.Model):
     file = models.FileField(blank=False, null=False)
     parent = models.ForeignKey(
         Folder, related_name="children_file", on_delete=models.CASCADE)
@@ -16,8 +12,8 @@ class File(models.Model):
     last_modified = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="files")
-    shared_among = models.ForeignKey(
-        User, related_name="shared_files", on_delete=models.DO_NOTHING, null=True)
+    shared_among = models.ManyToManyField(
+        User, related_name="shared_files")
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)

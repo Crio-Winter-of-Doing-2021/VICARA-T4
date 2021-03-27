@@ -7,9 +7,9 @@ from rest_framework import status
 
 
 # local imports
-from user.models import Profile
+
 from file.models import File
-from folder.models import Folder
+from .models import Folder
 
 
 def check_id_with_type(func):

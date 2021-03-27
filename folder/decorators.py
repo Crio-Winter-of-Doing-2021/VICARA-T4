@@ -102,7 +102,7 @@ def check_has_access_folder(func):
         if(folder.owner == request.user or folder.privacy == False):
             allowed = True
 
-        if (request.user in folder.shared_among):
+        if (request.user in folder.shared_among.all()):
             allowed = True
 
         if(not allowed):
