@@ -19,7 +19,6 @@ POST_FOLDER = ["NAME", "PARENT"]
 
 
 class Filesystem(APIView):
-s
     @check_id_folder
     @check_has_access_folder
     def get(self, request, * args, **kwargs):
