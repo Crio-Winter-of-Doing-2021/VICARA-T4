@@ -1,3 +1,5 @@
+# python imports
+from itertools import chain
 # django imports
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -9,10 +11,11 @@ from rest_framework import status
 
 # local imports
 from .models import Profile
-from .serializers import ProfileSerializer
 from folder.models import Folder
 from .serializers import ProfileSerializer, UserSerializer
 from .decorators import *
+from folder.serializers import FolderSerializer
+from file.serializers import FileSerializer
 
 
 class LoginView(ObtainAuthToken):
@@ -76,6 +79,69 @@ class ListOfUsers(APIView):
     def get(self, request):
         data = UserSerializer(User.objects.all(), many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class Favourites(APIView):
+
+    def get(self, request):
+
+        # folders
+        fav_folders = Folder.objects.filter(
+            favourite=True, owner=request.user, trash=False)
+        fav_folders = FolderSerializer(fav_folders, many=True).data
+        for folder in fav_folders:
+            folder["type"] = "folder"
+        # files
+        fav_files = File.objects.filter(
+            favourite=True, owner=request.user, trash=False)
+        fav_files = FileSerializer(fav_files, many=True).data
+        for file in fav_files:
+            file["type"] = "file"
+
+        # combined
+        result_list = list(chain(fav_folders, fav_files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
+
+
+class Recent(APIView):
+
+    def get(self, request):
+        # folders
+        fav_folders = Folder.objects.filter(owner=request.user, trash=False)
+        fav_folders = FolderSerializer(fav_folders, many=True).data
+        for folder in fav_folders:
+            folder["type"] = "folder"
+        # files
+        fav_files = File.objects.filter(owner=request.user, trash=False)
+        fav_files = FileSerializer(fav_files, many=True).data
+        for file in fav_files:
+            file["type"] = "file"
+
+        # combined
+        result_list = list(chain(fav_folders, fav_files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
+
+
+class Trash(APIView):
+
+    def get(self, request):
+        # folders
+        fav_folders = Folder.objects.filter(owner=request.user, trash=True)
+        fav_folders = FolderSerializer(fav_folders, many=True).data
+        for folder in fav_folders:
+            folder["type"] = "folder"
+        # files
+        fav_files = File.objects.filter(owner=request.user, trash=True)
+        fav_files = FileSerializer(fav_files, many=True).data
+        for file in fav_files:
+            file["type"] = "file"
+
+        # combined
+        result_list = list(chain(fav_folders, fav_files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
 
 
 class Path(APIView):

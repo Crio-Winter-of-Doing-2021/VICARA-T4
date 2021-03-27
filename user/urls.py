@@ -1,4 +1,4 @@
-from .views import LoginView, Logout, Register, ListOfUsers, ProfileView, Path
+from .views import LoginView, Logout, Recent, Register, ListOfUsers, ProfileView, Path, Favourites, Trash
 from django.urls import path
 
 urlpatterns = [
@@ -8,4 +8,7 @@ urlpatterns = [
     path('auth/users/', ListOfUsers.as_view(), name="users"),
     path('profile/', ProfileView.as_view(), name="profile"),
     path('path/', Path.as_view(), name="path"),
+    path('favourites/',  Favourites.as_view(), name="favourites"),
+    path('recent/',  Recent.as_view(), name="recent"),
+    path('trash/',  Trash.as_view(), name="trash"),
 ]

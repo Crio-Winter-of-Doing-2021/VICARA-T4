@@ -1,6 +1,6 @@
 import functools
 import re
-
+import datetime
 # django imports
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,7 +30,7 @@ def check_id_file(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
-        file = File.objects.get(id=id)
+        file = File.custom_objects.get(id=id)
         if(file == None):
             return Response(data={"message": "Invalid id or id is not of a file"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -45,7 +45,7 @@ def check_is_owner_file(func):
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
 
-        file = File.objects.get(id=id)
+        file = File.custom_objects.get(id=id)
         if(file.owner != request.user):
             return Response(data={"message": "user is not owner of the file"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -60,7 +60,7 @@ def check_has_access_file(func):
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
 
-        file = File.objects.get(id=id)
+        file = File.custom_objects.get(id=id)
         allowed = False
 
         if(file.owner == request.user or file.privacy == False):
@@ -96,17 +96,42 @@ def check_duplicate_file_exists(func):
             # for post when new is created by parent id
             if("PARENT" in request.data):
                 parent_id = request.data["PARENT"]
-                parent_folder = Folder.objects.get(id=parent_id)
+                parent_folder = Folder.custom_objects.get(id=parent_id)
             # for patch when rename is done by folder id
             else:
                 id = get_id(request)
-                folder = File.objects.get(id=id)
+                folder = File.custom_objects.get(id=id)
                 parent_folder = folder.parent
 
             children = parent_folder.children_file.all().filter(name=name)
             if(children):
                 return Response(data={"message": "File with given name already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_file_not_trashed(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        id = get_id(request)
+        file = File.custom_objects.get(id=id)
+
+        if file.trash:
+            return Response(data={"message": "File is in Trash"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def update_last_modified_file(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        id = get_id(request)
+        file = File.custom_objects.get(id=id)
+        file.last_modified = datetime.now()
+        file.save()
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

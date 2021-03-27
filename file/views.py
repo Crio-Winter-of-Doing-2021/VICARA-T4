@@ -19,6 +19,7 @@ class FileView(APIView):
 
     @check_id_file
     @check_has_access_file
+    @update_last_modified_file
     def get(self, request, * args, **kwargs):
         id = request.GET["id"]
         file = File.objects.get(id=id)
@@ -29,6 +30,7 @@ class FileView(APIView):
     @check_valid_name_request_file
     @check_id_parent_folder
     @check_is_owner_parent_folder
+    @check_file_not_trashed
     @check_duplicate_file_exists
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
@@ -46,16 +48,27 @@ class FileView(APIView):
     @check_valid_name
     @check_id_file
     @check_is_owner_file
+    @check_file_not_trashed
     @check_duplicate_file_exists
     def patch(self, request, * args, **kwargs):
         id = request.data["id"]
-        folder = Folder.objects.get(id=id)
+        file = File.objects.get(id=id)
 
-        serializer = FileSerializer(
-            folder, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        if("privacy" in request.data):
+            updated = True
+            file.privacy = request.data["privacy"]
+
+        if("favourite" in request.data):
+            updated = True
+            file.favourite = request.data["favourite"]
+        if("shared_among" in request.data):
+            usernames = request.data["shared_among"]
+            users = [User.objects.get(username=username)
+                     for username in usernames]
+            file.shared_among.set(users)
+
+        if(updated):
+            file.save()
 
         return Response(data={"message": "wrong patch params"}, status=status.HTTP_200_OK)
 
@@ -64,5 +77,9 @@ class FileView(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
-        file.delete()
+        if (not file.trash):
+            file.trash = True
+            file.save()
+        else:
+            file.delete()
         return Response(data={"id": id}, status=status.HTTP_200_OK)
