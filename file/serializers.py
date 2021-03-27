@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import File
+from user.models import Profile
 from mysite.constants import *
 
 
@@ -13,12 +14,18 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = File
-        fields = ('id', PRIVACY, USERS, CREATOR, TIMESTAMP,NAME)
+        fields = ('id', PRIVACY, USERS, CREATOR, TIMESTAMP, NAME)
 
     def get_id(self, obj):
         return obj.filesystem_id
+
     def get_NAME(self, obj):
-        return obj.name
+        creator = obj.creator
+        profile = Profile.objects.get(user=creator)
+        filesystem = profile.filesystem
+        name = filesystem[obj.filesystem_id][NAME]
+        return name
+
     def get_TIMESTAMP(self, obj):
         return obj.timestamp
 
