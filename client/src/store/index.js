@@ -6,6 +6,7 @@ import loaderReducer from './slices/loaderSlice'
 import favReducer from './slices/favSlice'
 import shareReducer from './slices/shareSlice'
 import recentReducer from './slices/recentSlice'
+import sharedWithMeReducer from './slices/sharedWithMeSlice'
 
 export default configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export default configureStore({
     loader:loaderReducer,
     fav:favReducer,
     share:shareReducer,
-    recent:recentReducer
+    recent:recentReducer,
+    sharedWithme:sharedWithMeReducer
   },
 });
