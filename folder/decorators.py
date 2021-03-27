@@ -17,15 +17,19 @@ from folder.models import Folder
 REGEX_NAME = r"^[\w\-. ]+$"
 
 
+def get_id(request):
+    if(request.method == "GET" or request.method == "DELETE"):
+        id = request.GET["id"]
+    else:
+        id = request.data["id"]
+    return id
+
+
 def check_id_folder(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        if(request.method == "GET" or request.method == "DELETE"):
-            id = request.GET["id"]
-        else:
-            id = request.data["id"]
-
+        id = get_id(request)
         folder = Folder.objects.get(id=id)
         if(folder == None):
             return Response(data={"message": "Invalid id or id is not of a folder"}, status=status.HTTP_400_BAD_REQUEST)
@@ -75,10 +79,7 @@ def check_is_owner_folder(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        if(request.method == "GET" or request.method == "DELETE"):
-            id = request.GET["id"]
-        else:
-            id = request.data["id"]
+        id = get_id(request)
 
         folder = Folder.objects.get(id=id)
         if(folder.owner != request.user):
@@ -93,10 +94,7 @@ def check_has_access_folder(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        if(request.method == "GET" or request.method == "DELETE"):
-            id = request.GET["id"]
-        else:
-            id = request.data["id"]
+        id = get_id(request)
 
         folder = Folder.objects.get(id=id)
         allowed = False
@@ -129,9 +127,11 @@ def check_request_attr(REQUIRED_PARAMS):
 def check_valid_name(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        name = request.data["NAME"]
-        if re.match(REGEX_NAME, name) is None:
-            return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
+        # in patch there might be cases when name is not changed
+        if("name" in request.data):
+            name = request.data["name"]
+            if re.match(REGEX_NAME, name) is None:
+                return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper
@@ -140,16 +140,36 @@ def check_valid_name(func):
 def check_duplicate_folder_exists(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        name = request.data["NAME"]
-        parent_id = request.data["PARENT"]
-        parent_folder = Folder.objects.get(id=parent_id)
-        print(f"{name=}")
-        print("children", parent_folder.children_folder.all().filter(
-            name=name).exists())
-        children = parent_folder.children_folder.all().filter(name=name)
-        if(children):
-            return Response(data={"message": "Folder with given name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        # there might be cases in patch when we are not changing names
+        if("name" in request.data):
+            name = request.data["name"]
+            # for post when new is created by parent id
+            if("PARENT" in request.data):
+                parent_id = request.data["PARENT"]
+                parent_folder = Folder.objects.get(id=parent_id)
+            # for patch when rename is done by folder id
+            else:
+                id = get_id(request)
+                folder = Folder.objects.get(id=id)
+                parent_folder = folder.parent
 
+            children = parent_folder.children_folder.all().filter(name=name)
+            if(children):
+                return Response(data={"message": "Folder with given name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_id_not_root(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        id = get_id(request)
+
+        folder = Folder.objects.get(id=id)
+        if(folder.parent == None):
+            return Response(data={"message": "Root folder can't be deleted"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

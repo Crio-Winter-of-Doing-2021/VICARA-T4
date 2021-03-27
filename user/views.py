@@ -93,12 +93,12 @@ class Path(APIView):
         path = []
         while(start_node.parent != None):
             path.append({
-                "Name": start_node.name,
+                "name": start_node.name,
                 "id": start_node.id
             })
             start_node = start_node.parent
         path.append({
-            "Name": start_node.name,
+            "name": start_node.name,
             "id": start_node.id
         })
         path.reverse()
