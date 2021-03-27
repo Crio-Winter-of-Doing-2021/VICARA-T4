@@ -9,14 +9,16 @@ class FileSerializer(serializers.ModelSerializer):
     CREATOR = serializers.SerializerMethodField()
     USERS = serializers.SerializerMethodField()
     PRIVACY = serializers.SerializerMethodField()
+    NAME = serializers.SerializerMethodField()
 
     class Meta():
         model = File
-        fields = ('id', PRIVACY, USERS, CREATOR, TIMESTAMP)
+        fields = ('id', PRIVACY, USERS, CREATOR, TIMESTAMP,NAME)
 
     def get_id(self, obj):
         return obj.filesystem_id
-
+    def get_NAME(self, obj):
+        return obj.name
     def get_TIMESTAMP(self, obj):
         return obj.timestamp
 
