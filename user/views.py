@@ -12,6 +12,7 @@ from .models import Profile
 from .serializers import ProfileSerializer
 from folder.models import Folder
 from .serializers import ProfileSerializer, UserSerializer
+from .decorators import *
 
 
 class LoginView(ObtainAuthToken):
@@ -75,3 +76,30 @@ class ListOfUsers(APIView):
     def get(self, request):
         data = UserSerializer(User.objects.all(), many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class Path(APIView):
+
+    @check_id_with_type
+    def get(self, request, *args, **kwargs):
+        id = request.GET["id"]
+        type = request.GET["TYPE"]
+
+        if(type == "FILE"):
+            start_node = File.objects.get(id=id)
+        elif(type == "FOLDER"):
+            start_node = Folder.objects.get(id=id)
+
+        path = []
+        while(start_node.parent != None):
+            path.append({
+                "Name": start_node.name,
+                "id": start_node.id
+            })
+            start_node = start_node.parent
+        path.append({
+            "Name": start_node.name,
+            "id": start_node.id
+        })
+        path.reverse()
+        return Response(data=path)
