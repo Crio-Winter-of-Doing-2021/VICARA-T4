@@ -101,6 +101,7 @@ export default function Structure(props) {
     let newData = {
       key: key,
       type: structureState[key].TYPE,
+      name:structureState[key].NAME,
       privacy: structureState[key].PRIVACY,
       author:structureState[key].CREATOR,
       path: location,
@@ -187,7 +188,7 @@ export default function Structure(props) {
                   updateFolder(data.key);
                 }}
               >
-                {/* {data.name} */}
+                {data.name}
               </UILink>
             ) : (
               <UILink
@@ -196,7 +197,7 @@ export default function Structure(props) {
                 style={{ marginLeft: "5px" }}
                 onClick={() =>{ dispatch(shareAsync(userDetails))}}
               >
-                {/* {data.name} */}
+                {data.name}
               </UILink>
             )}
 
