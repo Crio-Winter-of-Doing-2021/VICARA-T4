@@ -160,7 +160,7 @@ export default function Structure(props) {
     
 
     let userDetails = {
-      CREATOR: creator,
+      CREATOR: data.author,
       id: data.key,
     };
 
