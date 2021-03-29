@@ -39,7 +39,7 @@ class FileView(APIView):
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
-    @check_duplicate_file_exists
+    @check_already_present(to_check="req_file_name")
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
@@ -57,7 +57,7 @@ class FileView(APIView):
     @check_id_file
     @check_is_owner_file
     @check_file_not_trashed
-    @check_duplicate_file_exists
+    @check_already_present(to_check="req_data_name")
     def patch(self, request, * args, **kwargs):
         id = request.data["id"]
         file = File.objects.get(id=id)
