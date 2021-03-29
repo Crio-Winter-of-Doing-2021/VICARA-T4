@@ -1,6 +1,5 @@
-import secrets
-from datetime import datetime
-import copy
+# python imports
+from itertools import chain
 # django imports
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -12,17 +11,16 @@ from rest_framework import status
 
 # local imports
 from .models import Profile
+from folder.models import Folder
 from .serializers import ProfileSerializer, UserSerializer
-from mysite.constants import *
-from mysite.decorators import *
-from .utils import update_profile, remove_oldest
-from mysite.utils import recursive_delete
+from .decorators import *
+from file.decorators import *
+from folder.serializers import FolderSerializer
+from file.serializers import FileSerializer
+from folder.decorators import check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
+from folder.utils import set_recursive_trash
 
-
-REQUIRED_POST_PARAMS = [NAME, PARENT]
-REQUIRED_PATCH_PARAMS = ["id", NAME]
-REQUIRED_FAV_POST_PARAMS = ["id", "is_favourite"]
-REQUIRED_RECENT_GET_PARAMS = ["id"]
+RECOVER = ["id", "TYPE"]
 
 
 class LoginView(ObtainAuthToken):
@@ -49,12 +47,17 @@ class Register(APIView):
         user.save()
         token, created = Token.objects.get_or_create(user=user)
         profile = Profile.objects.get(user=user)
+        root_folder = Folder(name="ROOT", owner=user)
+        root_folder.save()
+        profile.root = root_folder
+        profile.save()
         data = ProfileSerializer(profile).data
         return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
 
 
 class Logout(APIView):
-    def post(self, request, format=None):
+    def post(self, request, *args, **kwargs):
+        print(request.user)
         request.user.auth_token.delete()
         return Response({"message": "logged out"}, status=status.HTTP_200_OK)
 
@@ -76,169 +79,161 @@ class ProfileView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class Filesystem(APIView):
+class ListOfUsers(APIView):
 
-    @check_id
-    @check_type_id(type_required=FOLDER)
     def get(self, request):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        id = request.GET["id"]
-        return Response(data={"id": id, **filesystem[id]})
-
-    @check_request_attr(REQUIRED_POST_PARAMS)
-    @parent_present_and_folder
-    @check_regex_file_name_from_request_body
-    @check_already_present(to_check="req_data_name", type=FOLDER)
-    def post(self, request, * args, **kwargs):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-
-        name = request.data[NAME]
-        parent = request.data[PARENT]
-        children = filesystem[parent][CHILDREN]
-
-        id = secrets.token_hex(16)
-        children[id] = {
-            TYPE: FOLDER,
-            NAME: name,
-            FAVOURITE: False
-        }
-        filesystem[parent][CHILDREN] = children
-        filesystem[id] = {
-            PARENT: parent,
-            TYPE: FOLDER,
-            NAME: name,
-            FAVOURITE: False
-        }
-
-        filesystem[id][CHILDREN] = {}
-        update_profile(profile, filesystem)
-        return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_201_CREATED)
-
-    @check_request_attr(REQUIRED_PATCH_PARAMS)
-    @check_id_not_root
-    @check_id
-    @check_type_id(type_required=FOLDER)
-    @check_regex_file_name_from_request_body
-    def patch(self, request):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        favourites = profile.favourites
-        recent = profile.recent
-
-        id = request.data["id"]
-        new_name = request.data[NAME]
-        parent = filesystem[id][PARENT]
-        filesystem[parent][CHILDREN][id][NAME] = new_name
-        filesystem[id][NAME] = new_name
-        if(id in recent):
-            recent[id][NAME] = new_name
-        if(id in favourites):
-            favourites[id][NAME] = new_name
-
-        update_profile(profile, filesystem)
-        return Response(data={"id": id, **filesystem[id]}, status=status.HTTP_200_OK)
-
-    @check_id
-    @check_type_id(type_required=FOLDER)
-    @check_id_not_root
-    def delete(self, request):
-
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        favourites = profile.favourites
-        recent = profile.recent
-
-        id = request.GET["id"]
-
-        recursive_delete(id, filesystem, favourites, recent)
-        update_profile(profile, filesystem, favourites, recent)
-        return Response(data={"id": id, "message": "Successfully deleted"}, status=status.HTTP_200_OK)
+        data = UserSerializer(User.objects.all(), many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class Favourites(APIView):
 
     def get(self, request):
-        profile = Profile.objects.get(user=request.user)
-        return Response(data=profile.favourites, status=status.HTTP_200_OK)
 
-    @check_request_attr(REQUIRED_FAV_POST_PARAMS)
-    @check_id
-    @check_id_not_root
-    @check_already_fav
-    def post(self, request):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
-        favourites = profile.favourites
-        id = request.data["id"]
-        is_favourite = request.data["is_favourite"]
-        parent = filesystem[id][PARENT]
-        filesystem[id][FAVOURITE] = is_favourite
-        filesystem[parent][CHILDREN][id][FAVOURITE] = is_favourite
-        if(is_favourite):
-            favourites[id] = copy.deepcopy(filesystem[id])
-            if(CHILDREN in favourites[id]):
-                favourites[id].pop(CHILDREN)
-        else:
-            favourites.pop(id)
-        update_profile(profile, filesystem, favourites)
-        return Response(data=profile.favourites, status=status.HTTP_200_OK)
+        # folders
+        folders = Folder.objects.filter(
+            favourite=True, owner=request.user, trash=False)
+        folders = FolderSerializer(folders, many=True).data
+        for folder in folders:
+            folder["type"] = "folder"
+        # files
+        files = File.objects.filter(
+            favourite=True, owner=request.user, trash=False)
+        files = FileSerializer(files, many=True).data
+        for file in files:
+            file["type"] = "file"
+
+        # combined
+        result_list = list(chain(folders, files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
 
 
 class Recent(APIView):
 
     def get(self, request):
-        profile = Profile.objects.get(user=request.user)
-        return Response(data=profile.recent, status=status.HTTP_200_OK)
+        # folders
+        folders = Folder.objects.filter(owner=request.user, trash=False)
+        folders = FolderSerializer(folders, many=True).data
+        for folder in folders:
+            folder["type"] = "folder"
+        # files
+        files = File.objects.filter(owner=request.user, trash=False)
+        files = FileSerializer(files, many=True).data
+        for file in files:
+            file["type"] = "file"
 
-    @check_request_attr(REQUIRED_RECENT_GET_PARAMS)
-    @check_id
-    @check_id_not_root
-    def post(self, request):
-        id = request.data["id"]
-        profile = Profile.objects.get(user=request.user)
-        recent = profile.recent
-        filesystem = profile.filesystem
+        # combined
+        result_list = list(chain(folders, files))
 
-        now = str(datetime.now().strftime(DATE_TIME_FORMAT))
-        recent[id] = {
-            TIMESTAMP: now,
-            NAME: filesystem[id][NAME],
-            TYPE: filesystem[id][TYPE],
-        }
-        if len(recent) >= 10:
-            remove_oldest(recent)
+        return Response(data=result_list, status=status.HTTP_200_OK)
 
-        update_profile(profile, recent)
-        return Response(data=profile.recent, status=status.HTTP_200_OK)
+
+class Trash(APIView):
+
+    def get(self, request):
+        # folders
+        folders = Folder.objects.filter(owner=request.user, trash=True)
+        folders = FolderSerializer(folders, many=True).data
+        for folder in folders:
+            folder["type"] = "folder"
+        # files
+        files = File.objects.filter(owner=request.user, trash=True)
+        files = FileSerializer(files, many=True).data
+        for file in files:
+            file["type"] = "file"
+
+        # combined
+        result_list = list(chain(folders, files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
+
+
+class SharedWithMe(APIView):
+
+    def get(self, request):
+        # folders
+        folders = request.user.shared_folders.all()
+        folders = FolderSerializer(folders, many=True).data
+        for folder in folders:
+            folder["type"] = "folder"
+        # files
+        files = request.user.shared_files.all()
+        files = FileSerializer(files, many=True).data
+        for file in files:
+            file["type"] = "file"
+
+        # combined
+        result_list = list(chain(folders, files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
 
 
 class Path(APIView):
 
-    @check_id
-    def get(self, request):
-        profile = Profile.objects.get(user=request.user)
-        filesystem = profile.filesystem
+    @check_id_with_type
+    def get(self, request, *args, **kwargs):
         id = request.GET["id"]
-        main_id=id
+        type = request.GET["TYPE"]
+
+        if(type == "FILE"):
+            start_node = File.objects.get(id=id)
+        elif(type == "FOLDER"):
+            start_node = Folder.objects.get(id=id)
+
         path = []
-        while(filesystem[id][PARENT] != None):
-            name = filesystem[id][NAME]
-            path.append({NAME: name, "id": id})
-            id = filesystem[id][PARENT]
-        path.append({NAME: ROOT, "id": ROOT})
+        while(start_node.parent != None):
+            path.append({
+                "name": start_node.name,
+                "id": start_node.id
+            })
+            start_node = start_node.parent
+        path.append({
+            "name": start_node.name,
+            "id": start_node.id
+        })
         path.reverse()
-        result={
-            "KEY":main_id,
-            "PATH":path
-        }
-        return Response(data=result)
+        return Response(data=path)
 
 
-class ListOfUsers(APIView):
+class RecoverFolder(APIView):
 
-    def get(self, request):
-        data = UserSerializer(User.objects.all(), many=True).data
-        print(User.objects.all())
+    @check_id_folder
+    @check_id_not_root
+    @check_is_owner_folder
+    def get(self, request, * args, **kwargs):
+        # check if folder's parent is in Trash
+        # if in trash move this folder to root
+        # break link between them
+        id = request.GET["id"]
+        root_folder = request.user.profile.root
+        folder = Folder.objects.get(id=id)
+        parent_folder = folder.parent
+
+        if(parent_folder.trash):
+            folder.parent = root_folder
+            folder.save()
+        set_recursive_trash(folder, False)
+        data = FolderSerializer(folder).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class RecoverFile(APIView):
+
+    @check_id_file
+    @check_is_owner_file
+    def get(self, request, * args, **kwargs):
+        # check if file's parent is in Trash
+        # if in trash move this file to root
+        # break link between them
+
+        id = request.GET["id"]
+        root_folder = request.user.profile.root
+        file = File.objects.get(id=id)
+        parent_folder = file.parent
+        if(parent_folder.trash):
+            file.parent = root_folder
+        file.trash = False
+        file.save()
+        data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)

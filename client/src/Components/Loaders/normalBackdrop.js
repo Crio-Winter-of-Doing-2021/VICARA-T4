@@ -9,7 +9,7 @@ import { normalLoading } from "../../store/slices/loaderSlice";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 5,
     color: "#fff",
   },
 }));

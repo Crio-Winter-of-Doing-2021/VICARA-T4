@@ -14,14 +14,14 @@ from pathlib import Path
 import os
 from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'n=pch$x%kbq%x^wop#mfw8i+6h!0z@(9uy-fnp(7=ag%u(ini)'
+SECRET_KEY = 'oinbns7**jbj&-x1%klser&9myuxp(-8gq5+y#2_mo_raj11q+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,11 +43,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'djoser',
     'storages',
     # Local Apps (Your project's apps)
     'user.apps.UserConfig',
     'file.apps.FileConfig',
+    'folder.apps.FolderConfig',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +86,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -120,22 +121,20 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
+# DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
+# USE_I18N = True
 
-USE_I18N = True
+# # USE_L10N = True
 
-USE_L10N = True
-
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-# CHECK ON DEPLOYMENT
-# STATIC_URL = '/static/'
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 REST_FRAMEWORK = {
@@ -174,5 +173,3 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
-
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
