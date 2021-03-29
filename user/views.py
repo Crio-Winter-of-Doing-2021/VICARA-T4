@@ -181,6 +181,9 @@ class Path(APIView):
         elif(type == "FOLDER"):
             start_node = Folder.objects.get(id=id)
 
+        if(start_node.owner != request.user):
+            return Response(data={"message": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
+
         path = []
         while(start_node.parent != None):
             path.append({

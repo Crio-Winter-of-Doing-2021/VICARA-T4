@@ -35,23 +35,9 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
         return shared_among
 
 
-class FolderSerializer(serializers.ModelSerializer):
+class FolderSerializer(FolderSerializerWithoutChildren):
 
-    created_at = serializers.SerializerMethodField()
-    last_modified = serializers.SerializerMethodField()
-    shared_among = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Folder
-        fields = '__all__'
-        # ordering = ['-last_modified']
-
-    def get_created_at(self, obj):
-        return humanize.naturaltime(obj.created_at)
-
-    def get_last_modified(self, obj):
-        return humanize.naturaltime(obj.last_modified)
 
     def get_children(self, obj):
         # folders
@@ -68,12 +54,3 @@ class FolderSerializer(serializers.ModelSerializer):
         # combined
         result_list = list(chain(folders, files))
         return result_list
-
-    def get_shared_among(self, obj):
-        shared_among = []
-        for user in obj.shared_among.all():
-            shared_among.append({
-                "username": user.username,
-                "id": user.id
-            })
-        return shared_among

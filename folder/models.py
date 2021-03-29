@@ -7,8 +7,9 @@ from django.utils import tree
 class FolderManager(models.Manager):
     def get_or_none(self, **kwargs):
         try:
-            return self.objects.get(**kwargs)
-        except:
+            return Folder.objects.get(**kwargs)
+        except Exception as e:
+            print(e)
             return None
 
 
