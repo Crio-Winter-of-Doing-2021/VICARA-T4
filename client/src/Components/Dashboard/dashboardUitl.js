@@ -20,8 +20,15 @@ import { sideNav } from "../../constants";
 import {Link} from 'react-router-dom'
 
 import {emptykeys } from '../../store/slices/checkBoxSlice'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
+
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: 'Nunito'
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,11 +64,13 @@ export default function ClippedDrawer(props) {
   };
 
   const handleLogout=()=>{
-    window.localStorage.removeItem('session')
+    window.localStorage.removeItem("session");
+    window.localStorage.removeItem("author");
   }
 
   return (
-    <div className={classes.root}>
+    <ThemeProvider theme={theme}>
+      <div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -100,16 +109,6 @@ export default function ClippedDrawer(props) {
             ))}
           </List>
           <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
         </div>
       </Drawer>
       <main className={classes.content}>
@@ -117,5 +116,6 @@ export default function ClippedDrawer(props) {
         {props.children}
       </main>
     </div>
+    </ThemeProvider>
   );
 }

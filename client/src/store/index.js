@@ -5,6 +5,8 @@ import checkboxReducer from './slices/checkBoxSlice'
 import loaderReducer from './slices/loaderSlice'
 import favReducer from './slices/favSlice'
 import shareReducer from './slices/shareSlice'
+import recentReducer from './slices/recentSlice'
+import sharedWithMeReducer from './slices/sharedWithMeSlice'
 
 export default configureStore({
   reducer: {
@@ -13,6 +15,8 @@ export default configureStore({
     checkbox: checkboxReducer,
     loader:loaderReducer,
     fav:favReducer,
-    share:shareReducer
+    share:shareReducer,
+    recent:recentReducer,
+    sharedWithme:sharedWithMeReducer
   },
 });

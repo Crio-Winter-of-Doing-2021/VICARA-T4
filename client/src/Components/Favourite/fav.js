@@ -48,6 +48,8 @@ import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
 
+import {addRecentAsync} from '../../store/slices/recentSlice'
+
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -193,7 +195,7 @@ export default function Structure(props) {
                 component="button"
                 variant="body2"
                 style={{ marginLeft: "5px" }}
-                onClick={() => dispatch(shareAsync(userDetails))}
+                onClick={() =>{ dispatch(shareAsync(userDetails));dispatch(addRecentAsync(data.key))}}
               >
                 {data.name}
               </UILink>

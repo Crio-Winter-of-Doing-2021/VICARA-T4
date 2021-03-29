@@ -4,6 +4,7 @@ import axios from 'axios'
 import {updateFileName,popFromCurrentStack} from './structureSlice'
 import {normalLoader} from './loaderSlice'
 import {updateFavFileName,popFromCurrentFavStack} from './favSlice'
+import {updateRecentFileName,popFromCurrentRecentStack} from './recentSlice'
 
 export const checkBoxSlice= createSlice({
   name: "checkbox",
@@ -71,6 +72,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
       for(k=0;k<folderArr.length;k++){
         dispatch(popFromCurrentStack(res[k].data))
         dispatch(popFromCurrentFavStack(res[k].data))
+        dispatch(popFromCurrentRecentStack(res[k].data))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -95,6 +97,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
       for(k=0;k<fileArr.length;k++){
         dispatch(popFromCurrentStack(res[k].data))
         dispatch(popFromCurrentFavStack(res[k].data))
+        dispatch(popFromCurrentRecentStack(res[k].data))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -116,6 +119,7 @@ export const updateAsync = (fileData,folderData) => (dispatch) => {
         // dispatch(emptykeys())
         dispatch(updateFileName(res.data))
         dispatch(updateFavFileName(res.data))
+        dispatch(updateRecentFileName(res.data))
         dispatch(normalLoader())
       })
       .catch((err) => {
@@ -133,6 +137,7 @@ export const updateAsync = (fileData,folderData) => (dispatch) => {
         // dispatch(emptykeys())
         dispatch(updateFileName(res.data))
         dispatch(updateFavFileName(res.data))
+        dispatch(updateRecentFileName(res.data))
         dispatch(normalLoader())
       })
       .catch((err) => {

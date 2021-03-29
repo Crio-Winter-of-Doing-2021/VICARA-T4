@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { normalLoader } from "./loaderSlice";
+import {updateSharePrivacy} from './shareSlice'
 
 export const structureSlice = createSlice({
   name: "structure",
@@ -110,6 +111,7 @@ export const privacyAsync = (data) => (dispatch) => {
   API.patch("/api/file/", data)
     .then((res) => {
       dispatch(updatePrivacy(data));
+      dispatch(updateSharePrivacy())
     })
     .catch((err) => {
       console.log(err);
