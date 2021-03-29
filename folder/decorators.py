@@ -248,7 +248,7 @@ def update_last_modified_folder(func):
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
         folder = Folder.custom_objects.get(id=id)
-        folder.last_modified = datetime.now()
+        folder.last_modified = datetime.datetime.now()
         folder.save()
         result = func(self, request, *args, **kwargs)
         return result
