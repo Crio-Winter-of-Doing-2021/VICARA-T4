@@ -170,7 +170,7 @@ class SharedWithMe(APIView):
 
 
 class Path(APIView):
-
+    @check_request_attr(["id", "TYPE"])
     @check_id_with_type
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]

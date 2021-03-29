@@ -29,6 +29,7 @@ class Filesystem(APIView):
     @allow_id_root
     @check_id_folder
     @check_has_access_folder
+    @check_folder_not_trashed
     @update_last_modified_folder
     def get(self, request, * args, **kwargs):
         id = request.GET["id"]
