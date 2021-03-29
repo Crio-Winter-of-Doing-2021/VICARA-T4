@@ -41,12 +41,12 @@ class FolderSerializer(FolderSerializerWithoutChildren):
 
     def get_children(self, obj):
         # folders
-        folders = obj.children_folder
+        folders = obj.children_folder.filter(trash=False)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
         # files
-        files = obj.children_file
+        files = obj.children_file.filter(trash=False)
         files = FileSerializer(files, many=True).data
         for file in files:
             file["type"] = "file"
