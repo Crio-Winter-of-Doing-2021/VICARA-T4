@@ -39,3 +39,6 @@ class Folder(models.Model):
 
     def get_last_modified(self):
         return humanize.naturaltime(self.last_modified)
+
+    def is_root(self):
+        return self.parent == None

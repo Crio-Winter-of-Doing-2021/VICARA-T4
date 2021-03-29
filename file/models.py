@@ -1,3 +1,6 @@
+import os
+
+# django imports
 from django.db import models
 from django.contrib.auth.models import User
 from folder.models import Folder
@@ -40,3 +43,9 @@ class File(models.Model):
 
     def get_last_modified(self):
         return humanize.naturaltime(self.last_modified)
+
+    def get_s3_key(self):
+        return os.path.join(self.file.storage.location, self.file.name)
+
+    def make_key(self, name):
+        return os.path.join(self.file.storage.location, name)

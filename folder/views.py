@@ -1,4 +1,6 @@
 
+from django.contrib.auth.models import AnonymousUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 import secrets
 from datetime import datetime
 
@@ -105,3 +107,44 @@ class Filesystem(APIView):
         folder = Folder.objects.get(id=id)
         recursive_delete(folder)
         return Response(data={"id": id}, status=status.HTTP_200_OK)
+
+
+class ShareFolder(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        creator = request.GET["CREATOR"]
+        try:
+            creator = User.objects.get(id=creator)
+        except:
+            creator = None
+        if(creator == None):
+            return Response(data={"message": "Invalid creator"}, status=status.HTTP_400_BAD_REQUEST)
+        id = request.GET["id"]
+        try:
+            folder = Folder.objects.get(id=id)
+        except:
+            folder = None
+
+        if(folder == None):
+            return Response(data={"message": "Invalid folder id"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if(folder.owner != creator):
+            return Response(data={"message": "Bad creator & id combination"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if(folder.is_root()):
+            return Response(data={"message": "Can't share root folder"}, status=status.HTTP_400_BAD_REQUEST)
+
+        visitor = request.user
+        allowed = False
+        if(isinstance(visitor, AnonymousUser) and folder.privacy == "PUBLIC"):
+            allowed = True
+        if(folder.privacy == "PUBLIC"):
+            allowed = True
+        if(visitor == folder.owner or visitor in folder.shared_among.all()):
+            allowed = True
+        if(allowed):
+            data = FolderSerializer(folder).data
+            return Response(data=data, status=status.HTTP_200_OK)
+        else:
+            return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
