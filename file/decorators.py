@@ -87,6 +87,17 @@ def check_valid_name_request_file(func):
     return wrapper
 
 
+def check_valid_name_request_body(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        name = request.data["NAME"]
+        if re.match(REGEX_NAME, name) is None:
+            return Response(data={"message": "Invalid Name of file"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
 def check_duplicate_file_exists(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
@@ -110,6 +121,36 @@ def check_duplicate_file_exists(func):
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper
+
+
+def check_already_present(to_check):
+    def decorator_func(func):
+        @functools.wraps(func)
+        def wrapper(self, request, *args, **kwargs):
+            # there might be cases in patch when we are not changing names
+            if(request.FILES or "name" in request.data):
+                if(to_check == "req_data_name"):
+                    name = request.data["name"]
+                elif to_check == "req_file_name":
+                    name = request.FILES['file'].name
+
+                # for post when new is created by parent id
+                if("PARENT" in request.data):
+                    parent_id = request.data["PARENT"]
+                    parent_folder = Folder.custom_objects.get(id=parent_id)
+                # for patch when rename is done by folder id
+                else:
+                    id = get_id(request)
+                    folder = File.custom_objects.get(id=id)
+                    parent_folder = folder.parent
+
+                children = parent_folder.children_file.all().filter(name=name)
+                if(children):
+                    return Response(data={"message": "File with given name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+            result = func(self, request, *args, **kwargs)
+            return result
+        return wrapper
+    return decorator_func
 
 
 def check_file_not_trashed(func):

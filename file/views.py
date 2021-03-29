@@ -1,12 +1,15 @@
 
 
 # django imports
+import requests
+import os
 from django.contrib.auth.models import AnonymousUser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.core.files import File as DjangoCoreFile
 # local imports
 from user.models import Profile
 from .decorators import *
@@ -15,6 +18,7 @@ from .serializers import FileSerializer
 from .utils import get_presigned_url, get_s3_filename, rename_s3
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
+REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
 
 
 class FileView(APIView):
@@ -159,53 +163,30 @@ class ShareFile(APIView):
             return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-# class SharedWithMe(APIView):
+class UploadByDriveUrl(APIView):
 
-#     def get(self, request):
-#         shared_files = request.user.shared_files.all()
-#         data = FileSerializer(shared_files, many=True).data
-#         return Response(data=data, status=status.HTTP_200_OK)
+    @check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
+    @allow_parent_root
+    @check_id_parent_folder
+    @check_valid_name_request_body
+    @check_already_present(to_check="req_data_name")
+    def post(self, request, *args, **kwargs):
 
+        parent = request.data["PARENT"]
+        drive_url = request.data["DRIVE_URL"]
+        name = request.data["NAME"]
 
-# class UploadByDriveUrl(APIView):
-
-#     @check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
-#     @parent_present_and_folder
-#     @check_regex_file_name_from_request_body
-#     @check_already_present(to_check="req_data_name", type=FILE)
-#     def post(self, request, *args, **kwargs):
-#         profile = Profile.objects.get(user=request.user)
-#         filesystem = profile.filesystem
-#         parent = request.data[PARENT]
-#         drive_url = request.data[DRIVE_URL]
-#         name = request.data[NAME]
-#         children = filesystem[parent][CHILDREN]
-#         filesystem_id = secrets.token_hex(16)
-
-#         s3_name = get_s3_filename(name)
-#         r = requests.get(drive_url, allow_redirects=True)
-#         open(s3_name, 'wb').write(r.content)
-#         local_file = open(s3_name, 'rb')
-#         djangofile = DjangoCoreFile(local_file)
-#         file_obj = File(file=djangofile,
-#                         filesystem_id=filesystem_id, creator=request.user)
-#         file_obj.save()
-#         os.remove(s3_name)
-#         children[filesystem_id] = {
-#             TYPE: FILE,
-#             NAME: name,
-#             FAVOURITE: False,
-#             PRIVACY: PRIVATE
-#         }
-#         filesystem[parent][CHILDREN] = children
-#         filesystem[filesystem_id] = {
-#             PARENT: parent,
-#             TYPE: FILE,
-#             NAME: name,
-#             FAVOURITE: False,
-#             PRIVACY: PRIVATE
-#         }
-
-#         update_profile(profile, filesystem)
-#         fileData = FileSerializer(file_obj).data
-#         return Response(data={**fileData, **filesystem[filesystem_id]}, status=status.HTTP_200_OK)
+        parent_folder = Folder.objects.get(id=parent)
+        s3_name = get_s3_filename(name)
+        r = requests.get(drive_url, allow_redirects=True)
+        open(s3_name, 'wb').write(r.content)
+        local_file = open(s3_name, 'rb')
+        djangofile = DjangoCoreFile(local_file)
+        file = File(file=djangofile,
+                    name=name,
+                    owner=request.user,
+                    parent=parent_folder)
+        file.save()
+        os.remove(s3_name)
+        data = FileSerializer(file).data
+        return Response(data=data, status=status.HTTP_200_OK)
