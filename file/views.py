@@ -39,7 +39,7 @@ class FileView(APIView):
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
-    @check_duplicate_file_exists
+    @check_already_present(to_check="req_file_name")
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
@@ -57,18 +57,23 @@ class FileView(APIView):
     @check_id_file
     @check_is_owner_file
     @check_file_not_trashed
-    @check_duplicate_file_exists
+    @check_already_present(to_check="req_data_name")
     def patch(self, request, * args, **kwargs):
         id = request.data["id"]
         file = File.objects.get(id=id)
 
         if("trash" in request.data):
-            if(request.data["trash"] == False):
-                updated = True
-                file.trash = False
-                file.save()
+            new_trash = request.data["trash"]
+            # if we are moving to trash
+            if(new_trash):
+                # folder was not trashed
+                if(new_trash != file.trash):
+                    updated = True
+                    file.trash = new_trash
+                else:
+                    return Response(data={"message": "Already in Trash"}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
+                return Response(data={"message": "Use Recovery route to recover folder"}, status=status.HTTP_400_BAD_REQUEST)
 
         if("name" in request.data):
             updated = True
@@ -113,11 +118,7 @@ class FileView(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
-        if (not file.trash):
-            file.trash = True
-            file.save()
-        else:
-            file.delete()
+        file.delete()
         return Response(data={"id": id}, status=status.HTTP_200_OK)
 
 
