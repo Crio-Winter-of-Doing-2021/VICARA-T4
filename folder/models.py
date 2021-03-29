@@ -28,6 +28,9 @@ class Folder(models.Model):
     objects = models.Manager()
     custom_objects = FolderManager()
 
+    def __str__(self):
+        return f"{self.name}| id = {self.id}  | parent = {self.parent}"
+
     class Meta:
         ordering = ['-last_modified', 'pk']
 

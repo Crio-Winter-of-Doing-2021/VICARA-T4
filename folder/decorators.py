@@ -170,7 +170,20 @@ def check_id_not_root(func):
 
         folder = Folder.custom_objects.get(id=id)
         if(folder.parent == None):
-            return Response(data={"message": "Root folder can't be deleted"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": "Can't perform this action with Root folder"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_parent_folder_not_trashed(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        id = request.data["PARENT"]
+        folder = Folder.custom_objects.get(id=id)
+
+        if folder.trash:
+            return Response(data={"message": "Folder is in Trash"}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

@@ -16,9 +16,12 @@ def check_id_with_type(func):
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
-
-        id = request.GET["id"]
-        type = request.GET["TYPE"]
+        if(request.method == "GET" or request.method == "DELETE"):
+            id = request.GET["id"]
+            type = request.GET["TYPE"]
+        else:
+            id = request.data["id"]
+            type = request.data["TYPE"]
 
         if(type == "FOLDER"):
             folder = Folder.custom_objects.get_or_none(id=id)

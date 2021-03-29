@@ -29,6 +29,9 @@ class File(models.Model):
     objects = models.Manager()
     custom_objects = FileManager()
 
+    def __str__(self):
+        return f"{self.name}  | parent = {self.parent.name}"
+
     class Meta:
         ordering = ['-last_modified', 'pk']
 

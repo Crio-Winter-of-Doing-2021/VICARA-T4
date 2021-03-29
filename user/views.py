@@ -14,8 +14,13 @@ from .models import Profile
 from folder.models import Folder
 from .serializers import ProfileSerializer, UserSerializer
 from .decorators import *
+from file.decorators import *
 from folder.serializers import FolderSerializer
 from file.serializers import FileSerializer
+from folder.decorators import check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
+from folder.utils import set_recursive_trash
+
+RECOVER = ["id", "TYPE"]
 
 
 class LoginView(ObtainAuthToken):
@@ -189,3 +194,46 @@ class Path(APIView):
         })
         path.reverse()
         return Response(data=path)
+
+
+class RecoverFolder(APIView):
+
+    @check_id_folder
+    @check_id_not_root
+    @check_is_owner_folder
+    def get(self, request, * args, **kwargs):
+        # check if folder's parent is in Trash
+        # if in trash move this folder to root
+        # break link between them
+        id = request.GET["id"]
+        root_folder = request.user.profile.root
+        folder = Folder.objects.get(id=id)
+        parent_folder = folder.parent
+
+        if(parent_folder.trash):
+            folder.parent = root_folder
+            folder.save()
+        set_recursive_trash(folder, False)
+        data = FolderSerializer(folder).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class RecoverFile(APIView):
+
+    @check_id_file
+    @check_is_owner_file
+    def get(self, request, * args, **kwargs):
+        # check if file's parent is in Trash
+        # if in trash move this file to root
+        # break link between them
+
+        id = request.GET["id"]
+        root_folder = request.user.profile.root
+        file = File.objects.get(id=id)
+        parent_folder = file.parent
+        if(parent_folder.trash):
+            file.parent = root_folder
+        file.trash = False
+        file.save()
+        data = FileSerializer(file).data
+        return Response(data=data, status=status.HTTP_200_OK)

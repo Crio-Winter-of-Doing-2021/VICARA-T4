@@ -8,8 +8,12 @@ from folder.models import Folder
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="profile")
     root = models.OneToOneField(Folder, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f"{self.user.username}  | id = {self.user.id}"
 
 
 @receiver(post_save, sender=User)

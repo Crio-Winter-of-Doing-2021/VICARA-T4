@@ -1,9 +1,10 @@
-from folder.serializers import FolderSerializer
+
 import secrets
 from datetime import datetime
 
 # django imports
 from django.contrib.auth.models import User
+from django.db import models
 from django.shortcuts import render
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -14,7 +15,9 @@ from rest_framework import status
 # local imports
 from user.models import Profile
 from .decorators import *
-
+from folder.serializers import FolderSerializer
+from .models import Folder
+from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
@@ -33,7 +36,7 @@ class Filesystem(APIView):
     @check_valid_name
     @check_id_parent_folder
     @check_is_owner_parent_folder
-    @check_folder_not_trashed
+    @check_parent_folder_not_trashed
     @check_duplicate_folder_exists
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
@@ -47,6 +50,7 @@ class Filesystem(APIView):
 
     @check_valid_name
     @check_id_folder
+    @check_id_not_root
     @check_is_owner_folder
     @check_folder_not_trashed
     @check_duplicate_folder_exists
@@ -54,15 +58,28 @@ class Filesystem(APIView):
         id = request.data["id"]
         folder = Folder.objects.get(id=id)
 
+        if("trash" in request.data):
+            new_trash = request.data["trash"]
+            # if we are moving to trash
+            if(new_trash):
+                # folder was not trashed
+                if(new_trash != folder.trash):
+                    set_recursive_trash(folder, new_trash)
+                else:
+                    return Response(data={"message": "Already in Trash"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(data={"message": "Use Recovery route to recover folder"}, status=status.HTTP_400_BAD_REQUEST)
+
         if("privacy" in request.data):
-            updated = True
-            folder.privacy = request.data["privacy"]
+            new_privacy = request.data["privacy"]
+            if(new_privacy != folder.privacy):
+                set_recursive_privacy(folder, new_privacy)
 
         if("favourite" in request.data):
-            updated = True
             folder.favourite = request.data["favourite"]
+            folder.save()
         if("shared_among" in request.data):
-            updated = True
+
             ids = request.data["shared_among"]
 
             # make unique & discard owner
@@ -72,18 +89,7 @@ class Filesystem(APIView):
 
             users = [User.objects.get(pk=id)
                      for id in ids]
-            folder.shared_among.set(users)
-        if("trash" in request.data):
-            if(request.data["trash"] == False):
-                updated = True
-                folder.trash = False
-                folder.save()
-            else:
-                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
-            folder.shared_among.set(users)
-
-        if(updated):
-            folder.save()
+            set_recursive_shared_among(folder, users)
 
         data = FolderSerializer(folder).data
         return Response(data=data, status=status.HTTP_200_OK)
@@ -94,9 +100,5 @@ class Filesystem(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         folder = Folder.objects.get(id=id)
-        if not folder.trash:
-            folder.trash = True
-            folder.save()
-        else:
-            folder.delete()
+        recursive_delete(folder)
         return Response(data={"id": id}, status=status.HTTP_200_OK)
