@@ -26,6 +26,47 @@ def get_id(request):
     return id
 
 
+def allow_id_root(func):
+
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+
+        id = get_id(request)
+        if(id == "ROOT"):
+            if(request.method == "GET" or request.method == "DELETE"):
+                request.GET._mutable = True
+                request.GET["id"] = request.user.profile.root.id
+                request.GET._mutable = False
+            else:
+                request.POST._mutable = True
+                request.data["id"] = request.user.profile.root.id
+                request.POST._mutable = False
+
+        result = func(self, request, args, **kwargs)
+        return result
+    return wrapper
+
+
+def allow_parent_root(func):
+
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        parent = request.data["PARENT"]
+        if(parent == "ROOT"):
+            if(request.method == "GET" or request.method == "DELETE"):
+                request.GET._mutable = True
+                request.GET["PARENT"] = request.user.profile.root.id
+                request.GET._mutable = False
+            else:
+                request.POST._mutable = True
+                request.data["PARENT"] = request.user.profile.root.id
+                request.POST._mutable = False
+
+        result = func(self, request, args, **kwargs)
+        return result
+    return wrapper
+
+
 def check_id_folder(func):
 
     @functools.wraps(func)

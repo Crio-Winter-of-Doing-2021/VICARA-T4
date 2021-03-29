@@ -8,7 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 # local imports
 from user.models import Profile
 from .decorators import *
-from folder.decorators import check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
+from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
 from .serializers import FileSerializer
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
@@ -28,6 +28,7 @@ class FileView(APIView):
 
     @check_request_attr(POST_FILE)
     @check_valid_name_request_file
+    @allow_parent_root
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed

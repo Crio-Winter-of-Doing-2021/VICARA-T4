@@ -23,6 +23,8 @@ PATCH_FOLDER = ["id"]
 
 
 class Filesystem(APIView):
+
+    @allow_id_root
     @check_id_folder
     @check_has_access_folder
     @update_last_modified_folder
@@ -34,6 +36,7 @@ class Filesystem(APIView):
 
     @check_request_attr(POST_FOLDER)
     @check_valid_name
+    @allow_parent_root
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
