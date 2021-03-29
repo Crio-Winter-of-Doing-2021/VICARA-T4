@@ -146,7 +146,7 @@ def update_last_modified_file(func):
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
         file = File.custom_objects.get(id=id)
-        file.last_modified = datetime.datetime.now()
+        file.last_modified = datetime.now()
         file.save()
         result = func(self, request, *args, **kwargs)
         return result
