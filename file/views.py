@@ -26,6 +26,7 @@ class FileView(APIView):
 
     @check_id_file
     @check_has_access_file
+    @check_file_not_trashed
     @update_last_modified_file
     def get(self, request, * args, **kwargs):
         id = request.GET["id"]
