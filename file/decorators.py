@@ -1,6 +1,6 @@
 import functools
 import re
-import datetime
+from datetime import datetime
 # django imports
 from rest_framework.response import Response
 from rest_framework import status
