@@ -83,6 +83,11 @@ class Filesystem(APIView):
         if("favourite" in request.data):
             folder.favourite = request.data["favourite"]
             folder.save()
+
+        if("name" in request.data):
+            folder.name = request.data["name"]
+            folder.save()
+
         if("shared_among" in request.data):
 
             ids = request.data["shared_among"]
