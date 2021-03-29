@@ -66,14 +66,14 @@ class FileView(APIView):
             new_trash = request.data["trash"]
             # if we are moving to trash
             if(new_trash):
-                # folder was not trashed
+                # file was not trashed
                 if(new_trash != file.trash):
                     updated = True
                     file.trash = new_trash
                 else:
                     return Response(data={"message": "Already in Trash"}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(data={"message": "Use Recovery route to recover folder"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={"message": "Use Recovery route to recover file"}, status=status.HTTP_400_BAD_REQUEST)
 
         if("name" in request.data):
             updated = True
