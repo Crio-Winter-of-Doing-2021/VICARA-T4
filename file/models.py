@@ -10,7 +10,7 @@ from django.contrib.humanize.templatetags import humanize
 class FileManager(models.Manager):
     def get_or_none(self, **kwargs):
         try:
-            return self.objects.get(**kwargs)
+            return File.objects.get(**kwargs)
         except:
             return None
 

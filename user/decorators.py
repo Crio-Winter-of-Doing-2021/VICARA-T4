@@ -22,7 +22,7 @@ def check_id_with_type(func):
         else:
             id = request.data["id"]
             type = request.data["TYPE"]
-
+        file, folder = None, None
         if(type == "FOLDER"):
             folder = Folder.custom_objects.get_or_none(id=id)
         elif(type == "FILE"):
