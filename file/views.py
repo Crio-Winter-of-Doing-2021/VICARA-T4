@@ -12,7 +12,7 @@ from user.models import Profile
 from .decorators import *
 from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
 from .serializers import FileSerializer
-from .utils import get_presigned_url
+from .utils import get_presigned_url, get_s3_filename, rename_s3
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 
@@ -58,6 +58,28 @@ class FileView(APIView):
         id = request.data["id"]
         file = File.objects.get(id=id)
 
+        if("trash" in request.data):
+            if(request.data["trash"] == False):
+                updated = True
+                file.trash = False
+                file.save()
+            else:
+                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
+
+        if("name" in request.data):
+            updated = True
+            new_name_file_system = request.data["name"]
+            """ will use this rename lines just before download"""
+            # new_path = os.path.join(settings.MEDIA_ROOT, new_name)
+            # initial_path = file_obj.file.path
+            # os.rename(initial_path, new_path)
+            old_file_key = file.get_s3_key()
+            s3_new_filename = get_s3_filename(new_name_file_system)
+            new_file_key = file.make_key(s3_new_filename)
+
+            rename_s3(old_file_key, new_file_key)
+            file.file.name = s3_new_filename
+
         if("privacy" in request.data):
             updated = True
             file.privacy = request.data["privacy"]
@@ -75,14 +97,6 @@ class FileView(APIView):
 
             users = [User.objects.get(pk=id)
                      for id in ids]
-            file.shared_among.set(users)
-        if("trash" in request.data):
-            if(request.data["trash"] == False):
-                updated = True
-                file.trash = False
-                file.save()
-            else:
-                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
             file.shared_among.set(users)
 
         if(updated):
