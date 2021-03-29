@@ -30,7 +30,7 @@ def check_id_file(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
-        file = File.custom_objects.get(id=id)
+        file = File.custom_objects.get_or_none(id=id)
         if(file == None):
             return Response(data={"message": "Invalid id or id is not of a file"}, status=status.HTTP_400_BAD_REQUEST)
 

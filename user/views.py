@@ -201,6 +201,7 @@ class Path(APIView):
 
 class RecoverFolder(APIView):
 
+    @check_request_attr(["id"])
     @check_id_folder
     @check_id_not_root
     @check_is_owner_folder
@@ -222,7 +223,7 @@ class RecoverFolder(APIView):
 
 
 class RecoverFile(APIView):
-
+    @check_request_attr(["id"])
     @check_id_file
     @check_is_owner_file
     def get(self, request, * args, **kwargs):
