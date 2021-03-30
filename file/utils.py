@@ -43,8 +43,6 @@ def rename_s3(old_file_key, new_file_key):
         'Key': old_file_key
     }
     bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
-    print(f"{copy_source=}")
-    print(f"{new_file_key}")
     bucket.copy(copy_source, new_file_key)
     bucket.delete_objects(
         Delete={

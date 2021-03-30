@@ -207,12 +207,10 @@ class UploadFolder(APIView):
         parent_record[0][base_folder_name] = base_folder.id
 
         # make all the folders required
-        print(f"{paths=}")
-        print(f"{parent_record=}")
+
         for path_list in structure:
             # because last one is the filename
             for level in range(1, len(path_list)-1):
-                print(f"{parent_record=}")
                 folder_name = path_list[level]
                 parent_name = path_list[level-1]
                 parent_id = parent_record[level-1][parent_name]

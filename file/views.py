@@ -164,7 +164,6 @@ class ShareFile(APIView):
             data = FileSerializer(file).data
             s3_key = file.get_s3_key()
             signed_url = get_presigned_url(s3_key)
-            print(f"{signed_url=}")
             data["URL"] = signed_url
             return Response(data=data, status=status.HTTP_200_OK)
         else:
