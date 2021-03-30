@@ -184,6 +184,8 @@ class UploadFolder(APIView):
             # example path = ['cloudinary', 'sdflksjdf', 'sdfjsdfijsdfi','file.co']
             # for /cloudinary/sdflksjdf/sdfjsdfijsdfi/file.co
             path_list = path.split(os.sep)
+            if(path_list[0] == ""):
+                path_list.remove("")
             max_level = max(max_level, len(path_list))
             structure.append(path_list)
         print(f"{structure}")
