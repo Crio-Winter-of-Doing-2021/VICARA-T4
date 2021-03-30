@@ -16,7 +16,7 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
 
     class Meta:
         model = Folder
-        fields = '__all__'
+        exclude = ('present_in_shared_me_of',)
         # ordering = ['-last_modified']
 
     def get_created_at(self, obj):

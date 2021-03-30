@@ -153,12 +153,12 @@ class SharedWithMe(APIView):
 
     def get(self, request):
         # folders
-        folders = request.user.shared_folders.all()
+        folders = request.user.shared_with_me_folders.all()
         folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
         # files
-        files = request.user.shared_files.all()
+        files = request.user.shared_with_me_files.all()
         files = FileSerializer(files, many=True).data
         for file in files:
             file["type"] = "file"

@@ -97,10 +97,13 @@ class Filesystem(APIView):
             ids = set(ids)
             ids.discard(folder.owner.id)
             ids = list(ids)
-
-            users = [User.objects.get(pk=id)
-                     for id in ids]
+            try:
+                users = [User.objects.get(pk=id)
+                         for id in ids]
+            except:
+                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
             set_recursive_shared_among(folder, users)
+            folder.present_in_shared_me_of.set(users)
 
         data = FolderSerializer(folder).data
         return Response(data=data, status=status.HTTP_200_OK)
