@@ -173,11 +173,6 @@ class UploadFolder(APIView):
 
         # check duplicate exists
         # take path of first file then convert to list then 2nd element is base name
-        base_folder_name = paths[0].split(os.sep)[1]
-
-        children = parent.children_folder.all().filter(name=base_folder_name)
-        if(children):
-            return Response(data={"message": f"Folder with given name = {base_folder_name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
         # making data required to make folders
         # max_level is for getting the len of deepest file in the folder
@@ -185,28 +180,34 @@ class UploadFolder(APIView):
         structure = []
         for path_string in paths:
             path = os.path.normpath(path_string)
-            # example path = ['', 'cloudinary', 'sdflksjdf', 'sdfjsdfijsdfi','file.co']
+            # example path = ['cloudinary', 'sdflksjdf', 'sdfjsdfijsdfi','file.co']
             # for /cloudinary/sdflksjdf/sdfjsdfijsdfi/file.co
             path_list = path.split(os.sep)
             max_level = max(max_level, len(path_list))
             structure.append(path_list)
+        print(f"{structure}")
 
         # create base folder
 
-        base_folder_name = structure[0][1]
+        base_folder_name = structure[0][0]
+        children = parent.children_folder.all().filter(name=base_folder_name)
+        if(children):
+            return Response(data={"message": f"Folder with given name = {base_folder_name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
         base_folder = Folder(owner=request.user,
                              name=base_folder_name, parent=parent)
         base_folder.save()
 
         # maintain parent record to make folders
         parent_record = defaultdict(dict)
-        parent_record[1][base_folder_name] = base_folder.id
+        parent_record[0][base_folder_name] = base_folder.id
 
         # make all the folders required
-
+        print(f"{paths=}")
+        print(f"{parent_record=}")
         for path_list in structure:
             # because last one is the filename
-            for level in range(2, len(path_list)-1):
+            for level in range(1, len(path_list)-1):
+                print(f"{parent_record=}")
                 folder_name = path_list[level]
                 parent_name = path_list[level-1]
                 parent_id = parent_record[level-1][parent_name]
