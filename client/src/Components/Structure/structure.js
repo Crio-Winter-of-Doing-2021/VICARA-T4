@@ -17,6 +17,8 @@ import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
 import AddFile from "../Buttons/addFile";
 
+import UploadMenu from '../UploadModal'
+
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -100,7 +102,11 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
-    dispatch(pathAsync(unique_id));
+    let newData={
+      id:unique_id,
+      type:"FOLDER"
+    }
+    dispatch(pathAsync(newData));
   }, [unique_id, dispatch]);
 
   // Object.keys(structureState).forEach((key, index) => {
@@ -268,7 +274,8 @@ export default function Structure(props) {
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <AddFile parent={unique_id} />
+        {/* <AddFile parent={unique_id} /> */}
+        <UploadMenu parent={unique_id}/>
         <AddFolder id={unique_id} />
         <Delete />
         <Update />

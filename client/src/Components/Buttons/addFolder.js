@@ -30,8 +30,7 @@ export default function FormDialog(props) {
   let inputChangeHandler = (e) => {
     e.preventDefault();
     setData({
-      NAME: e.target.value,
-      TYPE: "FOLDER",
+      name: e.target.value,
       PARENT: props.id,
     });
   };
@@ -42,11 +41,7 @@ export default function FormDialog(props) {
 
   const handleAdd = () => {
     handleClose();
-    let new_Data = {
-      body: data,
-      id: props.id,
-    };
-    dispatch(addFolderAsync(new_Data));
+    dispatch(addFolderAsync(data));
   };
 
   return (

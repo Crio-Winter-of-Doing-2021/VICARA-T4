@@ -42,7 +42,7 @@ export default function CustomizedBreadcrumbs(props) {
         key={data.id}
         component="a"
         href="#"
-        label={data.NAME}
+        label={data.name}
         icon={
           data.id === "ROOT" ? (
             <HomeIcon fontSize="small" />

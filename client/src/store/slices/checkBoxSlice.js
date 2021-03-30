@@ -16,7 +16,7 @@ export const checkBoxSlice= createSlice({
    updateSelectedKeys:(state,action)=>{
         let type=action.payload.type
         console.log(type)
-        if(type==='FOLDER'){
+        if(type==='folder'){
           let data=action.payload.id;
           console.log(data)
           function check(key) {
@@ -70,9 +70,13 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     axios.all(axi_data).then(axios.spread((...res)=>{
       let k;
       for(k=0;k<folderArr.length;k++){
-        dispatch(popFromCurrentStack(res[k].data))
-        dispatch(popFromCurrentFavStack(res[k].data))
-        dispatch(popFromCurrentRecentStack(res[k].data))
+        let newdata={
+          data:res[k].data,
+          type:'folder'
+        }
+        dispatch(popFromCurrentStack(newdata))
+        dispatch(popFromCurrentFavStack(newdata))
+        dispatch(popFromCurrentRecentStack(newdata))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -95,9 +99,13 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     axios.all(axi_data).then(axios.spread((...res)=>{
       let k;
       for(k=0;k<fileArr.length;k++){
-        dispatch(popFromCurrentStack(res[k].data))
-        dispatch(popFromCurrentFavStack(res[k].data))
-        dispatch(popFromCurrentRecentStack(res[k].data))
+        let newdata={
+          data:res[k].data,
+          type:'file'
+        }
+        dispatch(popFromCurrentStack(newdata))
+        dispatch(popFromCurrentFavStack(newdata))
+        dispatch(popFromCurrentRecentStack(newdata))
       }
       dispatch(normalLoader())
     })).catch(err=>{
