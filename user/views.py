@@ -15,7 +15,7 @@ from folder.models import Folder
 from .serializers import ProfileSerializer, UserSerializer
 from .decorators import *
 from file.decorators import *
-from folder.serializers import FolderSerializer
+from folder.serializers import FolderSerializer, FolderSerializerWithoutChildren
 from file.serializers import FileSerializer
 from folder.decorators import check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
 from folder.utils import set_recursive_trash
@@ -93,7 +93,7 @@ class Favourites(APIView):
         # folders
         folders = Folder.objects.filter(
             favourite=True, owner=request.user, trash=False)
-        folders = FolderSerializer(folders, many=True).data
+        folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
         # files
@@ -114,7 +114,7 @@ class Recent(APIView):
     def get(self, request):
         # folders
         folders = Folder.objects.filter(owner=request.user, trash=False)
-        folders = FolderSerializer(folders, many=True).data
+        folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
         # files
@@ -134,7 +134,7 @@ class Trash(APIView):
     def get(self, request):
         # folders
         folders = Folder.objects.filter(owner=request.user, trash=True)
-        folders = FolderSerializer(folders, many=True).data
+        folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
         # files
@@ -153,12 +153,12 @@ class SharedWithMe(APIView):
 
     def get(self, request):
         # folders
-        folders = request.user.shared_folders.all()
-        folders = FolderSerializer(folders, many=True).data
+        folders = request.user.shared_with_me_folders.all()
+        folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
         # files
-        files = request.user.shared_files.all()
+        files = request.user.shared_with_me_files.all()
         files = FileSerializer(files, many=True).data
         for file in files:
             file["type"] = "file"
@@ -170,7 +170,7 @@ class SharedWithMe(APIView):
 
 
 class Path(APIView):
-
+    @check_request_attr(["id", "TYPE"])
     @check_id_with_type
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
@@ -180,6 +180,9 @@ class Path(APIView):
             start_node = File.objects.get(id=id)
         elif(type == "FOLDER"):
             start_node = Folder.objects.get(id=id)
+
+        if(start_node.owner != request.user):
+            return Response(data={"message": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
 
         path = []
         while(start_node.parent != None):
@@ -198,6 +201,7 @@ class Path(APIView):
 
 class RecoverFolder(APIView):
 
+    @check_request_attr(["id"])
     @check_id_folder
     @check_id_not_root
     @check_is_owner_folder
@@ -219,7 +223,7 @@ class RecoverFolder(APIView):
 
 
 class RecoverFile(APIView):
-
+    @check_request_attr(["id"])
     @check_id_file
     @check_is_owner_file
     def get(self, request, * args, **kwargs):

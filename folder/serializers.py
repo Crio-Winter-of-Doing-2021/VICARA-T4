@@ -1,10 +1,14 @@
+from itertools import chain
+
+# django
 from rest_framework import serializers
 from .models import Folder
 from django.contrib.humanize.templatetags import humanize
 from django.contrib.auth.models import User
+from file.serializers import FileSerializer
 
 
-class FolderSerializer(serializers.ModelSerializer):
+class FolderSerializerWithoutChildren(serializers.ModelSerializer):
 
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
@@ -12,7 +16,7 @@ class FolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Folder
-        fields = '__all__'
+        exclude = ('present_in_shared_me_of',)
         # ordering = ['-last_modified']
 
     def get_created_at(self, obj):
@@ -29,3 +33,23 @@ class FolderSerializer(serializers.ModelSerializer):
                 "id": user.id
             })
         return shared_among
+
+
+class FolderSerializer(FolderSerializerWithoutChildren):
+
+    children = serializers.SerializerMethodField()
+
+    def get_children(self, obj):
+        # folders
+        folders = obj.children_folder.filter(trash=False)
+        folders = FolderSerializerWithoutChildren(folders, many=True).data
+        for folder in folders:
+            folder["type"] = "folder"
+        # files
+        files = obj.children_file.filter(trash=False)
+        files = FileSerializer(files, many=True).data
+        for file in files:
+            file["type"] = "file"
+
+        result_list = list(chain(folders, files))
+        return result_list

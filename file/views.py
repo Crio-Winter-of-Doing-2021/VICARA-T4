@@ -1,5 +1,3 @@
-
-
 # django imports
 import requests
 import os
@@ -11,11 +9,10 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.core.files import File as DjangoCoreFile
 # local imports
-from user.models import Profile
 from .decorators import *
 from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
 from .serializers import FileSerializer
-from .utils import get_presigned_url, get_s3_filename, rename_s3
+from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
@@ -26,6 +23,7 @@ class FileView(APIView):
 
     @check_id_file
     @check_has_access_file
+    @check_file_not_trashed
     @update_last_modified_file
     def get(self, request, * args, **kwargs):
         id = request.GET["id"]
@@ -39,36 +37,40 @@ class FileView(APIView):
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
-    @check_duplicate_file_exists
+    @check_already_present(to_check="req_file_name")
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
-        req_file = request.FILES['file']
-        req_file_name = request.FILES['file'].name
-
-        new_file = File(owner=request.user, file=req_file,
-                        parent=parent, name=req_file_name)
-        new_file.save()
-
-        data = FileSerializer(new_file).data
+        data = []
+        for req_file in request.FILES.getlist('file'):
+            req_file_name = req_file.name
+            new_file = create_file(
+                request.user, req_file, parent, req_file_name)
+            new_file = FileSerializer(new_file).data
+            data.append(new_file)
         return Response(data=data, status=status.HTTP_201_CREATED)
 
     @check_valid_name
     @check_id_file
     @check_is_owner_file
     @check_file_not_trashed
-    @check_duplicate_file_exists
+    @check_already_present(to_check="req_data_name")
     def patch(self, request, * args, **kwargs):
         id = request.data["id"]
         file = File.objects.get(id=id)
 
         if("trash" in request.data):
-            if(request.data["trash"] == False):
-                updated = True
-                file.trash = False
-                file.save()
+            new_trash = request.data["trash"]
+            # if we are moving to trash
+            if(new_trash):
+                # file was not trashed
+                if(new_trash != file.trash):
+                    updated = True
+                    file.trash = new_trash
+                else:
+                    return Response(data={"message": "Already in Trash"}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(data={"message": "Cant move to trash from PATCH"}, status=status.HTTP_200_OK)
+                return Response(data={"message": "Use Recovery route to recover file"}, status=status.HTTP_400_BAD_REQUEST)
 
         if("name" in request.data):
             updated = True
@@ -99,9 +101,13 @@ class FileView(APIView):
             ids.discard(file.owner.id)
             ids = list(ids)
 
-            users = [User.objects.get(pk=id)
-                     for id in ids]
+            try:
+                users = [User.objects.get(pk=id)
+                         for id in ids]
+            except:
+                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
             file.shared_among.set(users)
+            file.present_in_shared_me_of.set(users)
 
         if(updated):
             file.save()
@@ -113,11 +119,7 @@ class FileView(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
-        if (not file.trash):
-            file.trash = True
-            file.save()
-        else:
-            file.delete()
+        file.delete()
         return Response(data={"id": id}, status=status.HTTP_200_OK)
 
 

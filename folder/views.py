@@ -1,25 +1,23 @@
-
-from django.contrib.auth.models import AnonymousUser
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-import secrets
-from datetime import datetime
+from collections import defaultdict
+import json
+import os
 
 # django imports
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.contrib.auth.models import AnonymousUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.models import User
-from django.db import models
-from django.shortcuts import render
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
 # local imports
-from user.models import Profile
+
 from .decorators import *
-from folder.serializers import FolderSerializer
+from .serializers import FolderSerializer, FolderSerializerWithoutChildren
 from .models import Folder
-from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete
+from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete, create_folder
+from file.utils import create_file
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
@@ -29,6 +27,7 @@ class Filesystem(APIView):
     @allow_id_root
     @check_id_folder
     @check_has_access_folder
+    @check_folder_not_trashed
     @update_last_modified_folder
     def get(self, request, * args, **kwargs):
         id = request.GET["id"]
@@ -46,10 +45,7 @@ class Filesystem(APIView):
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         name = request.data["name"]
-        parent = Folder.objects.get(id=parent_id)
-        new_folder = Folder(owner=request.user, name=name, parent=parent)
-        new_folder.save()
-
+        new_folder = create_folder(parent_id, request.user, name)
         data = FolderSerializer(new_folder).data
         return Response(data=data, status=status.HTTP_201_CREATED)
 
@@ -83,6 +79,11 @@ class Filesystem(APIView):
         if("favourite" in request.data):
             folder.favourite = request.data["favourite"]
             folder.save()
+
+        if("name" in request.data):
+            folder.name = request.data["name"]
+            folder.save()
+
         if("shared_among" in request.data):
 
             ids = request.data["shared_among"]
@@ -91,10 +92,13 @@ class Filesystem(APIView):
             ids = set(ids)
             ids.discard(folder.owner.id)
             ids = list(ids)
-
-            users = [User.objects.get(pk=id)
-                     for id in ids]
+            try:
+                users = [User.objects.get(pk=id)
+                         for id in ids]
+            except:
+                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
             set_recursive_shared_among(folder, users)
+            folder.present_in_shared_me_of.set(users)
 
         data = FolderSerializer(folder).data
         return Response(data=data, status=status.HTTP_200_OK)
@@ -148,3 +152,76 @@ class ShareFolder(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
         else:
             return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class UploadFolder(APIView):
+
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    @check_request_attr(["PARENT", "PATH", "file"])
+    @check_id_parent_folder
+    @check_is_owner_parent_folder
+    @check_parent_folder_not_trashed
+    def post(self, request, *args, **kwargs):
+
+        # getting data from requests
+        parent_id = request.data["PARENT"]
+        parent = Folder.objects.get(id=parent_id)
+        paths = request.data["PATH"].read()
+        paths = json.loads(paths.decode('utf-8'))
+        files = request.FILES.getlist('file')
+
+        # check duplicate exists
+        # take path of first file then convert to list then 2nd element is base name
+        base_folder_name = paths[0].split(os.sep)[1]
+
+        children = parent.children_folder.all().filter(name=base_folder_name)
+        if(children):
+            return Response(data={"message": f"Folder with given name = {base_folder_name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # making data required to make folders
+        # max_level is for getting the len of deepest file in the folder
+        max_level = -1
+        structure = []
+        for path_string in paths:
+            path = os.path.normpath(path_string)
+            # example path = ['', 'cloudinary', 'sdflksjdf', 'sdfjsdfijsdfi','file.co']
+            # for /cloudinary/sdflksjdf/sdfjsdfijsdfi/file.co
+            path_list = path.split(os.sep)
+            max_level = max(max_level, len(path_list))
+            structure.append(path_list)
+
+        # create base folder
+
+        base_folder_name = structure[0][1]
+        base_folder = Folder(owner=request.user,
+                             name=base_folder_name, parent=parent)
+        base_folder.save()
+
+        # maintain parent record to make folders
+        parent_record = defaultdict(dict)
+        parent_record[1][base_folder_name] = base_folder.id
+
+        # make all the folders required
+
+        for path_list in structure:
+            # because last one is the filename
+            for level in range(2, len(path_list)-1):
+                folder_name = path_list[level]
+                parent_name = path_list[level-1]
+                parent_id = parent_record[level-1][parent_name]
+                new_folder = create_folder(
+                    parent_id, request.user, folder_name)
+                parent_record[level][folder_name] = new_folder.id
+
+        # make all the files
+        for index, path_list in enumerate(structure):
+            file_name = path_list[-1]
+            file_level = len(path_list)-1
+            parent_name = path_list[-2]
+            parent_id = parent_record[file_level-1][parent_name]
+            parent = Folder.objects.get(id=parent_id)
+            create_file(request.user, files[index], parent, file_name)
+
+        data = FolderSerializerWithoutChildren(base_folder).data
+        return Response(data=data, status=status.HTTP_200_OK)

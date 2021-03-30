@@ -1,0 +1,1097 @@
+{
+	"info": {
+		"_postman_id": "3abc7ddb-c244-4d30-8f33-42f19e5ee6ac",
+		"name": "Vicara Storage (SQL)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "REGISTER NEW USER",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"admin4\",\n    \"password\":\"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/register/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"register",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "REGISTER NEW USER",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"admin4\",\n    \"password\":\"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/auth/register/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"auth",
+								"register",
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 29 Mar 2021 07:05:28 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.8.5"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Origin"
+						},
+						{
+							"key": "Allow",
+							"value": "POST, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "125"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"token\": \"a498987d6c76d424189eb7b327dac16e95423d1a\",\n    \"first_name\": \"\",\n    \"last_name\": \"\",\n    \"id\": 6,\n    \"username\": \"admin4\",\n    \"root_id\": \"24\"\n}"
+				}
+			]
+		},
+		{
+			"name": "LOGIN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"admin2\",\n    \"password\":\"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/login/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LOGOUT",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/logout/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"logout",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/auth/users/",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/users/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET profile data",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH profile data",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/path",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/path/?id=11&TYPE=FOLDER",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"path",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "11"
+						},
+						{
+							"key": "TYPE",
+							"value": "FOLDER"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/filesystem",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/filesystem/?id=ROOT",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"filesystem",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "ROOT"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/filesystem",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"inside DEEP\",\n    \"PARENT\":\"ROOT\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/filesystem/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"filesystem",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/filesystem",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trash\":true,\n    \"id\":20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/filesystem/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"filesystem",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/filesystem",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/filesystem/?id=14",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"filesystem",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "14"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/share-file",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/share/?id=6&CREATOR=6",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						"share",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "6"
+						},
+						{
+							"key": "CREATOR",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/share-folder",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/filesystem/share/?id=25&CREATOR=6",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"filesystem",
+						"share",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "25"
+						},
+						{
+							"key": "CREATOR",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/shared-with-me",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/shared-with-me/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"shared-with-me",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/file",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/panda/Downloads/favicon_io (1)/apple-touch-icon.png"
+						},
+						{
+							"key": "PARENT",
+							"value": "ROOT",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/file",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/?id=1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/file",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":2,\n    \"privacy\":\"false\",\n    \"trash\":\"true\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/file",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/?id=1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload-by-url",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"PARENT\":\"ROOT\",\n    \"DRIVE_URL\":\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png\",\n    \"NAME\":\"hello.png\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/upload-by-url/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						"upload-by-url",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/favourites",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/favourites/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"favourites",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/recent",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth_token_string}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/recent/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"recent",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/trash",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/trash/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"trash",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/recover-folder",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":22\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/recover-folder/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"recover-folder",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "type",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/recover-file",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":22\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/recover-folder/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"recover-folder",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "type",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

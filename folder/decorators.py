@@ -158,10 +158,16 @@ def check_request_attr(REQUIRED_PARAMS):
     def decorator_fun(func):
         @functools.wraps(func)
         def wrapper(self, request, *args, **kwargs):
-            if not all(attr in request.data for attr in REQUIRED_PARAMS):
-                return Response(data={"message": f"Insufficient Post params req {REQUIRED_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-            result = func(self, request, *args, **kwargs)
-            return result
+            if(request.method == "POST" or request.method == "PATCH"):
+                if not all(attr in request.data for attr in REQUIRED_PARAMS):
+                    return Response(data={"message": f"Insufficient Post params req {REQUIRED_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+                result = func(self, request, *args, **kwargs)
+                return result
+            else:
+                if not all(attr in request.GET for attr in REQUIRED_PARAMS):
+                    return Response(data={"message": f"Insufficient GET params req {REQUIRED_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
+                result = func(self, request, *args, **kwargs)
+                return result
         return wrapper
     return decorator_fun
 
@@ -197,7 +203,7 @@ def check_duplicate_folder_exists(func):
 
             children = parent_folder.children_folder.all().filter(name=name)
             if(children):
-                return Response(data={"message": "Folder with given name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={"message": f"Folder with given name = {name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
         result = func(self, request, *args, **kwargs)
         return result
