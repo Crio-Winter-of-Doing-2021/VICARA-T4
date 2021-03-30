@@ -42,7 +42,7 @@ function App() {
         //handle error
         console.log(response);
       });
-  };, []);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
