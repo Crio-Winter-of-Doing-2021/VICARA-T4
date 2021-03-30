@@ -1,3 +1,4 @@
+import humanize
 from collections import defaultdict
 import json
 import os
@@ -222,7 +223,9 @@ class UploadFolder(APIView):
             parent_name = path_list[-2]
             parent_id = parent_record[file_level-1][parent_name]
             parent = Folder.objects.get(id=parent_id)
-            create_file(request.user, files[index], parent, file_name)
+            req_file_size = humanize.naturalsize(files[index].size)
+            create_file(request.user, files[index],
+                        parent, file_name, req_file_size)
 
         data = FolderSerializerWithoutChildren(base_folder).data
         return Response(data=data, status=status.HTTP_200_OK)

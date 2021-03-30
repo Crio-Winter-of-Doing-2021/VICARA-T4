@@ -13,3 +13,4 @@ boto3
 django-storages
 python-decouple
 varname
+humanize-3.3.0
