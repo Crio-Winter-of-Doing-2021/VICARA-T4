@@ -12,7 +12,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = File
-        exclude = ('file',)
+        exclude = ('file', 'present_in_shared_me_of')
         # ordering = ['-last_modified']
 
     def get_created_at(self, obj):

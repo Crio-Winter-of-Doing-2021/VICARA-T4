@@ -28,6 +28,8 @@ class Folder(models.Model):
     favourite = models.BooleanField(default=False)
     objects = models.Manager()
     custom_objects = FolderManager()
+    present_in_shared_me_of = models.ManyToManyField(
+        User, related_name="shared_with_me_folders")
 
     def __str__(self):
         return f"{self.name}| id = {self.id}  | parent = {self.parent}"

@@ -105,9 +105,13 @@ class FileView(APIView):
             ids.discard(file.owner.id)
             ids = list(ids)
 
-            users = [User.objects.get(pk=id)
-                     for id in ids]
+            try:
+                users = [User.objects.get(pk=id)
+                         for id in ids]
+            except:
+                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
             file.shared_among.set(users)
+            file.present_in_shared_me_of.set(users)
 
         if(updated):
             file.save()

@@ -26,6 +26,8 @@ class File(models.Model):
         User, on_delete=models.CASCADE, related_name="files")
     shared_among = models.ManyToManyField(
         User, related_name="shared_files")
+    present_in_shared_me_of = models.ManyToManyField(
+        User, related_name="shared_with_me_files")
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
