@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admin4\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"admin5\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -338,7 +338,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/path/?id=11&TYPE=FOLDER",
+					"raw": "http://127.0.0.1:8000/api/path/?id=24&TYPE=FOLDER",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -355,7 +355,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "11"
+							"value": "24"
 						},
 						{
 							"key": "TYPE",
@@ -367,7 +367,7 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -390,7 +390,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/?id=ROOT",
+					"raw": "http://127.0.0.1:8000/api/folder/?id=21",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -401,13 +401,13 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": "ROOT"
+							"value": "21"
 						}
 					]
 				}
@@ -415,7 +415,7 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -427,7 +427,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\":\"inside DEEP\",\n    \"PARENT\":\"ROOT\"\n}",
+					"raw": "{\n    \"name\":\"test folder parent\",\n    \"PARENT\":\"ROOT\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -435,7 +435,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/",
+					"raw": "http://127.0.0.1:8000/api/folder/",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -446,7 +446,7 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					]
 				}
@@ -454,7 +454,7 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"request": {
 				"method": "PATCH",
 				"header": [
@@ -466,7 +466,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"trash\":true,\n    \"id\":20\n}",
+					"raw": "{\n    \"shared_among\":[1,2],\n    \"id\":2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -474,7 +474,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/",
+					"raw": "http://127.0.0.1:8000/api/folder/",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -485,7 +485,7 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					]
 				}
@@ -493,14 +493,14 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"request": {
 				"method": "DELETE",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{auth_token_string}}"
 					}
 				],
 				"body": {
@@ -513,7 +513,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/?id=14",
+					"raw": "http://127.0.0.1:8000/api/folder/?id=14",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -524,7 +524,7 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					],
 					"query": [
@@ -614,7 +614,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/share/?id=25&CREATOR=6",
+					"raw": "http://127.0.0.1:8000/api/folder/share/?id=2&CREATOR=1",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -625,18 +625,18 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						"share",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": "25"
+							"value": "2"
 						},
 						{
 							"key": "CREATOR",
-							"value": "6"
+							"value": "1"
 						}
 					]
 				}
@@ -702,12 +702,18 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/home/panda/Downloads/favicon_io (1)/apple-touch-icon.png"
+							"src": [],
+							"disabled": true
 						},
 						{
 							"key": "PARENT",
 							"value": "ROOT",
 							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/panda/Desktop/Final_crio2.mp4"
 						}
 					]
 				},
@@ -1025,7 +1031,7 @@
 		{
 			"name": "/recover-file",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
@@ -1033,17 +1039,8 @@
 						"value": "{{auth_token_string}}"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\":22\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/recover-folder/",
+					"raw": "http://127.0.0.1:8000/api/recover-file/?id=6",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -1054,14 +1051,13 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"recover-folder",
+						"recover-file",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": null,
-							"disabled": true
+							"value": "6"
 						},
 						{
 							"key": "type",
