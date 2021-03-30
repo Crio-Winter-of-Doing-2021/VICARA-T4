@@ -159,3 +159,18 @@ def update_last_modified_file(func):
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper
+
+
+def check_storage_available(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        space_required = 0
+        for req_file in request.FILES.getlist('file'):
+            space_required += req_file.size
+        profile = request.user.profile
+        if(space_required + profile.storage_used > profile.storage_avail):
+            return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
+
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
