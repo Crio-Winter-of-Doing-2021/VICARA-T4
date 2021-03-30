@@ -6,9 +6,9 @@ from mysite.settings import AWS_STORAGE_BUCKET_NAME
 from .models import File
 
 
-def create_file(owner, req_file, parent, req_file_name):
+def create_file(owner, req_file, parent, req_file_name, size):
     new_file = File(owner=owner, file=req_file,
-                    parent=parent, name=req_file_name)
+                    parent=parent, name=req_file_name, size=size)
     new_file.save()
     return new_file
 

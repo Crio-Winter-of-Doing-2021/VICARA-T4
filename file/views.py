@@ -1,3 +1,4 @@
+import humanize
 # django imports
 from django.http import StreamingHttpResponse
 import requests
@@ -45,8 +46,9 @@ class FileView(APIView):
         data = []
         for req_file in request.FILES.getlist('file'):
             req_file_name = req_file.name
+            req_file_size = humanize.naturalsize(req_file.size)
             new_file = create_file(
-                request.user, req_file, parent, req_file_name)
+                request.user, req_file, parent, req_file_name, req_file_size)
             new_file = FileSerializer(new_file).data
             data.append(new_file)
         return Response(data=data, status=status.HTTP_201_CREATED)

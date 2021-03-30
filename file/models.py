@@ -19,7 +19,7 @@ class File(models.Model):
     file = models.FileField(blank=False, null=False)
     parent = models.ForeignKey(
         Folder, related_name="children_file", on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(
@@ -31,6 +31,7 @@ class File(models.Model):
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
+    size = models.CharField(max_length=20)
     objects = models.Manager()
     custom_objects = FileManager()
 

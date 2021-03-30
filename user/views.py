@@ -1,4 +1,6 @@
 # python imports
+import cloudinary.uploader
+from rest_framework.parsers import MultiPartParser, JSONParser
 from itertools import chain
 # django imports
 from django.contrib.auth.models import User
@@ -19,6 +21,7 @@ from folder.serializers import FolderSerializer, FolderSerializerWithoutChildren
 from file.serializers import FileSerializer
 from folder.decorators import check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
 from folder.utils import set_recursive_trash
+from .utils import is_valid_email
 
 RECOVER = ["id", "TYPE"]
 
@@ -69,14 +72,63 @@ class ProfileView(APIView):
         return Response(data=data)
 
     def patch(self, request):
-        profile = Profile.objects.get(user=request.user)
-        serializer = ProfileSerializer(
-            profile, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        profile = Profile.custom_objects.get_or_none(user=request.user)
+        if(profile == None):
+            return Response(data={"message": "Invalid id"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        if(not(profile.user == request.user or request.user.is_staff)):
+            return Response(data={"message": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if("email" in request.data):
+            new_email = request.data["email"]
+            if(is_valid_email(new_email)):
+                updated = True
+                profile.user.email = new_email
+            else:
+                return Response(data={"message": "Invalid email"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if("gender" in request.data):
+            new_gender = request.data["gender"]
+            if(new_gender in [1, 2, 3, 4]):
+                updated = True
+                profile.gender = new_gender
+            else:
+                return Response(data={"message": "Invalid gender"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if("capacity" in request.data):
+            if(not request.user.is_staff):
+                return Response(data={"message": "Admin Rights required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            updated = True
+            new_capacity = request.data["capacity"]
+            profile.capacity = new_capacity
+
+        if(updated):
+            profile.user.save()
+            profile.save()
+
+        data = ProfileSerializer(profile).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class ProfilePicture(APIView):
+    parser_classes = (
+        MultiPartParser,
+        JSONParser,
+    )
+
+    def post(self, request, format=None):
+        try:
+            file = request.data.get('picture')
+            user_profile = Profile.objects.get(user=request.user)
+            cloudinary_response = cloudinary.uploader.upload(file)
+            user_profile.profile_picture_url = cloudinary_response["secure_url"]
+            user_profile.save()
+            data = ProfileSerializer(user_profile).data
+            return Response(data=data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(str(e))
+            return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListOfUsers(APIView):
