@@ -3,6 +3,15 @@ import secrets
 import os
 from mysite.settings import AWS_STORAGE_BUCKET_NAME
 
+from .models import File
+
+
+def create_file(owner, req_file, parent, req_file_name):
+    new_file = File(owner=owner, file=req_file,
+                    parent=parent, name=req_file_name)
+    new_file.save()
+    return new_file
+
 
 def get_presigned_url(key):
     s3 = boto3.client('s3')
