@@ -1,3 +1,6 @@
+from .models import Folder
+
+
 def set_recursive_trash(folder, value):
     for child_folder in folder.children_folder.all():
         set_recursive_trash(child_folder, value)
@@ -34,3 +37,10 @@ def recursive_delete(folder):
     for child_file in folder.children_file.all():
         child_file.delete()
     folder.delete()
+
+
+def create_folder(parent_id, owner, name):
+    parent = Folder.objects.get(id=parent_id)
+    new_folder = Folder(owner=owner, name=name, parent=parent)
+    new_folder.save()
+    return new_folder

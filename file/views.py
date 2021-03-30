@@ -1,5 +1,3 @@
-
-
 # django imports
 import requests
 import os
@@ -11,11 +9,10 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.core.files import File as DjangoCoreFile
 # local imports
-from user.models import Profile
 from .decorators import *
 from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
 from .serializers import FileSerializer
-from .utils import get_presigned_url, get_s3_filename, rename_s3
+from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
@@ -44,14 +41,13 @@ class FileView(APIView):
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
-        req_file = request.FILES['file']
-        req_file_name = request.FILES['file'].name
-
-        new_file = File(owner=request.user, file=req_file,
-                        parent=parent, name=req_file_name)
-        new_file.save()
-
-        data = FileSerializer(new_file).data
+        data = []
+        for req_file in request.FILES.getlist('file'):
+            req_file_name = req_file.name
+            new_file = create_file(
+                request.user, req_file, parent, req_file_name)
+            new_file = FileSerializer(new_file).data
+            data.append(new_file)
         return Response(data=data, status=status.HTTP_201_CREATED)
 
     @check_valid_name

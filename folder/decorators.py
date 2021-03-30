@@ -203,7 +203,7 @@ def check_duplicate_folder_exists(func):
 
             children = parent_folder.children_folder.all().filter(name=name)
             if(children):
-                return Response(data={"message": "Folder with given name already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={"message": f"Folder with given name = {name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
         result = func(self, request, *args, **kwargs)
         return result

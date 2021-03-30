@@ -51,6 +51,5 @@ class FolderSerializer(FolderSerializerWithoutChildren):
         for file in files:
             file["type"] = "file"
 
-        # combined
         result_list = list(chain(folders, files))
         return result_list
