@@ -1,4 +1,5 @@
 # django imports
+from django.http import StreamingHttpResponse
 import requests
 import os
 from django.contrib.auth.models import AnonymousUser
@@ -192,3 +193,21 @@ class UploadByDriveUrl(APIView):
         os.remove(s3_name)
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class StreamFile(APIView):
+
+    @check_id_file
+    @check_has_access_file
+    @check_file_not_trashed
+    @update_last_modified_file
+    def get(self, request, *args, **kwargs):
+        id = request.GET["id"]
+        file = File.objects.get(id=id)
+        s3_key = file.get_s3_key()
+        signed_url = get_presigned_url(s3_key)
+        filename = os.path.basename(signed_url)
+        r = requests.get(signed_url, stream=True)
+        response = StreamingHttpResponse(streaming_content=r)
+        response['Content-Disposition'] = f'attachement; filename="{filename}"'
+        return response
