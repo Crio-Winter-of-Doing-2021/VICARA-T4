@@ -52,6 +52,8 @@ import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
 
+import {typeTest} from '../../Utilities/fileType'
+
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -90,7 +92,7 @@ export default function Structure(props) {
   const structureState = useSelector(selectStructure);
   // const fileKeys = useSelector(selectCheckedFileKeys);
   // const folderKeys = useSelector(selectCheckedFolderKeys);
-  console.log(structureState);
+  // console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
   let tableData = [];
@@ -101,17 +103,19 @@ export default function Structure(props) {
     dispatch(pathAsync(unique_id));
   }, [unique_id, dispatch]);
 
-  Object.keys(structureState).forEach((key, index) => {
-    let newData = {
-      key: key,
-      type: structureState[key].TYPE,
-      name: structureState[key].NAME,
-      favourite: structureState[key].FAVOURITE,
-      privacy: structureState[key].PRIVACY,
-    };
-    tableData.push(newData);
-  });
+  // Object.keys(structureState).forEach((key, index) => {
+  //   let newData = {
+  //     key: key,
+  //     type: structureState[key].TYPE,
+  //     name: structureState[key].NAME,
+  //     favourite: structureState[key].FAVOURITE,
+  //     privacy: structureState[key].PRIVACY,
+  //   };
+  //   tableData.push(newData);
+  // });
 
+  tableData=structureState
+  
   let updateFolder = (key) => {
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`);
@@ -137,36 +141,44 @@ export default function Structure(props) {
     dispatch(privacyAsync(data));
   };
 
-  let tableRenderer = tableData.map((data) => {
+  let tableRenderer = tableData.map((data,index) => {
     let favReverseData = {
-      id: data.key,
-      is_favourite: !data.favourite,
+      payload:{
+        id: data.id,
+        favourite: !data.favourite,
+      },
+      type:data.type,
+      key:index
     };
 
     let userDetails = {
       CREATOR: creator,
-      id: data.key,
+      id: data.id,
     };
 
     // console.log(userDetails)
 
     let privReverse = {
-      id: data.key,
-      PRIVACY: privOpp(data.privacy),
+      payload:{
+        id: data.id,
+        privacy:!data.privacy
+      },
+      type:data.type,
+      key:index
     };
 
     let keyData = {
-      id: data.key,
+      id: data.id,
       type: data.type,
     };
 
     let typeData={
       type:data.type,
-      id:data.key
+      id:data.id
     }
 
     return (
-      <StyledTableRow key={data.key}>
+      <StyledTableRow key={data.id}>
       
         <StyledTableCell component="th" scope="row">
         <RightClickUtil data={typeData}>
@@ -175,19 +187,19 @@ export default function Structure(props) {
               onChange={(e) => handleCheckedChange(keyData, e)}
               inputProps={{ "aria-label": "primary checkbox" }}
             />
-            {data.type === "FOLDER" ? (
+            {data.type === "folder" ? (
               <FolderOpenTwoToneIcon />
             ) : (
-              <DescriptionTwoToneIcon />
+             typeTest(data.name) 
             )}
 
-            {data.type === "FOLDER" ? (
+            {data.type === "folder" ? (
               <UILink
                 component="button"
                 variant="body2"
                 style={{ marginLeft: "5px" }}
                 onClick={() => {
-                  updateFolder(data.key);
+                  updateFolder(data.id);
                 }}
               >
                 {data.name}
@@ -197,7 +209,7 @@ export default function Structure(props) {
                 component="button"
                 variant="body2"
                 style={{ marginLeft: "5px" }}
-                onClick={() => {dispatch(shareAsync(userDetails));dispatch(addRecentAsync(data.key))}}
+                onClick={() => {console.log("clicked")}}
               >
                 {data.name}
               </UILink>
@@ -224,14 +236,12 @@ export default function Structure(props) {
           </RightClickUtil>
         </StyledTableCell>
         
+        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+          {data.last_modified}
+        </StyledTableCell>
+
         <StyledTableCell component="th" scope="row">
-          {data.privacy === undefined ? (
-            <Tooltip title="Privacy cannot be set for folders">
-              <IconButton>
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          ) : data.privacy === "PRIVATE" ? (
+          {data.privacy === true ? (
             <Tooltip title="File is Private">
               <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
                 <VisibilityOffIcon />
@@ -247,6 +257,9 @@ export default function Structure(props) {
               </IconButton>
             </Tooltip>
           )}
+        </StyledTableCell>
+        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+          {data.created_at}
         </StyledTableCell>
       </StyledTableRow>
     );
@@ -266,7 +279,9 @@ export default function Structure(props) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell></StyledTableCell>
               <StyledTableCell>Privacy</StyledTableCell>
+              <StyledTableCell>Time Created</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>{tableRenderer}</TableBody>

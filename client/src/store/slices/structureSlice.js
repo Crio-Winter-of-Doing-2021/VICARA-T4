@@ -6,7 +6,7 @@ import {updateSharePrivacy} from './shareSlice'
 export const structureSlice = createSlice({
   name: "structure",
   initialState: {
-    currentDisplayStructure: {},
+    currentDisplayStructure: [],
     currentPath: [
       {
         NAME: "ROOT",
@@ -16,7 +16,7 @@ export const structureSlice = createSlice({
   },
   reducers: {
     updateStructure: (state, action) => {
-      state.currentDisplayStructure = action.payload.CHILDREN;
+      state.currentDisplayStructure = action.payload.children;
     },
     pushToCurrentStack: (state, action) => {
       let res = action.payload;
@@ -42,11 +42,12 @@ export const structureSlice = createSlice({
     },
     updatePrivacy: (state, action) => {
       let res = action.payload;
-      state.currentDisplayStructure[res.id].PRIVACY = res.PRIVACY;
+      console.log(res)
+      state.currentDisplayStructure[res.key].privacy = res.payload.privacy;
     },
     updateFav: (state, action) => {
       let res = action.payload;
-      state.currentDisplayStructure[res.id].FAVOURITE = res.is_favourite;
+      state.currentDisplayStructure[res.key].favourite = res.payload.favourite;
     },
     popFromCurrentStack: (state, action) => {
       let res = action.payload;
@@ -98,24 +99,45 @@ export const addFolderAsync = (data) => (dispatch) => {
 };
 
 export const addFavouriteAsync = (data) => (dispatch) => {
-  API.post("/api/favourites/", data)
+  if(data.type==='file'){
+    API.patch("/api/file/", data.payload)
     .then((res) => {
       dispatch(updateFav(data));
     })
     .catch((err) => {
       console.log(err);
     });
-};
-
-export const privacyAsync = (data) => (dispatch) => {
-  API.patch("/api/file/", data)
+  }else{
+    API.patch("/api/filesystem/", data.payload)
     .then((res) => {
-      dispatch(updatePrivacy(data));
-      dispatch(updateSharePrivacy())
+      dispatch(updateFav(data));
     })
     .catch((err) => {
       console.log(err);
     });
+  }
+};
+
+export const privacyAsync = (data) => (dispatch) => {
+  if(data.type==='file'){
+    API.patch("/api/file/", data.payload)
+    .then((res) => {
+      dispatch(updatePrivacy(data));
+      // dispatch(updateSharePrivacy())
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }else{
+    API.patch("/api/filesystem/", data.payload)
+    .then((res) => {
+      dispatch(updatePrivacy(data));
+      // dispatch(updateSharePrivacy())
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
 };
 
 export const pathAsync = (data) => (dispatch) => {
