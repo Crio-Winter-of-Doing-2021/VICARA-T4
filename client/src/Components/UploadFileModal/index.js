@@ -58,7 +58,7 @@ export default function FormDialog(props) {
           Authorization: `Token ${token}`,
         },
         data: state,
-        url: `${baseURL}/upload-by-url/`,
+        url: `${baseURL}/api/file/upload-by-url/`,
         onUploadProgress: (ev) => {
           const prog = (ev.loaded / ev.total) * 100;
           setProgress(Math.round(prog));
@@ -84,6 +84,7 @@ export default function FormDialog(props) {
   return (
     <div>
       {/* <FileBackdropLoader progress={progress} show={loading} /> */}
+      {console.log(state)}
       <ListItem style={{cursor:"pointer"}} onClick={()=>{handleClickOpen()}}>
           <ListItemAvatar>
               <Avatar>
@@ -103,6 +104,7 @@ export default function FormDialog(props) {
           </DialogContentText>
           <TextField
             id="NAME"
+            name="NAME"
             label="Name"
             type="text"
             fullWidth
@@ -111,6 +113,7 @@ export default function FormDialog(props) {
           />
           <TextField
             id="DRIVE_URL"
+            name="DRIVE_URL"
             label="Downloadable URL"
             type="text"
             onChange={inputChangeHandler}
