@@ -17,7 +17,7 @@ import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
 import AddFile from "../Buttons/addFile";
 
-import UploadMenu from '../UploadModal'
+import UploadMenu from '../UploadMenu/index'
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -275,13 +275,14 @@ export default function Structure(props) {
     <div>
       <div style={{ display: "flex" }}>
         {/* <AddFile parent={unique_id} /> */}
-        <UploadMenu parent={unique_id}/>
+        
         <AddFolder id={unique_id} />
+        <UploadMenu parent={unique_id}/>
         <Delete />
         <Update />
       </div>
       <Path {...props} />
-      <TableContainer style={{ marginTop: "20px" }} component={Paper}>
+      <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>

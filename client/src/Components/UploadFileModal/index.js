@@ -8,13 +8,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
-import { Divider, Typography } from '@material-ui/core';
-import AddFile from '../Buttons/addFile'
+import { Divider, Typography,ListItemText,ListItem,Avatar,ListItemAvatar } from '@material-ui/core';
+import AddFile from './App-multi-file'
 import {token,baseURL} from '../../axios'
 import axios from 'axios'
 import {fileUploadLoader,fileLoading} from '../../store/slices/loaderSlice'
 import {pushToCurrentStack} from '../../store/slices/structureSlice'
 import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
+import DescriptionIcon from '@material-ui/icons/Description';
+
+
 
 export default function FormDialog(props) {
   const [open,setOpen]=React.useState(false)
@@ -80,10 +83,17 @@ export default function FormDialog(props) {
 
   return (
     <div>
-      <FileBackdropLoader progress={progress} show={loading} />
-      <Button startIcon={<InsertDriveFileIcon/>} variant="outlined" color="primary" onClick={handleClickOpen}>
-        Upload Files
-      </Button>
+      {/* <FileBackdropLoader progress={progress} show={loading} /> */}
+      <ListItem style={{cursor:"pointer"}} onClick={()=>{handleClickOpen()}}>
+          <ListItemAvatar>
+              <Avatar>
+                <DescriptionIcon/>
+              </Avatar>
+          </ListItemAvatar>
+        <ListItemText
+            primary="Files"
+          />
+        </ListItem>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Upload Files</DialogTitle>
         <Divider/>
@@ -107,12 +117,12 @@ export default function FormDialog(props) {
             fullWidth
           />
         </DialogContent>
-        <div style={{display:"flex",justifyContent:"center",margin:"30px 0 0 0"}}>
+        <div style={{display:"flex",justifyContent:"center",margin:"30px 0"}}>
             <Typography>OR</Typography>
         </div>
 
         <DialogContent>
-          <div style={{display:"flex",justifyContent:"center",alignItems:"center",height:"100px"}}>
+          <div style={{display:"flex",justifyContent:"center",alignItems:"center",height:"150px",border:"2px dashed grey",borderRadius:"5px"}}>
             <AddFile modalClose={handleClose} parent={props.parent}/>
           </div>
         </DialogContent>

@@ -70,8 +70,8 @@ export const {
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
-  console.log("Sending request for /api/filesystem/");
-  API.get(`/api/filesystem/`, {
+  console.log("Sending request for /api/folder/");
+  API.get(`/api/folder/`, {
     params: {
       id: uni_id,
     },
@@ -86,7 +86,7 @@ export const structureAsync = (uni_id) => (dispatch) => {
 
 export const addFolderAsync = (data) => (dispatch) => {
   dispatch(normalLoader());
-  API.post("/api/filesystem/", data)
+  API.post("/api/folder/", data)
     .then((res) => {
       console.log(res);
       let newData={
@@ -112,7 +112,7 @@ export const addFavouriteAsync = (data) => (dispatch) => {
       console.log(err);
     });
   }else{
-    API.patch("/api/filesystem/", data.payload)
+    API.patch("/api/folder/", data.payload)
     .then((res) => {
       dispatch(updateFav(data));
     })
@@ -133,7 +133,7 @@ export const privacyAsync = (data) => (dispatch) => {
       console.log(err);
     });
   }else{
-    API.patch("/api/filesystem/", data.payload)
+    API.patch("/api/folder/", data.payload)
     .then((res) => {
       dispatch(updatePrivacy(data));
       // dispatch(updateSharePrivacy())

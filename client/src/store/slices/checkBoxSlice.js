@@ -63,7 +63,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     let axi_data=[];
 
     for(i=0;i<folderArr.length;i++){
-      let new_data=API.delete(`/api/filesystem/?id=${folderArr[i]}`);
+      let new_data=API.delete(`/api/folder/?id=${folderArr[i]}`);
       axi_data.push(new_data)
     }
 
@@ -121,7 +121,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
 export const updateAsync = (fileData,folderData) => (dispatch) => {
     if(Object.keys(folderData).length!==0){
       dispatch(normalLoader())
-      API.patch("/api/filesystem/",folderData)
+      API.patch("/api/folder/",folderData)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())

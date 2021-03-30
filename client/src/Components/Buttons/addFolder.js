@@ -45,7 +45,7 @@ export default function FormDialog(props) {
   };
 
   return (
-    <div>
+    <div style={{margin:"10px"}}>
       <Button
         startIcon={<CreateNewFolderIcon />}
         variant="outlined"
