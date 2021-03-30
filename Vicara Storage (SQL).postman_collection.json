@@ -123,7 +123,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admin2\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"admin5\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -234,7 +234,7 @@
 			"response": []
 		},
 		{
-			"name": "GET profile data",
+			"name": "/profile",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -276,19 +276,19 @@
 			"response": []
 		},
 		{
-			"name": "PATCH profile data",
+			"name": "/profile",
 			"request": {
 				"method": "PATCH",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{auth_token_string}}"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\n    \"gender\":1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -308,6 +308,51 @@
 					"path": [
 						"api",
 						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile-picture",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "picture",
+							"type": "file",
+							"src": "/home/panda/Downloads/image-removebg-preview.jpg"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/profile-picture/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"profile-picture",
 						""
 					]
 				}
@@ -390,7 +435,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/folder/?id=21",
+					"raw": "http://127.0.0.1:8000/api/folder/?id=28",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -407,7 +452,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "21"
+							"value": "28"
 						}
 					]
 				}
@@ -686,6 +731,55 @@
 			"response": []
 		},
 		{
+			"name": "/stream-file",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/file/stream-file/?id=40",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"file",
+						"stream-file",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "40"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/file",
 			"request": {
 				"method": "POST",
@@ -700,12 +794,6 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "file",
-							"type": "file",
-							"src": [],
-							"disabled": true
-						},
-						{
 							"key": "PARENT",
 							"value": "ROOT",
 							"type": "text"
@@ -713,7 +801,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/home/panda/Desktop/Final_crio2.mp4"
+							"src": "/home/panda/Downloads/eStartup/inner-page.html"
 						}
 					]
 				},
