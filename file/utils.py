@@ -35,8 +35,7 @@ def get_s3_filename(full_filename):
     return s3_filename
 
 
-def rename_s3(old_file_key, new_file_key):
-
+def copy_s3(old_file_key, new_file_key):
     s3 = boto3.resource('s3')
     copy_source = {
         'Bucket': AWS_STORAGE_BUCKET_NAME,
@@ -44,12 +43,22 @@ def rename_s3(old_file_key, new_file_key):
     }
     bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
     bucket.copy(copy_source, new_file_key)
+
+
+def delete_s3(file_key):
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
     bucket.delete_objects(
         Delete={
             'Objects': [
                 {
-                    'Key': old_file_key
+                    'Key': file_key
                 },
             ],
         }
     )
+
+
+def rename_s3(old_file_key, new_file_key):
+    copy_s3(old_file_key, new_file_key)
+    delete_s3(old_file_key)
