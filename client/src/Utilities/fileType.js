@@ -10,8 +10,8 @@ import MusicNoteIcon from '@material-ui/icons/MusicNote';
 export const typeTest=(name)=>{
     var allowedDocFiles = [".doc", ".docx"];
     var allowedPdfFiles = [".pdf"];
-    var allowedImageFiles = [".jpeg", ".jpg",".gif",".bmp",".png",".tiff?",".webp"];
-    var allowedVideoFiles = [",mp4",".mov",".wmv",".avi",".avchd",".flv",".mkv",".webm",".mpeg-2"];
+    var allowedImageFiles = [".jpeg", ".jpg",".gif",".bmp",".png",".tiff?",".webp",".svg"];
+    var allowedVideoFiles = [".mp4",".mov",".wmv",".avi",".avchd",".flv",".mkv",".webm",".mpeg-2"];
     var allowedExcelFiles = [".xls", ".xlsx"];
     var allowedPptFiles = [".ppt", ".pptx"];
     var allowedMusicFiles = [".mp3", ".wav"];

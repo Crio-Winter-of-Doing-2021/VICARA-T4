@@ -12,12 +12,12 @@ import {
   privacyAsync,
 } from "../../store/slices/structureSlice";
 
-import AddFolder from "../Buttons/addFolder";
+import CreateFolder from "../Buttons/createFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
-import AddFile from "../Buttons/addFile";
 
 import UploadMenu from '../UploadMenu/index'
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -29,30 +29,21 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import{addRecentAsync} from '../../store/slices/recentSlice'
-
-// import { Link } from "react-router-dom";
-
 import RightClickUtil from '../RightClickMenu/rightClickUtil'
 
-import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
   updateSelectedKeys,
-  // selectCheckedFileKeys,
-  // selectCheckedFolderKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
-// import { selectUser } from "../../store/slices/authSlice";
-import { shareAsync } from "../../store/slices/shareSlice";
-
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
+
+import {skeletonLoading} from '../../store/slices/loaderSlice'
 
 import {typeTest} from '../../Utilities/fileType'
 
@@ -85,17 +76,27 @@ export let privOpp = (privacy) => {
   return "PUBLIC";
 };
 
+let loaderStructure=[1,2,3,4,5,6.7,8].map(key=>{
+  return(
+    <StyledTableRow>
+         {[1,2,3,4,5].map(el=>(
+           <StyledTableCell component="th" scope="row">
+              <Skeleton variant="text"/>
+            </StyledTableCell>
+         ))}
+    </StyledTableRow>
+  )
+})
+
 export default function Structure(props) {
   const classes = useStyles();
   let unique_id = props.match.params.id;
 
+  let loading=useSelector(skeletonLoading)
+
   const creator = window.localStorage.getItem("author");
   console.log(creator);
   const structureState = useSelector(selectStructure);
-  // const fileKeys = useSelector(selectCheckedFileKeys);
-  // const folderKeys = useSelector(selectCheckedFolderKeys);
-  // console.log(structureState);
-  //   const selectedKeys=useSelector(selectCheckedKeys)
 
   let tableData = [];
 
@@ -107,29 +108,15 @@ export default function Structure(props) {
       type:"FOLDER"
     }
     dispatch(pathAsync(newData));
-  }, [unique_id, dispatch]);
-
-  // Object.keys(structureState).forEach((key, index) => {
-  //   let newData = {
-  //     key: key,
-  //     type: structureState[key].TYPE,
-  //     name: structureState[key].NAME,
-  //     favourite: structureState[key].FAVOURITE,
-  //     privacy: structureState[key].PRIVACY,
-  //   };
-  //   tableData.push(newData);
-  // });
+  }, [unique_id]);
 
   tableData=structureState
   
   let updateFolder = (key) => {
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`);
-    // dispatch(structureAsync(key))
     dispatch(emptykeys());
   };
-
-  // const [checked, setChecked] = React.useState(true);
 
   const handleCheckedChange = (key, e) => {
     console.log("checked");
@@ -162,8 +149,6 @@ export default function Structure(props) {
       id: data.id,
     };
 
-    // console.log(userDetails)
-
     let privReverse = {
       payload:{
         id: data.id,
@@ -176,6 +161,7 @@ export default function Structure(props) {
     let keyData = {
       id: data.id,
       type: data.type,
+      index:index
     };
 
     let typeData={
@@ -267,16 +253,20 @@ export default function Structure(props) {
         <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
           {data.created_at}
         </StyledTableCell>
+        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+          {data.size}
+        </StyledTableCell>
       </StyledTableRow>
     );
   });
 
   return (
     <div>
+      {console.log("loader",loading)}
+      {console.log("table data",tableData)}
       <div style={{ display: "flex" }}>
-        {/* <AddFile parent={unique_id} /> */}
         
-        <AddFolder id={unique_id} />
+        <CreateFolder id={unique_id} />
         <UploadMenu parent={unique_id}/>
         <Delete />
         <Update />
@@ -290,9 +280,11 @@ export default function Structure(props) {
               <StyledTableCell></StyledTableCell>
               <StyledTableCell>Privacy</StyledTableCell>
               <StyledTableCell>Time Created</StyledTableCell>
+              <StyledTableCell>Size</StyledTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{tableRenderer}</TableBody>
+          <TableBody>{loading?loaderStructure:tableRenderer}</TableBody>
+          
         </Table>
       </TableContainer>
     </div>

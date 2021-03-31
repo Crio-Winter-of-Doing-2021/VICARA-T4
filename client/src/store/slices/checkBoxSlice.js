@@ -20,11 +20,11 @@ export const checkBoxSlice= createSlice({
           let data=action.payload.id;
           console.log(data)
           function check(key) {
-              return data === key;
+              return data === key.id;
             }
           let currentKeyIndex = state.selectedFolderKeys.findIndex(check);
           if(currentKeyIndex===-1){
-              state.selectedFolderKeys.push(data);
+              state.selectedFolderKeys.push({id:data,index:action.payload.index});
           }else{
               state.selectedFolderKeys.splice(currentKeyIndex,1);
           }
@@ -32,11 +32,11 @@ export const checkBoxSlice= createSlice({
           let data=action.payload.id;
           console.log(data)
           function check(key) {
-              return data === key;
+              return data === key.id;
             }
           let currentKeyIndex = state.selectedFileKeys.findIndex(check);
           if(currentKeyIndex===-1){
-              state.selectedFileKeys.push(data);
+              state.selectedFileKeys.push({id:data,index:action.payload.index});
           }else{
               state.selectedFileKeys.splice(currentKeyIndex,1);
           }
@@ -63,7 +63,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     let axi_data=[];
 
     for(i=0;i<folderArr.length;i++){
-      let new_data=API.delete(`/api/folder/?id=${folderArr[i]}`);
+      let new_data=API.delete(`/api/folder/?id=${folderArr[i].id}`);
       axi_data.push(new_data)
     }
 
@@ -92,7 +92,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     let axi_data=[];
 
     for(i=0;i<fileArr.length;i++){
-      let new_data=API.delete(`/api/file/?id=${fileArr[i]}`);
+      let new_data=API.delete(`/api/file/?id=${fileArr[i].id}`);
       axi_data.push(new_data)
     }
 
@@ -121,13 +121,17 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
 export const updateAsync = (fileData,folderData) => (dispatch) => {
     if(Object.keys(folderData).length!==0){
       dispatch(normalLoader())
-      API.patch("/api/folder/",folderData)
+      API.patch("/api/folder/",folderData.payload)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
-        dispatch(updateFileName(res.data))
-        dispatch(updateFavFileName(res.data))
-        dispatch(updateRecentFileName(res.data))
+        let newData={
+          data:res.data,
+          index:folderData.index
+        }
+        dispatch(updateFileName(newData))
+        dispatch(updateFavFileName(newData))
+        dispatch(updateRecentFileName(newData))
         dispatch(normalLoader())
       })
       .catch((err) => {
@@ -139,13 +143,17 @@ export const updateAsync = (fileData,folderData) => (dispatch) => {
 
     if(Object.keys(fileData).length!==0){
       dispatch(normalLoader())
-      API.patch("/api/file/",fileData)
+      API.patch("/api/file/",fileData.payload)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())
-        dispatch(updateFileName(res.data))
-        dispatch(updateFavFileName(res.data))
-        dispatch(updateRecentFileName(res.data))
+        let newData={
+          data:res.data,
+          index:fileData.index
+        }
+        dispatch(updateFileName(newData))
+        dispatch(updateFavFileName(newData))
+        dispatch(updateRecentFileName(newData))
         dispatch(normalLoader())
       })
       .catch((err) => {

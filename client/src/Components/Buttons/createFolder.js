@@ -52,7 +52,7 @@ export default function FormDialog(props) {
         color="primary"
         onClick={handleClickOpen}
       >
-        Add Folder
+        Create Folder
       </Button>
       <Dialog
         open={open}
