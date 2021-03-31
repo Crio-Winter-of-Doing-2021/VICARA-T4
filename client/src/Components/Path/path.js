@@ -42,7 +42,7 @@ export default function CustomizedBreadcrumbs(props) {
         key={data.id}
         component="a"
         href="#"
-        label={data.NAME}
+        label={data.name}
         icon={
           data.id === "ROOT" ? (
             <HomeIcon fontSize="small" />
@@ -56,7 +56,7 @@ export default function CustomizedBreadcrumbs(props) {
   });
 
   return (
-    <Breadcrumbs style={{ margin: "10px 0" }} aria-label="breadcrumb">
+    <Breadcrumbs style={{ margin: "10px" }} aria-label="breadcrumb">
       {renderNav}
     </Breadcrumbs>
   );

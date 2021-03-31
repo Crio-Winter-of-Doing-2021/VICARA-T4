@@ -1,10 +1,13 @@
 import os
-
+import boto3
 # django imports
 from django.db import models
 from django.contrib.auth.models import User
 from folder.models import Folder
 from django.contrib.humanize.templatetags import humanize
+
+# local
+from mysite.settings import AWS_STORAGE_BUCKET_NAME
 
 
 class FileManager(models.Manager):
@@ -52,3 +55,9 @@ class File(models.Model):
 
     def make_key(self, name):
         return os.path.join(self.file.storage.location, name)
+
+    def get_size(self):
+        s3 = boto3.resource('s3')
+        object = s3.Object(AWS_STORAGE_BUCKET_NAME, self.get_s3_key())
+        file_size = object.content_length  # size in bytes
+        return file_size

@@ -16,7 +16,7 @@ export const checkBoxSlice= createSlice({
    updateSelectedKeys:(state,action)=>{
         let type=action.payload.type
         console.log(type)
-        if(type==='FOLDER'){
+        if(type==='folder'){
           let data=action.payload.id;
           console.log(data)
           function check(key) {
@@ -63,16 +63,20 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     let axi_data=[];
 
     for(i=0;i<folderArr.length;i++){
-      let new_data=API.delete(`/api/filesystem/?id=${folderArr[i]}`);
+      let new_data=API.delete(`/api/folder/?id=${folderArr[i]}`);
       axi_data.push(new_data)
     }
 
     axios.all(axi_data).then(axios.spread((...res)=>{
       let k;
       for(k=0;k<folderArr.length;k++){
-        dispatch(popFromCurrentStack(res[k].data))
-        dispatch(popFromCurrentFavStack(res[k].data))
-        dispatch(popFromCurrentRecentStack(res[k].data))
+        let newdata={
+          data:res[k].data,
+          type:'folder'
+        }
+        dispatch(popFromCurrentStack(newdata))
+        dispatch(popFromCurrentFavStack(newdata))
+        dispatch(popFromCurrentRecentStack(newdata))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -95,9 +99,13 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
     axios.all(axi_data).then(axios.spread((...res)=>{
       let k;
       for(k=0;k<fileArr.length;k++){
-        dispatch(popFromCurrentStack(res[k].data))
-        dispatch(popFromCurrentFavStack(res[k].data))
-        dispatch(popFromCurrentRecentStack(res[k].data))
+        let newdata={
+          data:res[k].data,
+          type:'file'
+        }
+        dispatch(popFromCurrentStack(newdata))
+        dispatch(popFromCurrentFavStack(newdata))
+        dispatch(popFromCurrentRecentStack(newdata))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -113,7 +121,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
 export const updateAsync = (fileData,folderData) => (dispatch) => {
     if(Object.keys(folderData).length!==0){
       dispatch(normalLoader())
-      API.patch("/api/filesystem/",folderData)
+      API.patch("/api/folder/",folderData)
       .then((res) => {
         console.log(res)
         // dispatch(emptykeys())

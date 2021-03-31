@@ -14,6 +14,7 @@ from django.core.files import File as DjangoCoreFile
 from .decorators import *
 from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
 from .serializers import FileSerializer
+from user.serializers import ProfileSerializer
 from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
@@ -125,8 +126,13 @@ class FileView(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
+        size = file.get_size()
+        file.owner.profile.storage_used -= size
+        file.owner.profile.save()
         file.delete()
-        return Response(data={"id": id}, status=status.HTTP_200_OK)
+        storage_data = ProfileSerializer(
+            file.owner.profile).data["storage_data"]
+        return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
 
 
 class ShareFile(APIView):
