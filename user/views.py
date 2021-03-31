@@ -232,6 +232,8 @@ class Path(APIView):
         if(type == "FILE"):
             start_node = File.objects.get(id=id)
         elif(type == "FOLDER"):
+            if(id == "ROOT"):
+                id = request.user.profile.root.id
             start_node = Folder.objects.get(id=id)
 
         if(start_node.owner != request.user):
