@@ -169,7 +169,7 @@ export const pathAsync = (data) => (dispatch) => {
 export const getFileAsync = (data) => (dispatch) => {
   dispatch(normalLoader());
 
-  API.get(`/api/file/stream-file/`, {
+  API.get(`/api/file/download/`, {
     params: {
       id: data,
     },
