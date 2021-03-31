@@ -105,15 +105,15 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
-    let newData={
-      id:unique_id,
-      type:"FOLDER"
-    }
+    let newData = {
+      id: unique_id,
+      type: "FOLDER",
+    };
     dispatch(pathAsync(newData));
   }, [unique_id]);
 
-  tableData=structureState
-  
+  tableData = structureState;
+
   let updateFolder = (key) => {
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`);
@@ -136,28 +136,28 @@ export default function Structure(props) {
     dispatch(privacyAsync(data));
   };
 
-  let tableRenderer = tableData.map((data,index) => {
+  let tableRenderer = tableData.map((data, index) => {
     let favReverseData = {
-      payload:{
+      payload: {
         id: data.id,
         favourite: !data.favourite,
       },
-      type:data.type,
-      key:index
+      type: data.type,
+      key: index,
     };
 
-    let userDetails = {
-      CREATOR: creator,
-      id: data.id,
-    };
+    // let userDetails = {
+    //   CREATOR: creator,
+    //   id: data.id,
+    // };
 
     let privReverse = {
-      payload:{
+      payload: {
         id: data.id,
-        privacy:!data.privacy
+        privacy: !data.privacy,
       },
-      type:data.type,
-      key:index
+      type: data.type,
+      key: index,
     };
 
     let keyData = {
@@ -166,14 +166,13 @@ export default function Structure(props) {
       index:index
     };
 
-    let typeData={
-      type:data.type,
-      id:data.id
-    }
+    let typeData = {
+      type: data.type,
+      id: data.id,
+    };
 
     return (
       <StyledTableRow key={data.id}>
-      
         <StyledTableCell component="th" scope="row">
         <RightClickUtil data={typeData}>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -229,8 +228,12 @@ export default function Structure(props) {
           </div>
           </RightClickUtil>
         </StyledTableCell>
-        
-        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
           {data.last_modified}
         </StyledTableCell>
 
@@ -252,7 +255,11 @@ export default function Structure(props) {
             </Tooltip>
           )}
         </StyledTableCell>
-        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
           {data.created_at}
         </StyledTableCell>
         <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">

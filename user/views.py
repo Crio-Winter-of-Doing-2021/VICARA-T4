@@ -19,7 +19,7 @@ from .decorators import *
 from file.decorators import *
 from folder.serializers import FolderSerializer, FolderSerializerWithoutChildren
 from file.serializers import FileSerializer
-from folder.decorators import check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
+from folder.decorators import allow_id_root_helper, check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
 from folder.utils import set_recursive_trash
 from .utils import is_valid_email
 
@@ -225,6 +225,7 @@ class SharedWithMe(APIView):
 class Path(APIView):
     @ check_request_attr(["id", "TYPE"])
     @ check_id_with_type
+    # allow id in folder enabled
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
         type = request.GET["TYPE"]
@@ -232,6 +233,8 @@ class Path(APIView):
         if(type == "FILE"):
             start_node = File.objects.get(id=id)
         elif(type == "FOLDER"):
+            request = allow_id_root_helper(request)
+            id = request.GET["id"]
             start_node = Folder.objects.get(id=id)
 
         if(start_node.owner != request.user):

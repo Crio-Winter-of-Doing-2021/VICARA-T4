@@ -25,7 +25,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'root_id', 'gender', 'storage_data', 'storage_used', 'storage_avail')
 
     def get_gender(self, obj):
         options = {

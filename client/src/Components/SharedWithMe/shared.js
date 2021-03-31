@@ -5,21 +5,20 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 
-import {dateParser} from '../../Utilities/dateParser'
+import { dateParser } from "../../Utilities/dateParser";
 
 import {
-  
   selectSharedStructure,
   // pathAsync,
-  sharedStructureAsync
+  sharedStructureAsync,
 } from "../../store/slices/sharedWithMeSlice";
 
 // import { selectStructure } from "../../store/slices/structureSlice";
 import { shareAsync } from "../../store/slices/shareSlice";
 
 // import AddFolder from "../Buttons/addFolder";
-import Delete from "../Buttons/delete";
-import Update from "../Buttons/update";
+// import Delete from "../Buttons/delete";
+// import Update from "../Buttons/update";
 // import AddFile from "../Buttons/addFile";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
@@ -37,19 +36,18 @@ import { default as UILink } from "@material-ui/core/Link";
 import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
-import Checkbox from "@material-ui/core/Checkbox";
+// import Checkbox from "@material-ui/core/Checkbox";
 import {
-  updateSelectedKeys,
   // selectCheckedKeys,
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
-import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+// import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
+// import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
 
-import {addRecentAsync} from '../../store/slices/recentSlice'
+// import {addRecentAsync} from '../../store/slices/recentSlice'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -78,10 +76,10 @@ const useStyles = makeStyles({
 export default function Structure(props) {
   const classes = useStyles();
 
-  const creator = window.localStorage.getItem("author");
+  // const creator = window.localStorage.getItem("author");
   let structureState = useSelector(selectSharedStructure);
 
-//   let temp = useSelector(selectStructure);
+  //   let temp = useSelector(selectStructure);
 
   console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
@@ -96,11 +94,11 @@ export default function Structure(props) {
   Object.keys(structureState).forEach((key, index) => {
     let location = "Loading";
 
-    let newtime=''
+    let newtime = "";
 
-    if(structureState[key].TIMESTAMP!==undefined){
-      let res=dateParser(structureState[key].TIMESTAMP)
-      newtime=res.date + '-' + res.month + '-' + res.year
+    if (structureState[key].TIMESTAMP !== undefined) {
+      let res = dateParser(structureState[key].TIMESTAMP);
+      newtime = res.date + "-" + res.month + "-" + res.year;
     }
 
     if (structureState[key] !== undefined) {
@@ -110,11 +108,11 @@ export default function Structure(props) {
     let newData = {
       key: key,
       type: structureState[key].TYPE,
-      name:structureState[key].NAME,
+      name: structureState[key].NAME,
       privacy: structureState[key].PRIVACY,
-      author:structureState[key].CREATOR,
+      author: structureState[key].CREATOR,
       path: location,
-      time:newtime
+      time: newtime,
     };
     tableData.push(newData);
   });
@@ -128,27 +126,27 @@ export default function Structure(props) {
 
   // const [checked, setChecked] = React.useState(true);
 
-//   const handleCheckedChange = (key, e) => {
-//     console.log("checked");
-//     dispatch(updateSelectedKeys(key));
-//   };
+  //   const handleCheckedChange = (key, e) => {
+  //     console.log("checked");
+  //     dispatch(updateSelectedKeys(key));
+  //   };
 
-//   const handleFavouriteClick = (e, data) => {
-//     e.preventDefault();
-//     console.log(data);
-//     dispatch(addFavouriteAsync(data));
-//   };
+  //   const handleFavouriteClick = (e, data) => {
+  //     e.preventDefault();
+  //     console.log(data);
+  //     dispatch(addFavouriteAsync(data));
+  //   };
 
-//   const handlePrivacy = (e, data) => {
-//     e.preventDefault();
-//     dispatch(privacyAsync(data));
-//   };
+  //   const handlePrivacy = (e, data) => {
+  //     e.preventDefault();
+  //     dispatch(privacyAsync(data));
+  //   };
 
-  let privOpp = (privacy) => {
-    if (privacy === "PUBLIC") return "PRIVATE";
-    return "PUBLIC";
-  };
-  
+  // let privOpp = (privacy) => {
+  //   if (privacy === "PUBLIC") return "PRIVATE";
+  //   return "PUBLIC";
+  // };
+
   console.log(tableData);
 
   let tableRenderer = tableData.map((data) => {
@@ -156,8 +154,6 @@ export default function Structure(props) {
     //   id: data.key,
     //   is_favourite: !data.favourite,
     // };
-
-    
 
     let userDetails = {
       CREATOR: data.author,
@@ -190,8 +186,6 @@ export default function Structure(props) {
               <DescriptionTwoToneIcon />
             )}
 
-            
-
             {data.type === "FOLDER" ? (
               <UILink
                 component="button"
@@ -208,7 +202,9 @@ export default function Structure(props) {
                 component="button"
                 variant="body2"
                 style={{ marginLeft: "5px" }}
-                onClick={() =>{ dispatch(shareAsync(userDetails))}}
+                onClick={() => {
+                  dispatch(shareAsync(userDetails));
+                }}
               >
                 {data.name}
               </UILink>
@@ -234,7 +230,9 @@ export default function Structure(props) {
           </div>
         </StyledTableCell>
         <StyledTableCell>
-          <div style={{ fontStyle: "italic", color: "grey" }}>{data.author}</div>
+          <div style={{ fontStyle: "italic", color: "grey" }}>
+            {data.author}
+          </div>
         </StyledTableCell>
         <StyledTableCell component="th" scope="row">
           {data.privacy === undefined ? (
@@ -245,16 +243,13 @@ export default function Structure(props) {
             </Tooltip>
           ) : data.privacy === "PRIVATE" ? (
             <Tooltip title="File is Private">
-              <IconButton disabled >
+              <IconButton disabled>
                 <VisibilityOffIcon />
               </IconButton>
             </Tooltip>
           ) : (
             <Tooltip title="File is Public">
-              <IconButton
-              disabled
-                color="primary"
-              >
+              <IconButton disabled color="primary">
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>
