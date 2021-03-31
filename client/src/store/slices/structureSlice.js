@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { normalLoader, skeletonLoader } from "./loaderSlice";
-import { baseURL, token as authToken } from "../../axios";
+
 // import {updateSharePrivacy} from './shareSlice'
 
 export const structureSlice = createSlice({
@@ -166,56 +166,23 @@ export const pathAsync = (data) => (dispatch) => {
     });
 };
 
-function download(blob, filename) {
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.style.display = "none";
-  a.href = url;
-  // the filename you want
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
-}
 export const getFileAsync = (data) => (dispatch) => {
   dispatch(normalLoader());
-  fetch(`${baseURL}/api/file/stream-file/?id=${data}`, {
-    crossDomain: true,
-    method: "get",
-    headers: {
-      Authorisation: `Token ${authToken}`,
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
+
+  API.get(`/api/file/stream-file/`, {
+    params: {
+      id: data,
     },
   })
-    // .then((res) => res.blob())
-    .then((blob) => {
-      console.log("in blobbbbbbbbbbbbbb", blob);
-      // download(blob, "yahi hai file bete");
+    .then((res) => {
+      console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+      // saveAs(res.data["url"], "image.jpg");
       dispatch(normalLoader());
-      console.log(data);
     })
     .catch((err) => {
+      console.log("ommaago its an errro", err);
       dispatch(normalLoader());
-      console.error("trail with blob ", err);
     });
-
-  // API.get(`/api/file/stream-file/`, {
-  //   params: {
-  //     id: data,
-  //   },
-  // })
-  //   .then((res) => res.blob())
-  //   .then((blob) => {
-  //     console.log("in blobbbbbbbbbbbbbb");
-  //     download(blob, "yahi hai file bete");
-  //     dispatch(normalLoader());
-  //   })
-  //   .catch((err) => {
-  //     console.log("ommaago its an errro", err);
-  //     dispatch(normalLoader());
-  //   });
 };
 
 export const selectStructure = (state) =>

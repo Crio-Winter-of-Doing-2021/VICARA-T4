@@ -1,9 +1,9 @@
 from django.urls import path, include
-from .views import FileView, ShareFile, UploadByDriveUrl, StreamFile
+from .views import FileView, ShareFile, UploadByDriveUrl, DownloadFile
 
 urlpatterns = [
     path('', FileView.as_view(), name='file-upload'),
     path('share/', ShareFile.as_view(), name="share"),
     path('upload-by-url/', UploadByDriveUrl.as_view(), name="upload-by-url"),
-    path('stream-file/', StreamFile.as_view(), name="stream-file"),
+    path('download-file/', DownloadFile.as_view(), name="download-file"),
 ]

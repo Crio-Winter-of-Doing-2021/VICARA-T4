@@ -205,7 +205,7 @@ class UploadByDriveUrl(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class StreamFile(APIView):
+class DownloadFile(APIView):
 
     @check_id_file
     @check_has_access_file
