@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admssddisdfn5\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"admin6\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,9 +20,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROD}}/api/auth/register/",
+					"raw": "{{LOCAL}}/api/auth/register/",
 					"host": [
-						"{{PROD}}"
+						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
@@ -401,7 +401,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/folder/?id=28",
+					"raw": "{{LOCAL}}/api/folder/?id=1",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -413,7 +413,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "28"
+							"value": "1"
 						}
 					]
 				}
@@ -433,7 +433,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\":\"test folder parent\",\n    \"PARENT\":\"ROOT\"\n}",
+					"raw": "{\n    \"name\":\"Level 3.1\",\n    \"PARENT\":3\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -522,6 +522,49 @@
 						{
 							"key": "id",
 							"value": "14"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/folder/download-folder/",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/api/download-folder/?id=1",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"api",
+						"download-folder",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
 						}
 					]
 				}
@@ -648,9 +691,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/shared-with-me/",
+					"raw": "{{PROD}}/api/shared-with-me/",
 					"host": [
-						"{{LOCAL}}"
+						"{{PROD}}"
 					],
 					"path": [
 						"api",
@@ -662,7 +705,7 @@
 			"response": []
 		},
 		{
-			"name": "/stream-file",
+			"name": "/download-file",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -685,20 +728,20 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/file/stream-file/?id=40",
+					"raw": "{{LOCAL}}/api/file/download-file/?id=1",
 					"host": [
 						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
 						"file",
-						"stream-file",
+						"download-file",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": "40"
+							"value": "1"
 						}
 					]
 				}
@@ -727,7 +770,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/home/panda/Downloads/QEats-Crio.apk"
+							"src": "/home/panda/Documents/result_nitrr/sem_4.pdf"
 						}
 					]
 				},
@@ -822,7 +865,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{LOCAL}}/api/file/?id=1",
+					"raw": "{{LOCAL}}/api/file/?id=8",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -834,7 +877,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "8"
 						}
 					]
 				}
@@ -854,7 +897,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"PARENT\":\"ROOT\",\n    \"DRIVE_URL\":\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png\",\n    \"NAME\":\"hello.png\"\n}",
+					"raw": "{\n    \"PARENT\":\"ROOT\",\n    \"DRIVE_URL\":\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png\",\n    \"NAME\":\"hellsdfsdfo.png\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -21,7 +21,7 @@ class FileManager(models.Manager):
 class File(models.Model):
     file = models.FileField(blank=False, null=False)
     parent = models.ForeignKey(
-        Folder, related_name="children_file", on_delete=models.CASCADE)
+        Folder, related_name="children_file", on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -61,3 +61,10 @@ class File(models.Model):
         object = s3.Object(AWS_STORAGE_BUCKET_NAME, self.get_s3_key())
         file_size = object.content_length  # size in bytes
         return file_size
+
+    def download_to(self, parent_folder_path):
+        path_file = parent_folder_path.joinpath(self.name)
+        print(str(path_file))
+        s3 = boto3.client('s3')
+        s3.download_file(AWS_STORAGE_BUCKET_NAME,
+                         self.get_s3_key(), str(path_file))

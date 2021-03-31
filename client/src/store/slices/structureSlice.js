@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import { normalLoader ,skeletonLoader} from "./loaderSlice";
-import {updateSharePrivacy} from './shareSlice'
+import { normalLoader, skeletonLoader } from "./loaderSlice";
+
+// import {updateSharePrivacy} from './shareSlice'
 
 export const structureSlice = createSlice({
   name: "structure",
@@ -20,15 +21,14 @@ export const structureSlice = createSlice({
     },
     pushToCurrentStack: (state, action) => {
       let res = action.payload;
-      res.resData.type=res.type
-      state.currentDisplayStructure.unshift(res.resData)
-
+      res.resData.type = res.type;
+      state.currentDisplayStructure.unshift(res.resData);
     },
     updateFileName: (state, action) => {
       let res = action.payload.data;
-      let index=action.payload.index;
-      if(state.currentDisplayStructure[index]!==undefined){
-        state.currentDisplayStructure[index].name=res.name
+      let index = action.payload.index;
+      if (state.currentDisplayStructure[index] !== undefined) {
+        state.currentDisplayStructure[index].name = res.name;
       }
     },
     updatePrivacy: (state, action) => {
@@ -72,7 +72,7 @@ export const {
 
 export const structureAsync = (uni_id) => (dispatch) => {
   console.log("Sending request for /api/folder/");
-  dispatch(skeletonLoader())
+  dispatch(skeletonLoader());
   API.get(`/api/folder/`, {
     params: {
       id: uni_id,
@@ -80,11 +80,11 @@ export const structureAsync = (uni_id) => (dispatch) => {
   })
     .then((res) => {
       dispatch(updateStructure(res.data));
-      dispatch(skeletonLoader())
+      dispatch(skeletonLoader());
     })
     .catch((err) => {
       console.log(err);
-      dispatch(skeletonLoader())
+      dispatch(skeletonLoader());
     });
 };
 
@@ -166,20 +166,24 @@ export const pathAsync = (data) => (dispatch) => {
     });
 };
 
-export const getFileAsync=(data)=>(dispatch)=>{
+export const getFileAsync = (data) => (dispatch) => {
   dispatch(normalLoader());
-  API.get(`/api/file/stream-file/`,{
-    params:{
-      id:data
-    }
-  }).then(res=>{
-    console.log(res)
-    dispatch(normalLoader());
-  }).catch(err=>{
-    console.log(err)
-    dispatch(normalLoader());
+
+  API.get(`/api/file/stream-file/`, {
+    params: {
+      id: data,
+    },
   })
-}
+    .then((res) => {
+      console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+      // saveAs(res.data["url"], "image.jpg");
+      dispatch(normalLoader());
+    })
+    .catch((err) => {
+      console.log("ommaago its an errro", err);
+      dispatch(normalLoader());
+    });
+};
 
 export const selectStructure = (state) =>
   state.structure.currentDisplayStructure;
