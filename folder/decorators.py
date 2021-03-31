@@ -26,6 +26,18 @@ def get_id(request):
     return id
 
 
+def allow_id_root_helper(request):
+    if(request.method == "GET" or request.method == "DELETE"):
+        request.GET._mutable = True
+        request.GET["id"] = request.user.profile.root.id
+        request.GET._mutable = False
+    else:
+        request.POST._mutable = True
+        request.data["id"] = request.user.profile.root.id
+        request.POST._mutable = False
+    return request
+
+
 def allow_id_root(func):
 
     @functools.wraps(func)
@@ -33,14 +45,7 @@ def allow_id_root(func):
 
         id = get_id(request)
         if(id == "ROOT"):
-            if(request.method == "GET" or request.method == "DELETE"):
-                request.GET._mutable = True
-                request.GET["id"] = request.user.profile.root.id
-                request.GET._mutable = False
-            else:
-                request.POST._mutable = True
-                request.data["id"] = request.user.profile.root.id
-                request.POST._mutable = False
+            request = allow_id_root_helper(request)
 
         result = func(self, request, args, **kwargs)
         return result
