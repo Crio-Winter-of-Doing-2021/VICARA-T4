@@ -1,3 +1,4 @@
+from file.decorators import check_storage_available
 import humanize
 from collections import defaultdict
 import json
@@ -163,6 +164,7 @@ class UploadFolder(APIView):
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
+    @check_storage_available
     def post(self, request, *args, **kwargs):
 
         # getting data from requests
@@ -205,12 +207,10 @@ class UploadFolder(APIView):
         parent_record[0][base_folder_name] = base_folder.id
 
         # make all the folders required
-        print(f"{paths=}")
-        print(f"{parent_record=}")
+
         for path_list in structure:
             # because last one is the filename
             for level in range(1, len(path_list)-1):
-                print(f"{parent_record=}")
                 folder_name = path_list[level]
                 parent_name = path_list[level-1]
                 parent_id = parent_record[level-1][parent_name]
@@ -228,6 +228,9 @@ class UploadFolder(APIView):
             req_file_size = humanize.naturalsize(files[index].size)
             create_file(request.user, files[index],
                         parent, file_name, req_file_size)
+            request.user.profile.storage_used = request.user.profile.storage_used + \
+                files[index].size
+            request.user.profile.save()
 
         data = FolderSerializerWithoutChildren(base_folder).data
         return Response(data=data, status=status.HTTP_200_OK)

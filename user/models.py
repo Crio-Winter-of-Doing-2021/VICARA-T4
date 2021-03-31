@@ -22,7 +22,8 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile")
     root = models.OneToOneField(Folder, on_delete=models.CASCADE, null=True)
-    capacity = models.IntegerField(default=100000000)
+    storage_avail = models.IntegerField(default=100000000)
+    storage_used = models.IntegerField(default=0)
     gender = models.SmallIntegerField(default=4)
     gender = models.SmallIntegerField(default=4)
     profile_picture_url = models.TextField(

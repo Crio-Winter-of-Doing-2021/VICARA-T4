@@ -146,7 +146,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     )
 }
-django_heroku.settings(locals())
+
 cloudinary.config(cloud_name=config("CLOUDINARY_CLOUD_NAME"),
                   api_key=config("CLOUDINARY_API_KEY"),
                   api_secret=config("CLOUDINARY_API_SECRET"),)
@@ -176,3 +176,5 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+
+ALLOWED_HOSTS = ["*"]

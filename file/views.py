@@ -40,6 +40,7 @@ class FileView(APIView):
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
     @check_already_present(to_check="req_file_name")
+    @check_storage_available
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
@@ -49,6 +50,8 @@ class FileView(APIView):
             req_file_size = humanize.naturalsize(req_file.size)
             new_file = create_file(
                 request.user, req_file, parent, req_file_name, req_file_size)
+            request.user.profile.storage_used = request.user.profile.storage_used + req_file.size
+            request.user.profile.save()
             new_file = FileSerializer(new_file).data
             data.append(new_file)
         return Response(data=data, status=status.HTTP_201_CREATED)
@@ -161,7 +164,6 @@ class ShareFile(APIView):
             data = FileSerializer(file).data
             s3_key = file.get_s3_key()
             signed_url = get_presigned_url(s3_key)
-            print(f"{signed_url=}")
             data["URL"] = signed_url
             return Response(data=data, status=status.HTTP_200_OK)
         else:

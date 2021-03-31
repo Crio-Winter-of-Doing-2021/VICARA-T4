@@ -121,7 +121,8 @@ class ProfilePicture(APIView):
         try:
             file = request.data.get('picture')
             user_profile = Profile.objects.get(user=request.user)
-            cloudinary_response = cloudinary.uploader.upload(file)
+            cloudinary_response = cloudinary.uploader(
+                file, width=450, height=450, crop="thumb", gravity="faces", zoom=0.65, radius="max")
             user_profile.profile_picture_url = cloudinary_response["secure_url"]
             user_profile.save()
             data = ProfileSerializer(user_profile).data
@@ -222,8 +223,8 @@ class SharedWithMe(APIView):
 
 
 class Path(APIView):
-    @check_request_attr(["id", "TYPE"])
-    @check_id_with_type
+    @ check_request_attr(["id", "TYPE"])
+    @ check_id_with_type
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
         type = request.GET["TYPE"]
@@ -253,10 +254,10 @@ class Path(APIView):
 
 class RecoverFolder(APIView):
 
-    @check_request_attr(["id"])
-    @check_id_folder
-    @check_id_not_root
-    @check_is_owner_folder
+    @ check_request_attr(["id"])
+    @ check_id_folder
+    @ check_id_not_root
+    @ check_is_owner_folder
     def get(self, request, * args, **kwargs):
         # check if folder's parent is in Trash
         # if in trash move this folder to root
@@ -275,9 +276,9 @@ class RecoverFolder(APIView):
 
 
 class RecoverFile(APIView):
-    @check_request_attr(["id"])
-    @check_id_file
-    @check_is_owner_file
+    @ check_request_attr(["id"])
+    @ check_id_file
+    @ check_is_owner_file
     def get(self, request, * args, **kwargs):
         # check if file's parent is in Trash
         # if in trash move this file to root

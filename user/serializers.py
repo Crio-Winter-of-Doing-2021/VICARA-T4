@@ -1,4 +1,4 @@
-from rest_framework.authtoken.models import Token
+import humanize
 from rest_framework import serializers
 from .models import Profile
 
@@ -19,6 +19,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name", read_only=True)
     root_id = serializers.CharField(source="root.id", read_only=True)
     gender = serializers.SerializerMethodField()
+    storage_data = serializers.SerializerMethodField()
+    storage_used = serializers.SerializerMethodField()
+    storage_avail = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -32,3 +35,22 @@ class ProfileSerializer(serializers.ModelSerializer):
             4: "Not Set",
         }
         return options[obj.gender]
+
+    def get_storage_used(self, obj):
+        return humanize.naturalsize(obj.storage_used)
+
+    def get_storage_avail(self, obj):
+        return humanize.naturalsize(obj.storage_avail)
+
+    def get_storage_data(self, obj):
+        used = obj.storage_used
+        avail = obj.storage_avail
+        readable_used = humanize.naturalsize(used)
+        readable_avail = humanize.naturalsize(avail)
+
+        data = {
+            "readable": f"{readable_used} of {readable_avail}",
+            "ratio": used/avail
+        }
+
+        return data
