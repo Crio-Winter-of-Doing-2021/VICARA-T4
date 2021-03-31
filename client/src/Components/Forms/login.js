@@ -14,7 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { baseURL } from "../../axios";
-
+import NormalLoader from '../Loaders/normalBackdrop'
 import { Link as RouteLink } from "react-router-dom";
 
 import { loginAsync } from "../../store/slices/authSlice";
@@ -80,6 +80,7 @@ export default function SignIn(props) {
 
   return (
     <Container component="main" maxWidth="xs">
+      <NormalLoader/>
       <CssBaseline />
       {console.log(state)}
       <div className={classes.paper}>

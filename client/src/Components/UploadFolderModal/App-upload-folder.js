@@ -64,7 +64,7 @@ function App(props) {
         //handle success
         console.log(res)
         let newData={
-          data:res.data,
+          resData:res.data,
           type:"folder"
         }
         dispatch(pushToCurrentStack(newData));

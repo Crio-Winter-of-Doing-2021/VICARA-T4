@@ -67,7 +67,7 @@ function App(props) {
        let k;
        for(k=0;k<res.data.length;k++){
         let newData={
-          data:res.data[k],
+          resData:res.data[k],
           type:"file"
         }
         dispatch(pushToCurrentStack(newData));
