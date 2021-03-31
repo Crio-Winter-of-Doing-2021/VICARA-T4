@@ -6,9 +6,9 @@ from mysite.settings import AWS_STORAGE_BUCKET_NAME
 from .models import File
 
 
-def create_file(owner, req_file, parent, req_file_name):
+def create_file(owner, req_file, parent, req_file_name, size):
     new_file = File(owner=owner, file=req_file,
-                    parent=parent, name=req_file_name)
+                    parent=parent, name=req_file_name, size=size)
     new_file.save()
     return new_file
 
@@ -43,8 +43,6 @@ def rename_s3(old_file_key, new_file_key):
         'Key': old_file_key
     }
     bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
-    print(f"{copy_source=}")
-    print(f"{new_file_key}")
     bucket.copy(copy_source, new_file_key)
     bucket.delete_objects(
         Delete={

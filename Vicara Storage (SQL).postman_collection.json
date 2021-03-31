@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admin4\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"admssddisdfn5\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,15 +20,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/register/",
-					"protocol": "http",
+					"raw": "{{PROD}}/api/auth/register/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{PROD}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -123,7 +118,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admin2\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"admisdn5\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -131,15 +126,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/login/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/auth/login/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -171,15 +161,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/logout/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/auth/logout/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -214,15 +199,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/users/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/auth/users/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"auth",
@@ -234,7 +214,7 @@
 			"response": []
 		},
 		{
-			"name": "GET profile data",
+			"name": "/profile",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -257,15 +237,50 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/profile/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/profile/?id=2",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
+					"path": [
+						"api",
+						"profile",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gender\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/api/profile/",
+					"host": [
+						"{{LOCAL}}"
+					],
 					"path": [
 						"api",
 						"profile",
@@ -276,19 +291,25 @@
 			"response": []
 		},
 		{
-			"name": "PATCH profile data",
+			"name": "/profile-picture",
 			"request": {
-				"method": "PATCH",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{auth_token_string}}"
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "",
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "picture",
+							"type": "file",
+							"src": "/home/panda/Downloads/image-removebg-preview.jpg"
+						}
+					],
 					"options": {
 						"raw": {
 							"language": "json"
@@ -296,18 +317,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/profile/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/profile-picture/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"profile",
+						"profile-picture",
 						""
 					]
 				}
@@ -338,15 +354,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/path/?id=11&TYPE=FOLDER",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/path/?id=24&TYPE=FOLDER",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"path",
@@ -355,7 +366,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "11"
+							"value": "24"
 						},
 						{
 							"key": "TYPE",
@@ -367,7 +378,7 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -390,24 +401,19 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/?id=ROOT",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/folder/?id=28",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": "ROOT"
+							"value": "28"
 						}
 					]
 				}
@@ -415,7 +421,7 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -427,7 +433,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\":\"inside DEEP\",\n    \"PARENT\":\"ROOT\"\n}",
+					"raw": "{\n    \"name\":\"test folder parent\",\n    \"PARENT\":\"ROOT\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -435,18 +441,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/folder/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					]
 				}
@@ -454,7 +455,7 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"request": {
 				"method": "PATCH",
 				"header": [
@@ -466,7 +467,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"trash\":true,\n    \"id\":20\n}",
+					"raw": "{\n    \"shared_among\":[1,2],\n    \"id\":2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -474,18 +475,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/folder/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					]
 				}
@@ -493,14 +489,14 @@
 			"response": []
 		},
 		{
-			"name": "/filesystem",
+			"name": "/folder",
 			"request": {
 				"method": "DELETE",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{auth_token_string}}"
 					}
 				],
 				"body": {
@@ -513,18 +509,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/?id=14",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/folder/?id=14",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						""
 					],
 					"query": [
@@ -561,15 +552,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/file/share/?id=6&CREATOR=6",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/file/share/?id=6&CREATOR=6",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"file",
@@ -614,29 +600,24 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/filesystem/share/?id=25&CREATOR=6",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/folder/share/?id=2&CREATOR=1",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"filesystem",
+						"folder",
 						"share",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": "25"
+							"value": "2"
 						},
 						{
 							"key": "CREATOR",
-							"value": "6"
+							"value": "1"
 						}
 					]
 				}
@@ -667,19 +648,58 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/shared-with-me/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/shared-with-me/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"shared-with-me",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/stream-file",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/api/file/stream-file/?id=40",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"api",
+						"file",
+						"stream-file",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "40"
+						}
 					]
 				}
 			},
@@ -700,27 +720,22 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "file",
-							"type": "file",
-							"src": "/home/panda/Downloads/favicon_io (1)/apple-touch-icon.png"
-						},
-						{
 							"key": "PARENT",
 							"value": "ROOT",
 							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/panda/Downloads/QEats-Crio.apk"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/file/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/file/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"file",
@@ -742,15 +757,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/file/?id=1",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/file/?id=1",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"file",
@@ -787,15 +797,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/file/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/file/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"file",
@@ -817,15 +822,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/file/?id=1",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/file/?id=1",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"file",
@@ -862,15 +862,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/file/upload-by-url/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/file/upload-by-url/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"file",
@@ -893,15 +888,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/favourites/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/favourites/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"favourites",
@@ -923,15 +913,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/recent/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/recent/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"recent",
@@ -953,15 +938,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/trash/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/trash/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"trash",
@@ -992,15 +972,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/recover-folder/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/recover-folder/",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"recover-folder",
@@ -1025,7 +1000,7 @@
 		{
 			"name": "/recover-file",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
@@ -1033,35 +1008,20 @@
 						"value": "{{auth_token_string}}"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\":22\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/recover-folder/",
-					"protocol": "http",
+					"raw": "{{LOCAL}}/api/recover-file/?id=6",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{LOCAL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
-						"recover-folder",
+						"recover-file",
 						""
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": null,
-							"disabled": true
+							"value": "6"
 						},
 						{
 							"key": "type",

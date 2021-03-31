@@ -1,10 +1,13 @@
 import os
-
+import boto3
 # django imports
 from django.db import models
 from django.contrib.auth.models import User
 from folder.models import Folder
 from django.contrib.humanize.templatetags import humanize
+
+# local
+from mysite.settings import AWS_STORAGE_BUCKET_NAME
 
 
 class FileManager(models.Manager):
@@ -19,7 +22,7 @@ class File(models.Model):
     file = models.FileField(blank=False, null=False)
     parent = models.ForeignKey(
         Folder, related_name="children_file", on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(
@@ -31,6 +34,7 @@ class File(models.Model):
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
+    size = models.CharField(max_length=20)
     objects = models.Manager()
     custom_objects = FileManager()
 
@@ -51,3 +55,9 @@ class File(models.Model):
 
     def make_key(self, name):
         return os.path.join(self.file.storage.location, name)
+
+    def get_size(self):
+        s3 = boto3.resource('s3')
+        object = s3.Object(AWS_STORAGE_BUCKET_NAME, self.get_s3_key())
+        file_size = object.content_length  # size in bytes
+        return file_size

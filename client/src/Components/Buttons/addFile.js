@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
+import DevicesIcon from '@material-ui/icons/Devices';
 import axios from "axios";
 
 import { fileUploadLoader, fileLoading } from "../../store/slices/loaderSlice";
@@ -58,12 +58,18 @@ export default function UploadButtons(props) {
       },
     })
       .then((res) => {
-        dispatch(pushToCurrentStack(res.data));
+        let newData={
+          data:res.data,
+          type:"file"
+        }
+        dispatch(pushToCurrentStack(newData));
         dispatch(fileUploadLoader());
+        props.modalClose();
       })
       .catch((err) => {
         dispatch(fileUploadLoader());
         console.log(err);
+        props.modalClose();
       });
   };
 
@@ -79,12 +85,15 @@ export default function UploadButtons(props) {
       />
       <label htmlFor="contained-button-file">
         <Button
-          startIcon={<InsertDriveFileIcon />}
+          disableElevation
+          startIcon={<DevicesIcon/>}
           variant="contained"
-          color="primary"
+          style={{
+            backgroundColor:"lightgrey"
+          }}
           component="span"
         >
-          Add File
+          Select from Device
         </Button>
       </label>
     </div>

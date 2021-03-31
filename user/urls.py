@@ -1,5 +1,5 @@
 from .views import LoginView, Logout, Recent, Register, ListOfUsers,\
-    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile
+    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile, ProfilePicture
 from django.urls import path
 
 urlpatterns = [
@@ -8,6 +8,7 @@ urlpatterns = [
     path('auth/logout/', Logout.as_view(), name="signup"),
     path('auth/users/', ListOfUsers.as_view(), name="users"),
     path('profile/', ProfileView.as_view(), name="profile"),
+    path('profile-picture/', ProfilePicture.as_view(), name="profile-picture"),
     path('path/', Path.as_view(), name="path"),
     path('favourites/',  Favourites.as_view(), name="favourites"),
     path('recent/',  Recent.as_view(), name="recent"),

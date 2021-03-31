@@ -33,7 +33,7 @@ export default function OutlinedButtons() {
     checkedFileKeys.length + checkedFolderKeys.length !== 0 ? false : true;
 
   return (
-    <div style={{ margin: "0 5px 0 10" }}>
+    <div style={{ margin: "10px" }}>
       <Button
         disabled={deactive}
         startIcon={<DeleteIcon />}

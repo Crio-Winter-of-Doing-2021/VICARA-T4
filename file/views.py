@@ -1,4 +1,6 @@
+import humanize
 # django imports
+from django.http import StreamingHttpResponse
 import requests
 import os
 from django.contrib.auth.models import AnonymousUser
@@ -12,6 +14,7 @@ from django.core.files import File as DjangoCoreFile
 from .decorators import *
 from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
 from .serializers import FileSerializer
+from user.serializers import ProfileSerializer
 from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
@@ -38,14 +41,18 @@ class FileView(APIView):
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
     @check_already_present(to_check="req_file_name")
+    @check_storage_available
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
         data = []
         for req_file in request.FILES.getlist('file'):
             req_file_name = req_file.name
+            req_file_size = humanize.naturalsize(req_file.size)
             new_file = create_file(
-                request.user, req_file, parent, req_file_name)
+                request.user, req_file, parent, req_file_name, req_file_size)
+            request.user.profile.storage_used = request.user.profile.storage_used + req_file.size
+            request.user.profile.save()
             new_file = FileSerializer(new_file).data
             data.append(new_file)
         return Response(data=data, status=status.HTTP_201_CREATED)
@@ -119,8 +126,13 @@ class FileView(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
+        size = file.get_size()
+        file.owner.profile.storage_used -= size
+        file.owner.profile.save()
         file.delete()
-        return Response(data={"id": id}, status=status.HTTP_200_OK)
+        storage_data = ProfileSerializer(
+            file.owner.profile).data["storage_data"]
+        return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
 
 
 class ShareFile(APIView):
@@ -158,7 +170,6 @@ class ShareFile(APIView):
             data = FileSerializer(file).data
             s3_key = file.get_s3_key()
             signed_url = get_presigned_url(s3_key)
-            print(f"{signed_url=}")
             data["URL"] = signed_url
             return Response(data=data, status=status.HTTP_200_OK)
         else:
@@ -192,3 +203,21 @@ class UploadByDriveUrl(APIView):
         os.remove(s3_name)
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class StreamFile(APIView):
+
+    @check_id_file
+    @check_has_access_file
+    @check_file_not_trashed
+    @update_last_modified_file
+    def get(self, request, *args, **kwargs):
+        id = request.GET["id"]
+        file = File.objects.get(id=id)
+        s3_key = file.get_s3_key()
+        signed_url = get_presigned_url(s3_key)
+        filename = os.path.basename(signed_url)
+        r = requests.get(signed_url, stream=True)
+        response = StreamingHttpResponse(streaming_content=r)
+        response['Content-Disposition'] = f'attachement; filename="{filename}"'
+        return response

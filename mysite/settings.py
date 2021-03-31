@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import django_heroku
+import cloudinary
 from pathlib import Path
 import os
 from decouple import config
@@ -145,9 +147,10 @@ REST_FRAMEWORK = {
     )
 }
 
-
+cloudinary.config(cloud_name=config("CLOUDINARY_CLOUD_NAME"),
+                  api_key=config("CLOUDINARY_API_KEY"),
+                  api_secret=config("CLOUDINARY_API_SECRET"),)
 USE_S3 = config('USE_S3') == 'TRUE'
-
 if USE_S3:
     # aws settings
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
@@ -173,3 +176,5 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+
+ALLOWED_HOSTS = ["*"]

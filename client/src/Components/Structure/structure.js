@@ -15,7 +15,9 @@ import {
 import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
-import AddFile from "../Buttons/addFile";
+// import AddFile from "../Buttons/addFile";
+
+import UploadMenu from "../UploadMenu/index";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -27,13 +29,13 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import{addRecentAsync} from '../../store/slices/recentSlice'
+// import{addRecentAsync} from '../../store/slices/recentSlice'
 
 // import { Link } from "react-router-dom";
 
-import RightClickUtil from '../RightClickMenu/rightClickUtil'
+import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
-import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
+// import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
 import Checkbox from "@material-ui/core/Checkbox";
@@ -45,12 +47,14 @@ import {
 } from "../../store/slices/checkBoxSlice";
 
 // import { selectUser } from "../../store/slices/authSlice";
-import { shareAsync } from "../../store/slices/shareSlice";
+// import { shareAsync } from "../../store/slices/shareSlice";
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import RemoveIcon from "@material-ui/icons/Remove";
+// import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
+
+import { typeTest } from "../../Utilities/fileType";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -90,7 +94,7 @@ export default function Structure(props) {
   const structureState = useSelector(selectStructure);
   // const fileKeys = useSelector(selectCheckedFileKeys);
   // const folderKeys = useSelector(selectCheckedFolderKeys);
-  console.log(structureState);
+  // console.log(structureState);
   //   const selectedKeys=useSelector(selectCheckedKeys)
 
   let tableData = [];
@@ -98,19 +102,25 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
-    dispatch(pathAsync(unique_id));
+    let newData = {
+      id: unique_id,
+      type: "FOLDER",
+    };
+    dispatch(pathAsync(newData));
   }, [unique_id, dispatch]);
 
-  Object.keys(structureState).forEach((key, index) => {
-    let newData = {
-      key: key,
-      type: structureState[key].TYPE,
-      name: structureState[key].NAME,
-      favourite: structureState[key].FAVOURITE,
-      privacy: structureState[key].PRIVACY,
-    };
-    tableData.push(newData);
-  });
+  // Object.keys(structureState).forEach((key, index) => {
+  //   let newData = {
+  //     key: key,
+  //     type: structureState[key].TYPE,
+  //     name: structureState[key].NAME,
+  //     favourite: structureState[key].FAVOURITE,
+  //     privacy: structureState[key].PRIVACY,
+  //   };
+  //   tableData.push(newData);
+  // });
+
+  tableData = structureState;
 
   let updateFolder = (key) => {
     console.log("key clicked", key);
@@ -137,101 +147,112 @@ export default function Structure(props) {
     dispatch(privacyAsync(data));
   };
 
-  let tableRenderer = tableData.map((data) => {
+  let tableRenderer = tableData.map((data, index) => {
     let favReverseData = {
-      id: data.key,
-      is_favourite: !data.favourite,
+      payload: {
+        id: data.id,
+        favourite: !data.favourite,
+      },
+      type: data.type,
+      key: index,
     };
 
-    let userDetails = {
-      CREATOR: creator,
-      id: data.key,
-    };
+    // let userDetails = {
+    //   CREATOR: creator,
+    //   id: data.id,
+    // };
 
     // console.log(userDetails)
 
     let privReverse = {
-      id: data.key,
-      PRIVACY: privOpp(data.privacy),
+      payload: {
+        id: data.id,
+        privacy: !data.privacy,
+      },
+      type: data.type,
+      key: index,
     };
 
     let keyData = {
-      id: data.key,
+      id: data.id,
       type: data.type,
     };
 
-    let typeData={
-      type:data.type,
-      id:data.key
-    }
+    let typeData = {
+      type: data.type,
+      id: data.id,
+    };
 
     return (
-      <StyledTableRow key={data.key}>
-      
+      <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-        <RightClickUtil data={typeData}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Checkbox
-              onChange={(e) => handleCheckedChange(keyData, e)}
-              inputProps={{ "aria-label": "primary checkbox" }}
-            />
-            {data.type === "FOLDER" ? (
-              <FolderOpenTwoToneIcon />
-            ) : (
-              <DescriptionTwoToneIcon />
-            )}
+          <RightClickUtil data={typeData}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Checkbox
+                onChange={(e) => handleCheckedChange(keyData, e)}
+                inputProps={{ "aria-label": "primary checkbox" }}
+              />
+              {data.type === "folder" ? (
+                <FolderOpenTwoToneIcon />
+              ) : (
+                typeTest(data.name)
+              )}
 
-            {data.type === "FOLDER" ? (
-              <UILink
-                component="button"
-                variant="body2"
-                style={{ marginLeft: "5px" }}
-                onClick={() => {
-                  updateFolder(data.key);
-                }}
-              >
-                {data.name}
-              </UILink>
-            ) : (
-              <UILink
-                component="button"
-                variant="body2"
-                style={{ marginLeft: "5px" }}
-                onClick={() => {dispatch(shareAsync(userDetails));dispatch(addRecentAsync(data.key))}}
-              >
-                {data.name}
-              </UILink>
-            )}
+              {data.type === "folder" ? (
+                <UILink
+                  component="button"
+                  variant="body2"
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    updateFolder(data.id);
+                  }}
+                >
+                  {data.name}
+                </UILink>
+              ) : (
+                <UILink
+                  component="button"
+                  variant="body2"
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    console.log("clicked");
+                  }}
+                >
+                  {data.name}
+                </UILink>
+              )}
 
-            {data.favourite === true ? (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarRoundedIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarBorderRoundedIcon />
-              </IconButton>
-            )}
-          </div>
+              {data.favourite === true ? (
+                <IconButton
+                  onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                  style={{ margin: "0 10px" }}
+                  color="primary"
+                >
+                  <StarRoundedIcon />
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                  style={{ margin: "0 10px" }}
+                  color="primary"
+                >
+                  <StarBorderRoundedIcon />
+                </IconButton>
+              )}
+            </div>
           </RightClickUtil>
         </StyledTableCell>
-        
+
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
+          {data.last_modified}
+        </StyledTableCell>
+
         <StyledTableCell component="th" scope="row">
-          {data.privacy === undefined ? (
-            <Tooltip title="Privacy cannot be set for folders">
-              <IconButton>
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          ) : data.privacy === "PRIVATE" ? (
+          {data.privacy === true ? (
             <Tooltip title="File is Private">
               <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
                 <VisibilityOffIcon />
@@ -248,6 +269,13 @@ export default function Structure(props) {
             </Tooltip>
           )}
         </StyledTableCell>
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
+          {data.created_at}
+        </StyledTableCell>
       </StyledTableRow>
     );
   });
@@ -255,18 +283,22 @@ export default function Structure(props) {
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <AddFile parent={unique_id} />
+        {/* <AddFile parent={unique_id} /> */}
+
         <AddFolder id={unique_id} />
+        <UploadMenu parent={unique_id} />
         <Delete />
         <Update />
       </div>
       <Path {...props} />
-      <TableContainer style={{ marginTop: "20px" }} component={Paper}>
+      <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell></StyledTableCell>
               <StyledTableCell>Privacy</StyledTableCell>
+              <StyledTableCell>Time Created</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>{tableRenderer}</TableBody>

@@ -70,7 +70,7 @@ export default function FormDialog() {
     checkedFolderKeys.length + checkedFileKeys.length !== 1 ? true : false;
 
   return (
-    <div style={{ margin: "0 10px 0 5px" }}>
+    <div style={{ margin: "10px" }}>
       <Button
         startIcon={<EditIcon />}
         disabled={deactive}
