@@ -15,9 +15,9 @@ import {
 import AddFolder from "../Buttons/addFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
-import AddFile from "../Buttons/addFile";
+// import AddFile from "../Buttons/addFile";
 
-import UploadMenu from '../UploadMenu/index'
+import UploadMenu from "../UploadMenu/index";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -29,13 +29,13 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import{addRecentAsync} from '../../store/slices/recentSlice'
+// import{addRecentAsync} from '../../store/slices/recentSlice'
 
 // import { Link } from "react-router-dom";
 
-import RightClickUtil from '../RightClickMenu/rightClickUtil'
+import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
-import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
+// import DescriptionTwoToneIcon from "@material-ui/icons/DescriptionTwoTone";
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
 import Checkbox from "@material-ui/core/Checkbox";
@@ -47,14 +47,14 @@ import {
 } from "../../store/slices/checkBoxSlice";
 
 // import { selectUser } from "../../store/slices/authSlice";
-import { shareAsync } from "../../store/slices/shareSlice";
+// import { shareAsync } from "../../store/slices/shareSlice";
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import RemoveIcon from "@material-ui/icons/Remove";
+// import RemoveIcon from "@material-ui/icons/Remove";
 import IconButton from "@material-ui/core/IconButton";
 
-import {typeTest} from '../../Utilities/fileType'
+import { typeTest } from "../../Utilities/fileType";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -102,10 +102,10 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
-    let newData={
-      id:unique_id,
-      type:"FOLDER"
-    }
+    let newData = {
+      id: unique_id,
+      type: "FOLDER",
+    };
     dispatch(pathAsync(newData));
   }, [unique_id, dispatch]);
 
@@ -120,8 +120,8 @@ export default function Structure(props) {
   //   tableData.push(newData);
   // });
 
-  tableData=structureState
-  
+  tableData = structureState;
+
   let updateFolder = (key) => {
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`);
@@ -147,30 +147,30 @@ export default function Structure(props) {
     dispatch(privacyAsync(data));
   };
 
-  let tableRenderer = tableData.map((data,index) => {
+  let tableRenderer = tableData.map((data, index) => {
     let favReverseData = {
-      payload:{
+      payload: {
         id: data.id,
         favourite: !data.favourite,
       },
-      type:data.type,
-      key:index
+      type: data.type,
+      key: index,
     };
 
-    let userDetails = {
-      CREATOR: creator,
-      id: data.id,
-    };
+    // let userDetails = {
+    //   CREATOR: creator,
+    //   id: data.id,
+    // };
 
     // console.log(userDetails)
 
     let privReverse = {
-      payload:{
+      payload: {
         id: data.id,
-        privacy:!data.privacy
+        privacy: !data.privacy,
       },
-      type:data.type,
-      key:index
+      type: data.type,
+      key: index,
     };
 
     let keyData = {
@@ -178,71 +178,76 @@ export default function Structure(props) {
       type: data.type,
     };
 
-    let typeData={
-      type:data.type,
-      id:data.id
-    }
+    let typeData = {
+      type: data.type,
+      id: data.id,
+    };
 
     return (
       <StyledTableRow key={data.id}>
-      
         <StyledTableCell component="th" scope="row">
-        <RightClickUtil data={typeData}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Checkbox
-              onChange={(e) => handleCheckedChange(keyData, e)}
-              inputProps={{ "aria-label": "primary checkbox" }}
-            />
-            {data.type === "folder" ? (
-              <FolderOpenTwoToneIcon />
-            ) : (
-             typeTest(data.name) 
-            )}
+          <RightClickUtil data={typeData}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Checkbox
+                onChange={(e) => handleCheckedChange(keyData, e)}
+                inputProps={{ "aria-label": "primary checkbox" }}
+              />
+              {data.type === "folder" ? (
+                <FolderOpenTwoToneIcon />
+              ) : (
+                typeTest(data.name)
+              )}
 
-            {data.type === "folder" ? (
-              <UILink
-                component="button"
-                variant="body2"
-                style={{ marginLeft: "5px" }}
-                onClick={() => {
-                  updateFolder(data.id);
-                }}
-              >
-                {data.name}
-              </UILink>
-            ) : (
-              <UILink
-                component="button"
-                variant="body2"
-                style={{ marginLeft: "5px" }}
-                onClick={() => {console.log("clicked")}}
-              >
-                {data.name}
-              </UILink>
-            )}
+              {data.type === "folder" ? (
+                <UILink
+                  component="button"
+                  variant="body2"
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    updateFolder(data.id);
+                  }}
+                >
+                  {data.name}
+                </UILink>
+              ) : (
+                <UILink
+                  component="button"
+                  variant="body2"
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    console.log("clicked");
+                  }}
+                >
+                  {data.name}
+                </UILink>
+              )}
 
-            {data.favourite === true ? (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarRoundedIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarBorderRoundedIcon />
-              </IconButton>
-            )}
-          </div>
+              {data.favourite === true ? (
+                <IconButton
+                  onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                  style={{ margin: "0 10px" }}
+                  color="primary"
+                >
+                  <StarRoundedIcon />
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                  style={{ margin: "0 10px" }}
+                  color="primary"
+                >
+                  <StarBorderRoundedIcon />
+                </IconButton>
+              )}
+            </div>
           </RightClickUtil>
         </StyledTableCell>
-        
-        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
           {data.last_modified}
         </StyledTableCell>
 
@@ -264,7 +269,11 @@ export default function Structure(props) {
             </Tooltip>
           )}
         </StyledTableCell>
-        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
           {data.created_at}
         </StyledTableCell>
       </StyledTableRow>
@@ -275,9 +284,9 @@ export default function Structure(props) {
     <div>
       <div style={{ display: "flex" }}>
         {/* <AddFile parent={unique_id} /> */}
-        
+
         <AddFolder id={unique_id} />
-        <UploadMenu parent={unique_id}/>
+        <UploadMenu parent={unique_id} />
         <Delete />
         <Update />
       </div>

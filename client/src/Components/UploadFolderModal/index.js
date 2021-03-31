@@ -1,29 +1,35 @@
-import React from 'react';
-import {useDispatch,useSelector} from 'react-redux'
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FolderIcon from '@material-ui/icons/Folder';
-import { Divider, Typography,ListItemText,ListItem,Avatar,ListItemAvatar } from '@material-ui/core';
-import AddFolder from './App-upload-folder'
-import {token,baseURL} from '../../axios'
-import axios from 'axios'
-import {fileUploadLoader,fileLoading} from '../../store/slices/loaderSlice'
-import {pushToCurrentStack} from '../../store/slices/structureSlice'
-import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
+import React from "react";
+// import { useDispatch, useSelector } from "react-redux";
+import Button from "@material-ui/core/Button";
+// import TextField from '@material-ui/core/TextField';
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+// import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FolderIcon from "@material-ui/icons/Folder";
+import {
+  Divider,
+  ListItemText,
+  ListItem,
+  Avatar,
+  ListItemAvatar,
+} from "@material-ui/core";
+import AddFolder from "./App-upload-folder";
+// import {token,baseURL} from '../../axios'
+// import axios from 'axios'
+// import { fileLoading } from "../../store/slices/loaderSlice";
+// import {pushToCurrentStack} from '../../store/slices/structureSlice'
+// import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 
 export default function FormDialog(props) {
-  const [open,setOpen]=React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
-  let loading = useSelector(fileLoading)
+  // let loading = useSelector(fileLoading);
 
-  const dispatch=useDispatch();
+  // const dispatch = useDispatch();
 
-  const [progress, setProgress] = React.useState(0);
+  // const [progress, setProgress] = React.useState(0);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -36,22 +42,39 @@ export default function FormDialog(props) {
   return (
     <div>
       {/* <FileBackdropLoader progress={progress} show={loading} /> */}
-      <ListItem style={{cursor:"pointer"}} onClick={()=>{handleClickOpen()}}>
-          <ListItemAvatar>
-              <Avatar>
-                <FolderIcon/>
-              </Avatar>
-          </ListItemAvatar>
-        <ListItemText
-            primary="Folders"
-          />
-        </ListItem>
-      <Dialog fullWidth  open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <ListItem
+        style={{ cursor: "pointer" }}
+        onClick={() => {
+          handleClickOpen();
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar>
+            <FolderIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary="Folders" />
+      </ListItem>
+      <Dialog
+        fullWidth
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
         <DialogTitle id="form-dialog-title">Upload Folders</DialogTitle>
-        <Divider/>
+        <Divider />
         <DialogContent>
-          <div style={{display:"flex",justifyContent:"center",alignItems:"center",height:"150px",border:"2px dashed grey",borderRadius:"5px"}}>
-            <AddFolder modalClose={handleClose} parent={props.parent}/>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "150px",
+              border: "2px dashed grey",
+              borderRadius: "5px",
+            }}
+          >
+            <AddFolder modalClose={handleClose} parent={props.parent} />
           </div>
         </DialogContent>
         <DialogActions>

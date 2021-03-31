@@ -1,22 +1,22 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import List from '@material-ui/core/List'
-import MenuList from '@material-ui/core/MenuList';
-import { makeStyles } from '@material-ui/core/styles';
-import UploadFile from '../UploadFileModal/index'
-import UploadFolder from '../UploadFolderModal/index'
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import { Divider } from '@material-ui/core';
+import React from "react";
+import Button from "@material-ui/core/Button";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
+// import MenuItem from '@material-ui/core/MenuItem';
+// import List from '@material-ui/core/List'
+import MenuList from "@material-ui/core/MenuList";
+import { makeStyles } from "@material-ui/core/styles";
+import UploadFile from "../UploadFileModal/index";
+import UploadFolder from "../UploadFolderModal/index";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import { Divider } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    margin:"10px"
+    display: "flex",
+    margin: "10px",
   },
   paper: {
     marginRight: theme.spacing(2),
@@ -41,7 +41,7 @@ export default function MenuListComposition(props) {
   };
 
   function handleListKeyDown(event) {
-    if (event.key === 'Tab') {
+    if (event.key === "Tab") {
       event.preventDefault();
       setOpen(false);
     }
@@ -62,24 +62,41 @@ export default function MenuListComposition(props) {
       <div>
         <Button
           ref={anchorRef}
-          aria-controls={open ? 'menu-list-grow' : undefined}
+          aria-controls={open ? "menu-list-grow" : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
-          startIcon={<CloudUploadIcon/>}
+          startIcon={<CloudUploadIcon />}
           variant="contained"
           color="primary"
         >
           Upload
         </Button>
-        <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+        <Popper
+          open={open}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+        >
           {({ TransitionProps, placement }) => (
             <Grow
               {...TransitionProps}
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+              style={{
+                transformOrigin:
+                  placement === "bottom" ? "center top" : "center bottom",
+              }}
             >
-              <Paper style={{marginTop:"10px"}} variant="outlined" elevation={100}>
+              <Paper
+                style={{ marginTop: "10px" }}
+                variant="outlined"
+                elevation={100}
+              >
                 <ClickAwayListener onClickAway={handleClose}>
-                  <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                  <MenuList
+                    autoFocusItem={open}
+                    id="menu-list-grow"
+                    onKeyDown={handleListKeyDown}
+                  >
                     {/* <MenuItem>
                       <div style={{display:"flex",justifyContent:"center"}}>
                         <UploadFile parent={props.parent}/>
@@ -90,9 +107,15 @@ export default function MenuListComposition(props) {
                         <UploadFolder parent={props.parent}/>
                       </div>
                     </MenuItem> */}
-                    <UploadFile modalClose={handleClose} parent={props.parent}/>
-                    <Divider/>
-                    <UploadFolder modalClose={handleClose} parent={props.parent}/>
+                    <UploadFile
+                      modalClose={handleClose}
+                      parent={props.parent}
+                    />
+                    <Divider />
+                    <UploadFolder
+                      modalClose={handleClose}
+                      parent={props.parent}
+                    />
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
