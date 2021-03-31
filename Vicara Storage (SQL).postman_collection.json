@@ -529,7 +529,7 @@
 			"response": []
 		},
 		{
-			"name": "/folder/download-folder/",
+			"name": "/folder/download",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -552,13 +552,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/download-folder/?id=1",
+					"raw": "{{LOCAL}}/api/folder/download/?id=1",
 					"host": [
 						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
-						"download-folder",
+						"folder",
+						"download",
 						""
 					],
 					"query": [
@@ -705,7 +706,7 @@
 			"response": []
 		},
 		{
-			"name": "/download-file",
+			"name": "/file/download",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -728,14 +729,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/file/download-file/?id=1",
+					"raw": "{{LOCAL}}/api/file/download/?id=1",
 					"host": [
 						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
 						"file",
-						"download-file",
+						"download",
 						""
 					],
 					"query": [

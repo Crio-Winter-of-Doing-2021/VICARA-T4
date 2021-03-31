@@ -44,3 +44,19 @@ def create_folder(parent_id, owner, name):
     new_folder = Folder(owner=owner, name=name, parent=parent)
     new_folder.save()
     return new_folder
+
+
+def create_local_folder(parent_path, folder_name):
+    new_folder_path = parent_path.joinpath(folder_name)
+    new_folder_path.mkdir(parents=True, exist_ok=True)
+    return new_folder_path
+
+
+def create_folder_rec(parent_path, folder):
+    folder_name = folder.name
+    new_folder_path = create_local_folder(parent_path, folder_name)
+    for child_folder in folder.children_folder.all():
+        create_folder_rec(new_folder_path, child_folder)
+    for child_file in folder.children_file.all():
+        child_file.download_to(new_folder_path)
+    return new_folder_path

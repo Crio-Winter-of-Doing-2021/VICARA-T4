@@ -216,10 +216,3 @@ class DownloadFile(APIView):
         file = File.objects.get(id=id)
         url = get_presigned_url(file.get_s3_key())
         return Response(data={"url": url}, status=status.HTTP_200_OK)
-        # s3_key = file.get_s3_key()
-        # signed_url = get_presigned_url(s3_key)
-        # filename = os.path.basename(signed_url)
-        # r = requests.get(signed_url, stream=True)
-        # response = StreamingHttpResponse(streaming_content=r)
-        # response['Content-Disposition'] = f'attachement; filename="{filename}"'
-        # return response
