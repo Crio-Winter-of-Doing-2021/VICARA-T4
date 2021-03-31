@@ -166,6 +166,21 @@ export const pathAsync = (data) => (dispatch) => {
     });
 };
 
+export const getFileAsync=(data)=>(dispatch)=>{
+  dispatch(normalLoader());
+  API.get(`/api/file/stream-file/`,{
+    params:{
+      id:data
+    }
+  }).then(res=>{
+    console.log(res)
+    dispatch(normalLoader());
+  }).catch(err=>{
+    console.log(err)
+    dispatch(normalLoader());
+  })
+}
+
 export const selectStructure = (state) =>
   state.structure.currentDisplayStructure;
 export const navStructure = (state) => state.structure.currentPath;

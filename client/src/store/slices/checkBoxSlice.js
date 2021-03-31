@@ -5,6 +5,7 @@ import {updateFileName,popFromCurrentStack} from './structureSlice'
 import {normalLoader} from './loaderSlice'
 import {updateFavFileName,popFromCurrentFavStack} from './favSlice'
 import {updateRecentFileName,popFromCurrentRecentStack} from './recentSlice'
+import {popFromCurrentTrashStack} from './trashSlice'
 
 export const checkBoxSlice= createSlice({
   name: "checkbox",
@@ -77,6 +78,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
         dispatch(popFromCurrentStack(newdata))
         dispatch(popFromCurrentFavStack(newdata))
         dispatch(popFromCurrentRecentStack(newdata))
+        dispatch(popFromCurrentTrashStack(newdata))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -106,6 +108,7 @@ export const deleteAsync = (fileArr,folderArr) => (dispatch) => {
         dispatch(popFromCurrentStack(newdata))
         dispatch(popFromCurrentFavStack(newdata))
         dispatch(popFromCurrentRecentStack(newdata))
+        dispatch(popFromCurrentTrashStack(newdata))
       }
       dispatch(normalLoader())
     })).catch(err=>{
@@ -163,6 +166,145 @@ export const updateAsync = (fileData,folderData) => (dispatch) => {
       });
     }
   };
+
+  
+  export const trashAsync = (fileArr,folderArr) => (dispatch) => {
+  
+  
+    if(folderArr.length!==0){
+      dispatch(normalLoader())
+      let i;
+      let axi_data=[];
+  
+      for(i=0;i<folderArr.length;i++){
+        let new_data=API.patch(`/api/folder/`,{
+          id:folderArr[i].id,
+          trash:true
+        });
+        axi_data.push(new_data)
+      }
+  
+      axios.all(axi_data).then(axios.spread((...res)=>{
+        let k;
+        for(k=0;k<folderArr.length;k++){
+          let newdata={
+            data:res[k].data,
+            type:'folder'
+          }
+          dispatch(popFromCurrentStack(newdata))
+          dispatch(popFromCurrentFavStack(newdata))
+          dispatch(popFromCurrentRecentStack(newdata))
+        }
+        dispatch(normalLoader())
+      })).catch(err=>{
+        console.log(err)
+        dispatch(normalLoader())
+        dispatch(emptykeys())
+      })
+    }
+  
+    if(fileArr.length!==0){
+      dispatch(normalLoader())
+      let i;
+      let axi_data=[];
+  
+      for(i=0;i<fileArr.length;i++){
+        let new_data=API.patch(`/api/file/`,{
+          id:fileArr[i].id,
+          trash:true
+        });
+        axi_data.push(new_data)
+      }
+  
+      axios.all(axi_data).then(axios.spread((...res)=>{
+        let k;
+        for(k=0;k<fileArr.length;k++){
+          let newdata={
+            data:res[k].data,
+            type:'file'
+          }
+          dispatch(popFromCurrentStack(newdata))
+          dispatch(popFromCurrentFavStack(newdata))
+          dispatch(popFromCurrentRecentStack(newdata))
+        }
+        dispatch(normalLoader())
+      })).catch(err=>{
+        console.log(err)
+        dispatch(normalLoader())
+        dispatch(emptykeys())
+      })
+    }
+    
+    dispatch(emptykeys())
+  };
+
+  
+  export const restoreAsync = (fileArr,folderArr) => (dispatch) => {
+  
+  
+    if(folderArr.length!==0){
+      dispatch(normalLoader())
+      let i;
+      let axi_data=[];
+  
+      for(i=0;i<folderArr.length;i++){
+        let new_data=API.get(`/api/recover-folder/?id=${folderArr[i].id}`);
+        axi_data.push(new_data)
+      }
+  
+      axios.all(axi_data).then(axios.spread((...res)=>{
+        let k;
+        for(k=0;k<folderArr.length;k++){
+          let newdata={
+            data:res[k].data,
+            type:'folder'
+          }
+          dispatch(popFromCurrentStack(newdata))
+          dispatch(popFromCurrentFavStack(newdata))
+          dispatch(popFromCurrentRecentStack(newdata))
+          dispatch(popFromCurrentTrashStack(newdata))
+        }
+        dispatch(normalLoader())
+      })).catch(err=>{
+        console.log(err)
+        dispatch(normalLoader())
+        dispatch(emptykeys())
+      })
+    }
+  
+    if(fileArr.length!==0){
+      dispatch(normalLoader())
+      let i;
+      let axi_data=[];
+  
+      for(i=0;i<fileArr.length;i++){
+        let new_data=API.get(`/api/recover-file/?id=${fileArr[i].id}`);
+        axi_data.push(new_data)
+      }
+  
+      axios.all(axi_data).then(axios.spread((...res)=>{
+        let k;
+        for(k=0;k<fileArr.length;k++){
+          let newdata={
+            data:res[k].data,
+            type:'file'
+          }
+          dispatch(popFromCurrentStack(newdata))
+          dispatch(popFromCurrentFavStack(newdata))
+          dispatch(popFromCurrentRecentStack(newdata))
+          dispatch(popFromCurrentTrashStack(newdata))
+        }
+        dispatch(normalLoader())
+      })).catch(err=>{
+        console.log(err)
+        dispatch(normalLoader())
+        dispatch(emptykeys())
+      })
+    }
+    
+    dispatch(emptykeys())
+  };
+  
 
 export const selectCheckedFolderKeys = (state) => state.checkbox.selectedFolderKeys;
 export const selectCheckedFileKeys = (state) => state.checkbox.selectedFileKeys;

@@ -10,11 +10,13 @@ import {
   pathAsync,
   addFavouriteAsync,
   privacyAsync,
+  getFileAsync
 } from "../../store/slices/structureSlice";
 
 import CreateFolder from "../Buttons/createFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
+import Trash from '../Buttons/moveToTrash'
 
 import UploadMenu from '../UploadMenu/index'
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -201,7 +203,7 @@ export default function Structure(props) {
                 component="button"
                 variant="body2"
                 style={{ marginLeft: "5px" }}
-                onClick={() => {console.log("clicked")}}
+                onClick={() => dispatch(getFileAsync(data.id))}
               >
                 {data.name}
               </UILink>
@@ -268,8 +270,9 @@ export default function Structure(props) {
         
         <CreateFolder id={unique_id} />
         <UploadMenu parent={unique_id}/>
-        <Delete />
         <Update />
+        <Trash/>
+        <Delete />
       </div>
       <Path {...props} />
       <TableContainer style={{ margin: "20px 10px" }} component={Paper}>

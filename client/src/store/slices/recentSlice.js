@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-// import {normalLoader} from './loaderSlice'
 import { normalLoader ,skeletonLoader} from "./loaderSlice";
 import axios from "axios";
 
@@ -111,7 +110,6 @@ export const addFavouriteAsync = (data) => (dispatch) => {
     API.patch("/api/file/", data.payload)
     .then((res) => {
       dispatch(updateFav(data));
-      
     })
     .catch((err) => {
       console.log(err);
@@ -148,14 +146,6 @@ export const privacyAsync = (data) => (dispatch) => {
     });
   }
 };
-
-export const addRecentAsync=(data)=>(dispatch)=>{
-  API.post(`/api/recent/`,{id:data}).then(res=>{
-    console.log(res)
-  }).catch(err=>{
-    console.log(err)
-  })
-}
 
 export const selectRecentStructure = (state) => state.recent.currentDisplayStructure;
 
