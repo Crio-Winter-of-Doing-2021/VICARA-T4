@@ -2,7 +2,13 @@ from file.decorators import check_storage_available
 import humanize
 from collections import defaultdict
 import json
+# python imports
+from file.utils import get_presigned_url
 import os
+from django.core.files import File as DjangoCoreFile
+import shutil
+import secrets
+from mysite.settings import BASE_DIR
 
 # django imports
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -18,7 +24,7 @@ from rest_framework import status
 from .decorators import *
 from .serializers import FolderSerializer, FolderSerializerWithoutChildren
 from .models import Folder
-from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete, create_folder
+from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete, create_folder, create_folder_rec
 from file.utils import create_file
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
@@ -234,3 +240,30 @@ class UploadFolder(APIView):
 
         data = FolderSerializerWithoutChildren(base_folder).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class DownloadFolder(APIView):
+
+    def get(self, request, * args, **kwargs):
+        id = request.GET["id"]
+        folder = Folder.objects.get(id=id)
+        folder_name = folder.name
+        transaction = secrets.token_hex(4)
+        zip_dir = (BASE_DIR).joinpath(transaction)
+        # base_folder_name = folder.name
+        new_folder = create_folder_rec(zip_dir, folder)
+        new_folder_zipped_name = f"{folder_name}__{transaction}"
+        new_folder_zip = shutil.make_archive(
+            new_folder_zipped_name, 'zip', str(new_folder))
+
+        local_file = open(f"{new_folder_zipped_name}.zip", 'rb')
+        djangofile = DjangoCoreFile(local_file)
+        file = File(file=djangofile,
+                    name=f"{folder_name}.zip",
+                    owner=request.user,
+                    parent=None)
+        file.save()
+        url = get_presigned_url(file.get_s3_key())
+        shutil.rmtree(zip_dir)
+        os.remove(f"{new_folder_zipped_name}.zip")
+        return Response(data={"url": url}, status=status.HTTP_200_OK)

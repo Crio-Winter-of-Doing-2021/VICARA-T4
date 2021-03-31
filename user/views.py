@@ -1,9 +1,4 @@
-# python imports
-import os
-from django.core.files import File as DjangoCoreFile
-import shutil
-import secrets
-from mysite.settings import BASE_DIR
+
 import cloudinary.uploader
 from rest_framework.parsers import MultiPartParser, JSONParser
 from itertools import chain
@@ -299,47 +294,6 @@ class RecoverFile(APIView):
         if(parent_folder.trash):
             file.parent = root_folder
         file.trash = False
-        file.save()
-        data = FileSerializer(file).data
-        return Response(data=data, status=status.HTTP_200_OK)
-
-
-def create_local_folder(parent_path, folder_name):
-    new_folder_path = parent_path.joinpath(folder_name)
-    new_folder_path.mkdir(parents=True, exist_ok=True)
-    return new_folder_path
-
-
-def create_folder(parent_path, folder):
-    folder_name = folder.name
-    new_folder_path = create_local_folder(parent_path, folder_name)
-    for child_folder in folder.children_folder.all():
-        create_folder(new_folder_path, child_folder)
-    for child_file in folder.children_file.all():
-        child_file.download_to(new_folder_path)
-    return new_folder_path
-
-
-class DownloadFolder(APIView):
-
-    def get(self, request, * args, **kwargs):
-        id = request.GET["id"]
-        folder = Folder.objects.get(id=id)
-        folder_name = folder.name
-        transaction = secrets.token_hex(4)
-        zip_dir = (BASE_DIR).joinpath(transaction)
-        # base_folder_name = folder.name
-        new_folder = create_folder(zip_dir, folder)
-        new_folder_zip = shutil.make_archive(
-            folder_name+transaction, 'zip', str(new_folder))
-        print("new path zip = ", new_folder_zip)
-        local_file = open(folder_name+transaction+".zip", 'rb')
-        djangofile = DjangoCoreFile(local_file)
-        file = File(file=djangofile,
-                    name=f"{folder_name}.zip",
-                    owner=request.user,
-                    parent=None)
-        print("done till here")
         file.save()
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
