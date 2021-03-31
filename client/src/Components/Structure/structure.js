@@ -10,16 +10,16 @@ import {
   pathAsync,
   addFavouriteAsync,
   privacyAsync,
-  getFileAsync
+  getFileAsync,
 } from "../../store/slices/structureSlice";
 
 import CreateFolder from "../Buttons/createFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
-import Trash from '../Buttons/moveToTrash'
+import Trash from "../Buttons/moveToTrash";
 
-import UploadMenu from '../UploadMenu/index'
-import Skeleton from '@material-ui/lab/Skeleton';
+import UploadMenu from "../UploadMenu/index";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -31,7 +31,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import RightClickUtil from '../RightClickMenu/rightClickUtil'
+import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
@@ -45,9 +45,9 @@ import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import IconButton from "@material-ui/core/IconButton";
 
-import {skeletonLoading} from '../../store/slices/loaderSlice'
+import { skeletonLoading } from "../../store/slices/loaderSlice";
 
-import {typeTest} from '../../Utilities/fileType'
+import { typeTest } from "../../Utilities/fileType";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -78,23 +78,23 @@ export let privOpp = (privacy) => {
   return "PUBLIC";
 };
 
-let loaderStructure=[1,2,3,4,5,6.7,8].map(key=>{
-  return(
+let loaderStructure = [1, 2, 3, 4, 5, 6, 7, 8].map((key) => {
+  return (
     <StyledTableRow>
-         {[1,2,3,4,5].map(el=>(
-           <StyledTableCell component="th" scope="row">
-              <Skeleton variant="text"/>
-            </StyledTableCell>
-         ))}
+      {[1, 2, 3, 4, 5].map((el) => (
+        <StyledTableCell component="th" scope="row">
+          <Skeleton variant="text" />
+        </StyledTableCell>
+      ))}
     </StyledTableRow>
-  )
-})
+  );
+});
 
 export default function Structure(props) {
   const classes = useStyles();
   let unique_id = props.match.params.id;
 
-  let loading=useSelector(skeletonLoading)
+  let loading = useSelector(skeletonLoading);
 
   const creator = window.localStorage.getItem("author");
   console.log(creator);
@@ -110,7 +110,7 @@ export default function Structure(props) {
       type: "FOLDER",
     };
     dispatch(pathAsync(newData));
-  }, [unique_id]);
+  }, [unique_id, dispatch]);
 
   tableData = structureState;
 
@@ -163,7 +163,7 @@ export default function Structure(props) {
     let keyData = {
       id: data.id,
       type: data.type,
-      index:index
+      index: index,
     };
 
     let typeData = {
@@ -174,58 +174,58 @@ export default function Structure(props) {
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-        <RightClickUtil data={typeData}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Checkbox
-              onChange={(e) => handleCheckedChange(keyData, e)}
-              inputProps={{ "aria-label": "primary checkbox" }}
-            />
-            {data.type === "folder" ? (
-              <FolderOpenTwoToneIcon />
-            ) : (
-             typeTest(data.name) 
-            )}
+          <RightClickUtil data={typeData}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Checkbox
+                onChange={(e) => handleCheckedChange(keyData, e)}
+                inputProps={{ "aria-label": "primary checkbox" }}
+              />
+              {data.type === "folder" ? (
+                <FolderOpenTwoToneIcon />
+              ) : (
+                typeTest(data.name)
+              )}
 
-            {data.type === "folder" ? (
-              <UILink
-                component="button"
-                variant="body2"
-                style={{ marginLeft: "5px" }}
-                onClick={() => {
-                  updateFolder(data.id);
-                }}
-              >
-                {data.name}
-              </UILink>
-            ) : (
-              <UILink
-                component="button"
-                variant="body2"
-                style={{ marginLeft: "5px" }}
-                onClick={() => dispatch(getFileAsync(data.id))}
-              >
-                {data.name}
-              </UILink>
-            )}
+              {data.type === "folder" ? (
+                <UILink
+                  component="button"
+                  variant="body2"
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    updateFolder(data.id);
+                  }}
+                >
+                  {data.name}
+                </UILink>
+              ) : (
+                <UILink
+                  component="button"
+                  variant="body2"
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => dispatch(getFileAsync(data.id))}
+                >
+                  {data.name}
+                </UILink>
+              )}
 
-            {data.favourite === true ? (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarRoundedIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={(e) => handleFavouriteClick(e, favReverseData)}
-                style={{ margin: "0 10px" }}
-                color="primary"
-              >
-                <StarBorderRoundedIcon />
-              </IconButton>
-            )}
-          </div>
+              {data.favourite === true ? (
+                <IconButton
+                  onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                  style={{ margin: "0 10px" }}
+                  color="primary"
+                >
+                  <StarRoundedIcon />
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={(e) => handleFavouriteClick(e, favReverseData)}
+                  style={{ margin: "0 10px" }}
+                  color="primary"
+                >
+                  <StarBorderRoundedIcon />
+                </IconButton>
+              )}
+            </div>
           </RightClickUtil>
         </StyledTableCell>
 
@@ -262,7 +262,11 @@ export default function Structure(props) {
         >
           {data.created_at}
         </StyledTableCell>
-        <StyledTableCell style={{fontStyle:"italic",color:"grey"}} component="th" scope="row">
+        <StyledTableCell
+          style={{ fontStyle: "italic", color: "grey" }}
+          component="th"
+          scope="row"
+        >
           {data.size}
         </StyledTableCell>
       </StyledTableRow>
@@ -271,14 +275,13 @@ export default function Structure(props) {
 
   return (
     <div>
-      {console.log("loader",loading)}
-      {console.log("table data",tableData)}
+      {console.log("loader", loading)}
+      {console.log("table data", tableData)}
       <div style={{ display: "flex" }}>
-        
         <CreateFolder id={unique_id} />
-        <UploadMenu parent={unique_id}/>
+        <UploadMenu parent={unique_id} />
         <Update />
-        <Trash/>
+        <Trash />
         <Delete />
       </div>
       <Path {...props} />
@@ -293,8 +296,7 @@ export default function Structure(props) {
               <StyledTableCell>Size</StyledTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{loading?loaderStructure:tableRenderer}</TableBody>
-          
+          <TableBody>{loading ? loaderStructure : tableRenderer}</TableBody>
         </Table>
       </TableContainer>
     </div>

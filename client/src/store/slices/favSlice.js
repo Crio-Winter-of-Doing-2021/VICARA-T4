@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import { normalLoader ,skeletonLoader} from "./loaderSlice";
+import { skeletonLoader } from "./loaderSlice";
 import axios from "axios";
 
 export const favStructureSlice = createSlice({
   name: "fav",
   initialState: {
-    currentDisplayStructure:[],
+    currentDisplayStructure: [],
     currentPath: [
       {
         NAME: "ROOT",
@@ -20,14 +20,14 @@ export const favStructureSlice = createSlice({
     },
     updateFavFileName: (state, action) => {
       let res = action.payload.data;
-      let index=action.payload.index;
-      if(state.currentDisplayStructure[index]!==undefined){
-        state.currentDisplayStructure[index].name=res.name
+      let index = action.payload.index;
+      if (state.currentDisplayStructure[index] !== undefined) {
+        state.currentDisplayStructure[index].name = res.name;
       }
     },
     updatePrivacy: (state, action) => {
       let res = action.payload;
-      console.log(res)
+      console.log(res);
       state.currentDisplayStructure[res.key].privacy = res.payload.privacy;
     },
     updateFav: (state, action) => {
@@ -36,16 +36,16 @@ export const favStructureSlice = createSlice({
     },
     popFromCurrentFavStack: (state, action) => {
       let res = action.payload;
-      console.log(res)
+      console.log(res);
       function check(data) {
-        return (parseInt(res.data.id) === data.id)&&(res.type===data.type);
+        return parseInt(res.data.id) === data.id && res.type === data.type;
       }
-      let index = state.currentDisplayStructure.findIndex(check)
+      let index = state.currentDisplayStructure.findIndex(check);
 
-      console.log(index)
+      console.log(index);
 
-      if(index!==-1){
-        state.currentDisplayStructure.splice(index,1)
+      if (index !== -1) {
+        state.currentDisplayStructure.splice(index, 1);
       }
     },
     updatePath: (state, action) => {
@@ -98,12 +98,12 @@ export const pathParse = (data) => (dispatch) => {
 };
 
 export const favStructureAsync = () => (dispatch) => {
-  dispatch(skeletonLoader())
+  dispatch(skeletonLoader());
   API.get(`/api/favourites/`)
     .then((res) => {
       dispatch(updateStructure(res.data));
       // dispatch(pathParse(res.data));
-      dispatch(skeletonLoader())
+      dispatch(skeletonLoader());
     })
     .catch((err) => {
       console.log(err);
@@ -111,59 +111,58 @@ export const favStructureAsync = () => (dispatch) => {
 };
 
 export const addFavouriteAsync = (data) => (dispatch) => {
-  if(data.type==='file'){
+  if (data.type === "file") {
     API.patch("/api/file/", data.payload)
-    .then((res) => {
-      let temp=res.data.id
-      res.data.id=temp.toString()
-      let newdata={
-        data:res.data,
-        type:'file'
-      }
-      dispatch(popFromCurrentFavStack(newdata))
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }else{
+      .then((res) => {
+        let temp = res.data.id;
+        res.data.id = temp.toString();
+        let newdata = {
+          data: res.data,
+          type: "file",
+        };
+        dispatch(popFromCurrentFavStack(newdata));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
     API.patch("/api/folder/", data.payload)
-    .then((res) => {
-      let temp=res.data.id
-      res.data.id=temp.toString()
-      let newdata={
-        data:res.data,
-        type:'folder'
-      }
-      dispatch(popFromCurrentFavStack(newdata))
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((res) => {
+        let temp = res.data.id;
+        res.data.id = temp.toString();
+        let newdata = {
+          data: res.data,
+          type: "folder",
+        };
+        dispatch(popFromCurrentFavStack(newdata));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
 
 export const privacyAsync = (data) => (dispatch) => {
-  if(data.type==='file'){
+  if (data.type === "file") {
     API.patch("/api/file/", data.payload)
-    .then((res) => {
-      dispatch(updatePrivacy(data));
-      // dispatch(updateSharePrivacy())
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }else{
+      .then((res) => {
+        dispatch(updatePrivacy(data));
+        // dispatch(updateSharePrivacy())
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
     API.patch("/api/folder/", data.payload)
-    .then((res) => {
-      dispatch(updatePrivacy(data));
-      // dispatch(updateSharePrivacy())
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((res) => {
+        dispatch(updatePrivacy(data));
+        // dispatch(updateSharePrivacy())
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
-
 
 export const selectFavStructure = (state) => state.fav.currentDisplayStructure;
 

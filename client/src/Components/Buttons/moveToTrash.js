@@ -2,14 +2,14 @@ import React from "react";
 // import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 // import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import DeleteIcon from "@material-ui/icons/Delete";
+// import DeleteIcon from "@material-ui/icons/Delete";
 import {
   selectCheckedFolderKeys,
   selectCheckedFileKeys,
   trashAsync,
 } from "../../store/slices/checkBoxSlice";
 import { useDispatch, useSelector } from "react-redux";
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
 // const useStyles = makeStyles((theme) => ({
 //   root: {
