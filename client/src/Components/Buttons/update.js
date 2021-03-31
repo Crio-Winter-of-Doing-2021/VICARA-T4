@@ -51,15 +51,21 @@ export default function FormDialog() {
 
     if (checkedFileKeys.length !== 0) {
       newFileData = {
-        id: checkedFileKeys[0],
-        NAME: data,
+        payload:{
+          id: checkedFileKeys[0].id,
+          name: data,
+        },
+        index:checkedFileKeys[0].index
       };
     }
 
     if (checkedFolderKeys.length !== 0) {
       newFolderData = {
-        id: checkedFolderKeys[0],
-        NAME: data,
+        payload:{
+          id: checkedFolderKeys[0].id,
+          name: data,
+        },
+        index:checkedFolderKeys[0].index
       };
     }
 

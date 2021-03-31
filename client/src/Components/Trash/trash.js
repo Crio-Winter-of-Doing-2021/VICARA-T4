@@ -6,14 +6,12 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 
 import {
-  recentStructureAsync,
-  selectRecentStructure,
-  addFavouriteAsync,
-  privacyAsync
-} from "../../store/slices/recentSlice";
+  trashStructureAsync,
+  selectTrashStructure,
+} from "../../store/slices/trashSlice";
 
 import Delete from "../Buttons/delete";
-import Update from "../Buttons/update";
+import Restore from "../Buttons/restore"
 
 import Skeleton from '@material-ui/lab/Skeleton';
 
@@ -92,13 +90,13 @@ export default function Structure(props) {
 
   const creator = window.localStorage.getItem("author");
   console.log(creator);
-  const structureState = useSelector(selectRecentStructure);
+  const structureState = useSelector(selectTrashStructure);
 
   let tableData = [];
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(recentStructureAsync());
+    dispatch(trashStructureAsync());
   }, []);
 
   tableData=structureState
@@ -117,12 +115,10 @@ export default function Structure(props) {
   const handleFavouriteClick = (e, data) => {
     e.preventDefault();
     console.log(data);
-    dispatch(addFavouriteAsync(data));
   };
 
   const handlePrivacy = (e, data) => {
     e.preventDefault();
-    dispatch(privacyAsync(data));
   };
 
   let tableRenderer = tableData.map((data,index) => {
@@ -203,6 +199,7 @@ export default function Structure(props) {
                 onClick={(e) => handleFavouriteClick(e, favReverseData)}
                 style={{ margin: "0 10px" }}
                 color="primary"
+                disabled
               >
                 <StarRoundedIcon />
               </IconButton>
@@ -211,6 +208,7 @@ export default function Structure(props) {
                 onClick={(e) => handleFavouriteClick(e, favReverseData)}
                 style={{ margin: "0 10px" }}
                 color="primary"
+                disabled
               >
                 <StarBorderRoundedIcon />
               </IconButton>
@@ -226,13 +224,14 @@ export default function Structure(props) {
         <StyledTableCell component="th" scope="row">
           {data.privacy === true ? (
             <Tooltip title="File is Private">
-              <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
+              <IconButton disabled onClick={(e) => handlePrivacy(e, privReverse)}>
                 <VisibilityOffIcon />
               </IconButton>
             </Tooltip>
           ) : (
             <Tooltip title="File is Public">
               <IconButton
+                disabled
                 onClick={(e) => handlePrivacy(e, privReverse)}
                 color="primary"
               >
@@ -253,8 +252,8 @@ export default function Structure(props) {
       {console.log("loader",loading)}
       {console.log("table data",tableData)}
       <div style={{ display: "flex" }}>
+        <Restore/>
         <Delete />
-        <Update />
       </div>
       <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">

@@ -5,11 +5,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import DeleteIcon from "@material-ui/icons/Delete";
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 import {
   selectCheckedFolderKeys,
   selectCheckedFileKeys,
-  deleteAsync,
+  restoreAsync,
 } from "../../store/slices/checkBoxSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -28,8 +28,8 @@ export default function AlertDialog() {
   let checkedFileKeys = useSelector(selectCheckedFileKeys);
   const dispatch = useDispatch();
 
-  let deleteSelected = (fileData, folderData) => {
-    dispatch(deleteAsync(fileData, folderData));
+  let restoreSelected = (fileData, folderData) => {
+    dispatch(restoreAsync(fileData, folderData));
   };
 
   let deactive =
@@ -38,8 +38,8 @@ export default function AlertDialog() {
 
   return (
     <div style={{margin:"10px"}}>
-      <Button disabled={deactive} startIcon={<DeleteIcon/>} variant="outlined" color="secondary" onClick={handleClickOpen}>
-        Delete
+      <Button disabled={deactive} startIcon={<RestoreFromTrashIcon/>} variant="outlined" onClick={handleClickOpen}>
+        Restore
       </Button>
       <Dialog
         open={open}
@@ -47,18 +47,18 @@ export default function AlertDialog() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Delete Files/Folders</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Restore Files/Folders</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-           Are you sure you want to delete {checkedFileKeys.length + checkedFolderKeys.length} files/folder permanently?
+            After agreeing, {checkedFileKeys.length + checkedFolderKeys.length} selected files/folder will get restored?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose}>
             Disagree
           </Button>
-          <Button onClick={()=>{handleClose();deleteSelected(checkedFileKeys,checkedFolderKeys)}} color="secondary" autoFocus>
-            Yes,&nbsp;delete&nbsp;permanently.
+          <Button onClick={()=>{handleClose();restoreSelected(checkedFileKeys,checkedFolderKeys)}} color="primary" autoFocus>
+            Yes,&nbsp;Restore.
           </Button>
         </DialogActions>
       </Dialog>
