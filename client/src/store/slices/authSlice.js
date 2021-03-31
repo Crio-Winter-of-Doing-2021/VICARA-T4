@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { baseURL } from "../../axios";
 import axios from "axios";
 import API from "../../axios";
+import {normalLoader} from './loaderSlice'
+
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -29,6 +31,7 @@ export const { login } = authSlice.actions;
 export const signupAsync = (data) => (dispatch) => {};
 
 export const loginAsync = (data, props) => (dispatch) => {
+  dispatch(normalLoader())
   axios
     .post(`${baseURL}/api/auth/login/`, data)
     .then((res) => {
@@ -39,10 +42,12 @@ export const loginAsync = (data, props) => (dispatch) => {
       window.localStorage.setItem("author", res.data.username);
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
       // console.log("token is set");
-      props.history.push("/drive/ROOT");
+      props.history.push(`/drive/${res.data.id}`);
+      dispatch(normalLoader())
     })
     .catch((err) => {
       console.log(err);
+      dispatch(normalLoader())
     });
 };
 

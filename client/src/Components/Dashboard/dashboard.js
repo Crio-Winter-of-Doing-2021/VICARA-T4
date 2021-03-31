@@ -5,6 +5,7 @@ import Favourite from "../Favourite/fav";
 import Structure from "../Structure/structure";
 import Recent from "../Recent/recent"
 import SharedWithMe from "../SharedWithMe/shared"
+import Trash from "../Trash/trash"
 import PrivateRoute from "../../Utilities/protectedRoute"
 
 export default function Dashboard() {
@@ -20,6 +21,7 @@ export default function Dashboard() {
               <PrivateRoute exact path="/drive/:id" component={Structure} />
               <PrivateRoute exact path="/favourites" component={Favourite} />
               <PrivateRoute exact path="/recent" component={Recent} />
+              <PrivateRoute exact path="/trash" component={Trash} />
               <PrivateRoute exact path="/shared with me" component={SharedWithMe} />
               <Route path="*">
                 <div style={{fontSize:"30px",position:"absolute",top:"40%",left:"40%"}}>

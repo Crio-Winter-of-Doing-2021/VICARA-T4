@@ -1,35 +1,46 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-// import {normalLoader} from './loaderSlice'
+import { normalLoader ,skeletonLoader} from "./loaderSlice";
 import axios from "axios";
 
 export const recentStructureSlice = createSlice({
   name: "recent",
   initialState: {
-    currentDisplayStructure: {}
+    currentDisplayStructure: []
   },
   reducers: {
     updateStructure: (state, action) => {
       state.currentDisplayStructure = action.payload;
     },
     updateRecentFileName: (state, action) => {
-      let res = action.payload;
-      if (state.currentDisplayStructure[res.id] !== undefined) {
-        state.currentDisplayStructure[res.id].NAME = res.NAME;
+      let res = action.payload.data;
+      let index=action.payload.index;
+      if(state.currentDisplayStructure[index]!==undefined){
+        state.currentDisplayStructure[index].name=res.name
       }
     },
     updatePrivacy: (state, action) => {
       let res = action.payload;
-      state.currentDisplayStructure[res.id].PRIVACY = res.PRIVACY;
+      console.log(res)
+      state.currentDisplayStructure[res.key].privacy = res.payload.privacy;
     },
     popFromCurrentRecentStack: (state, action) => {
-        let res = action.payload;
-        delete state.currentDisplayStructure[res.id];
-        console.log(res);
+      let res = action.payload;
+      console.log(res)
+      function check(data) {
+        return (parseInt(res.data.id) === data.id)&&(res.type===data.type);
+      }
+      let index = state.currentDisplayStructure.findIndex(check)
+
+      console.log(index)
+
+      if(index!==-1){
+        state.currentDisplayStructure.splice(index,1)
+      }
       },
     updateFav: (state, action) => {
       let res = action.payload;
-      state.currentDisplayStructure[res.id].FAVOURITE = res.is_favourite;
+      state.currentDisplayStructure[res.key].favourite = res.payload.favourite;
     },
     updatePath: (state, action) => {
       let res = action.payload;
@@ -81,23 +92,60 @@ export const pathParse = (data) => (dispatch) => {
 };
 
 export const recentStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader())
   API.get(`/api/recent/`)
     .then((res) => {
       dispatch(updateStructure(res.data));
-      dispatch(pathParse(res.data));
+      dispatch(skeletonLoader())
+      // dispatch(pathParse(res.data));
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch(skeletonLoader())
+    });
+};
+
+export const addFavouriteAsync = (data) => (dispatch) => {
+  if(data.type==='file'){
+    API.patch("/api/file/", data.payload)
+    .then((res) => {
+      dispatch(updateFav(data));
     })
     .catch((err) => {
       console.log(err);
     });
+  }else{
+    API.patch("/api/folder/", data.payload)
+    .then((res) => {
+      dispatch(updateFav(data));
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
 };
 
-export const addRecentAsync=(data)=>(dispatch)=>{
-  API.post(`/api/recent/`,{id:data}).then(res=>{
-    console.log(res)
-  }).catch(err=>{
-    console.log(err)
-  })
-}
+export const privacyAsync = (data) => (dispatch) => {
+  if(data.type==='file'){
+    API.patch("/api/file/", data.payload)
+    .then((res) => {
+      dispatch(updatePrivacy(data));
+      // dispatch(updateSharePrivacy())
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }else{
+    API.patch("/api/folder/", data.payload)
+    .then((res) => {
+      dispatch(updatePrivacy(data));
+      // dispatch(updateSharePrivacy())
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+};
 
 export const selectRecentStructure = (state) => state.recent.currentDisplayStructure;
 

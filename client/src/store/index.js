@@ -7,6 +7,7 @@ import favReducer from './slices/favSlice'
 import shareReducer from './slices/shareSlice'
 import recentReducer from './slices/recentSlice'
 import sharedWithMeReducer from './slices/sharedWithMeSlice'
+import trashReducer from './slices/trashSlice'
 
 export default configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export default configureStore({
     fav:favReducer,
     share:shareReducer,
     recent:recentReducer,
-    sharedWithme:sharedWithMeReducer
+    sharedWithme:sharedWithMeReducer,
+    trash:trashReducer
   },
 });

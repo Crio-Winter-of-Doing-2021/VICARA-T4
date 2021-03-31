@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import { normalLoader } from "./loaderSlice";
-// import {updateSharePrivacy} from './shareSlice'
+import { normalLoader ,skeletonLoader} from "./loaderSlice";
+import {updateSharePrivacy} from './shareSlice'
 
 export const structureSlice = createSlice({
   name: "structure",
@@ -20,13 +20,15 @@ export const structureSlice = createSlice({
     },
     pushToCurrentStack: (state, action) => {
       let res = action.payload;
-      res.data.type = res.type;
-      state.currentDisplayStructure.unshift(res.data);
+      res.resData.type=res.type
+      state.currentDisplayStructure.unshift(res.resData)
+
     },
     updateFileName: (state, action) => {
-      let res = action.payload;
-      if (state.currentDisplayStructure[res.id] !== undefined) {
-        state.currentDisplayStructure[res.id].NAME = res.NAME;
+      let res = action.payload.data;
+      let index=action.payload.index;
+      if(state.currentDisplayStructure[index]!==undefined){
+        state.currentDisplayStructure[index].name=res.name
       }
     },
     updatePrivacy: (state, action) => {
@@ -70,6 +72,7 @@ export const {
 
 export const structureAsync = (uni_id) => (dispatch) => {
   console.log("Sending request for /api/folder/");
+  dispatch(skeletonLoader())
   API.get(`/api/folder/`, {
     params: {
       id: uni_id,
@@ -77,9 +80,11 @@ export const structureAsync = (uni_id) => (dispatch) => {
   })
     .then((res) => {
       dispatch(updateStructure(res.data));
+      dispatch(skeletonLoader())
     })
     .catch((err) => {
       console.log(err);
+      dispatch(skeletonLoader())
     });
 };
 
@@ -89,7 +94,7 @@ export const addFolderAsync = (data) => (dispatch) => {
     .then((res) => {
       console.log(res);
       let newData = {
-        data: res.data,
+        resData: res.data,
         type: "folder",
       };
       dispatch(pushToCurrentStack(newData));
@@ -160,6 +165,21 @@ export const pathAsync = (data) => (dispatch) => {
       console.log(err);
     });
 };
+
+export const getFileAsync=(data)=>(dispatch)=>{
+  dispatch(normalLoader());
+  API.get(`/api/file/stream-file/`,{
+    params:{
+      id:data
+    }
+  }).then(res=>{
+    console.log(res)
+    dispatch(normalLoader());
+  }).catch(err=>{
+    console.log(err)
+    dispatch(normalLoader());
+  })
+}
 
 export const selectStructure = (state) =>
   state.structure.currentDisplayStructure;
