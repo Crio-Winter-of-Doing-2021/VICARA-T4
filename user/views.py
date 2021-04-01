@@ -61,6 +61,45 @@ class Register(APIView):
         return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
 
 
+class GoogleLogin(APIView):
+    @check_request_attr(["email", "givenName", "familyName", "imageUrl"])
+    def post(self, request):
+        try:
+            user = User.objects.get(email=request.data.get('email'))
+        except:
+            user = None
+
+        if(user):
+            update_last_login(None, user)
+            token, _ = Token.objects.get_or_create(user=user)
+            profile = Profile.objects.get(user=user)
+            data = ProfileSerializer(profile).data
+            return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
+        else:
+            username = request.data.get("email")[:-len("@gmail.com")]
+            user = User.objects.create(
+                username=username,
+                email=request.data.get('username'),
+            )
+            user.set_password(str(request.data.get('password')))
+            user.first_name = request.data.get('givenName')
+            user.last_name = request.data.get('familyName')
+            user.save()
+
+            update_last_login(None, user)
+            token, _ = Token.objects.get_or_create(user=user)
+
+            profile = Profile.objects.get(user=user)
+            root_folder = Folder(name="ROOT", owner=user)
+            root_folder.save()
+            profile.root = root_folder
+            profile.profile_picture_url = request.data.get('imageUrl')
+            profile.save()
+
+            data = ProfileSerializer(profile).data
+            return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
+
+
 class Logout(APIView):
     def post(self, request, *args, **kwargs):
         print(request.user)
