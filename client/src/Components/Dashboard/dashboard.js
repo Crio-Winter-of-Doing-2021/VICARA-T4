@@ -9,6 +9,8 @@ import Trash from "../Trash/trash"
 import PrivateRoute from "../../Utilities/protectedRoute"
 
 export default function Dashboard() {
+  let id=window.localStorage.getItem("id")
+  console.log("id is",id)
   return (
     <div>
       <DashUtil>
@@ -16,7 +18,7 @@ export default function Dashboard() {
               <Route
                 path="/"
                 exact
-                component={() => <Redirect to="/drive/ROOT" />}
+                component={() => <Redirect to={`/drive/${id}`} />}
               />
               <PrivateRoute exact path="/drive/:id" component={Structure} />
               <PrivateRoute exact path="/favourites" component={Favourite} />

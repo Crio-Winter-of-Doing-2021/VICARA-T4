@@ -10,8 +10,9 @@ import MenuList from "@material-ui/core/MenuList";
 import { makeStyles } from "@material-ui/core/styles";
 import UploadFile from "../UploadFileModal/index";
 import UploadFolder from "../UploadFolderModal/index";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+// import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Divider } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,11 +66,11 @@ export default function MenuListComposition(props) {
           aria-controls={open ? "menu-list-grow" : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
-          startIcon={<CloudUploadIcon />}
+          startIcon={<AddIcon/>}
           variant="contained"
           color="primary"
         >
-          Upload
+          New
         </Button>
         <Popper
           open={open}

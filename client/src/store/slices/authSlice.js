@@ -7,26 +7,20 @@ import {normalLoader} from './loaderSlice'
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    username: "",
-    firstname: "",
-    lastname: "",
-    token: null,
-    rootStructure: {},
+    userData:{},
+    username:""
   },
   reducers: {
     login: (state, action) => {
-      let res = action.payload;
-      console.log(res.username);
-      state.username = res.username;
-      state.firstname = res.first_name;
-      state.lastname = res.last_name;
-      state.token = res.token;
-      state.rootStructure = res.filesystem;
+      state.userData=action.payload
     },
+    setUser:(state,action)=>{
+      state.username=action.payload
+    }
   },
 });
 
-export const { login } = authSlice.actions;
+export const { login,setUser } = authSlice.actions;
 
 export const signupAsync = (data) => (dispatch) => {};
 
@@ -37,12 +31,12 @@ export const loginAsync = (data, props) => (dispatch) => {
     .then((res) => {
       console.log(res.data);
       let token = res.data.token;
-      dispatch(login(res.data));
-      window.localStorage.setItem("session", token);
-      window.localStorage.setItem("author", res.data.username);
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
-      // console.log("token is set");
-      props.history.push(`/drive/${res.data.id}`);
+      props.history.push(`/drive/${res.data.root_id}`);
+      dispatch(setUser(res.data.username))
+      window.localStorage.setItem("session", token);
+      window.localStorage.setItem("id", res.data.root_id)
+     
       dispatch(normalLoader())
     })
     .catch((err) => {
@@ -51,6 +45,14 @@ export const loginAsync = (data, props) => (dispatch) => {
     });
 };
 
-export const selectUser = (state) => state.auth.username;
+export const getProfileAsync = (id)=>(dispatch)=>{
+  API.get(`/api/profile/?id=${id}`).then(res=>{
+    dispatch(login(res.data))
+  }).catch(err=>{
+    console.log(err)
+  })
+}
 
+export const selectUser = (state) => state.auth.username;
+export const selectUserData=(state)=> state.auth.userData
 export default authSlice.reducer;

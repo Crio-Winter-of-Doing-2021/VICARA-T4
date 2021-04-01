@@ -38,13 +38,13 @@ export const typeTest=(name)=>{
     "([a-zA-Z0-9s_\\.-:])+(" + allowedPptFiles.join("|") + ")$"
   );
 
-  if (docRegex.test(name)) return <DescriptionIcon />;
-  if (pdfRegex.test(name)) return <PictureAsPdfIcon />;
-  if (imgRegex.test(name)) return <ImageIcon />;
-  if (excelRegex.test(name)) return <LibraryBooksIcon />;
-  if (pptRegex.test(name)) return <SlideshowIcon />;
-  if (videoRegex.test(name)) return <MovieIcon />;
-  if (musicRegex.test(name)) return <MusicNoteIcon />;
+  if (docRegex.test(name)) return <DescriptionIcon style={{color:"#3086F6"}} />;
+  if (pdfRegex.test(name)) return <PictureAsPdfIcon style={{color:"#ED3F23"}} />;
+  if (imgRegex.test(name)) return <ImageIcon style={{color:"#D263D2"}} />;
+  if (excelRegex.test(name)) return <LibraryBooksIcon style={{color:"#41A15E"}} />;
+  if (pptRegex.test(name)) return <SlideshowIcon style={{color:"#F8BF29"}} />;
+  if (videoRegex.test(name)) return <MovieIcon style={{color:"#F64225"}} />;
+  if (musicRegex.test(name)) return <MusicNoteIcon style={{color:"#7E387D"}} />;
 
   return <InsertDriveFileOutlinedIcon />;
 };

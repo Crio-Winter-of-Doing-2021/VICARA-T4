@@ -89,9 +89,6 @@ let loaderStructure = [1, 2, 3, 4, 5, 6.7, 8].map((key) => {
 export default function Structure(props) {
   const classes = useStyles();
   let loading = useSelector(skeletonLoading);
-
-  const creator = window.localStorage.getItem("author");
-  console.log(creator);
   const structureState = useSelector(selectRecentStructure);
 
   let tableData = [];
@@ -134,11 +131,6 @@ export default function Structure(props) {
       type: data.type,
       key: index,
     };
-
-    // let userDetails = {
-    //   CREATOR: creator,
-    //   id: data.id,
-    // };
 
     let privReverse = {
       payload: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -22,12 +22,20 @@ import { Link } from "react-router-dom";
 import { emptykeys } from "../../store/slices/checkBoxSlice";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-const drawerWidth = 240;
+import {selectUserData} from '../../store/slices/authSlice'
+
+import UserImage from '../Avatar/index'
+const drawerWidth = 280;
 
 const theme = createMuiTheme({
   typography: {
-    fontFamily: "Nunito",
+    fontFamily: "Nunito"
   },
+  palette:{
+    primary:{
+      main:"#1e2022",
+    }
+  }
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -56,6 +64,8 @@ const useStyles = makeStyles((theme) => ({
 export default function ClippedDrawer(props) {
   const classes = useStyles();
 
+  let userData=useSelector(selectUserData)
+
   const dispatch = useDispatch();
 
   const handlePageChange = (e, data) => {
@@ -63,9 +73,11 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys());
   };
 
+  let id=window.localStorage.getItem("id")
+
   const handleLogout = () => {
     window.localStorage.removeItem("session");
-    window.localStorage.removeItem("author");
+    window.localStorage.removeItem("id")
   };
 
   return (
@@ -74,16 +86,13 @@ export default function ClippedDrawer(props) {
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
+            <div
+              style={{display:"flex",width:"100%",justifyContent:"space-between",margin:"0 20px"}}
+            >
+
             <Typography style={{ fontWeight: "bold" }} variant="h6">
               Vicara-T4
             </Typography>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                width: "90%",
-              }}
-            >
               <Link
                 style={{ textDecoration: "none", color: "white" }}
                 to="/login"
@@ -108,24 +117,36 @@ export default function ClippedDrawer(props) {
           }}
         >
           <Toolbar />
+          <div style={{margin:"15px 0"}}>
+            <UserImage/>
+            <div style={{display:"flex",justifyContent:"center"}}>
+              <Typography style={{color:"grey",fontStyle:"italic"}}>@{userData.username}</Typography>
+            </div>
+            <div style={{display:"flex",justifyContent:"center"}}>
+              <Typography>Pratik Chaudhary</Typography>
+            </div>
+          </div>
+          <Divider/>
           <div className={classes.drawerContainer}>
-            <List>
-              {sideNav.map((data, index) => (
-                <Link
-                  style={{ textDecoration: "none" }}
-                  to={data.name === "Home" ? "/drive/ROOT" : `/${data.name}`}
-                >
-                  <ListItem
-                    button
-                    onClick={(e) => handlePageChange(e, data.name)}
-                    key={data.name}
+            <div style={{display:"flex",justifyContent:"center"}}>
+              <List>
+                {sideNav.map((data, index) => (
+                  <Link
+                    style={{ textDecoration: "none" }}
+                    to={data.name === "Home" ? `/drive/${id}` : `/${data.name}`}
                   >
-                    <ListItemIcon>{data.icon}</ListItemIcon>
-                    <ListItemText primary={data.name} />
-                  </ListItem>
-                </Link>
-              ))}
-            </List>
+                    <ListItem
+                      button
+                      onClick={(e) => handlePageChange(e, data.name)}
+                      key={data.name}
+                    >
+                      <ListItemIcon>{data.icon}</ListItemIcon>
+                      <ListItemText style={{color:"black"}} primary={data.name} />
+                    </ListItem>
+                  </Link>
+                ))}
+              </List>
+            </div>
             <Divider />
           </div>
         </Drawer>
