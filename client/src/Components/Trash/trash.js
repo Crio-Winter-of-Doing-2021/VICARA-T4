@@ -35,7 +35,7 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
-import {getProfileAsync} from '../../store/slices/authSlice'
+// import {getProfileAsync} from '../../store/slices/authSlice'
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
@@ -98,7 +98,7 @@ export default function Structure(props) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(trashStructureAsync());
-    dispatch(getProfileAsync(root_id))
+    // dispatch(getProfileAsync(root_id))
   }, [dispatch,root_id]);
 
   tableData = structureState;

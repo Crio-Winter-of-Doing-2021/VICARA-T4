@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -22,9 +22,8 @@ import { Link } from "react-router-dom";
 import { emptykeys } from "../../store/slices/checkBoxSlice";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-import {selectUserData} from '../../store/slices/authSlice'
+import Profile from '../Profile/profile'
 
-import UserImage from '../Avatar/index'
 const drawerWidth = 280;
 
 const theme = createMuiTheme({
@@ -63,8 +62,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ClippedDrawer(props) {
   const classes = useStyles();
-
-  let userData=useSelector(selectUserData)
 
   const dispatch = useDispatch();
 
@@ -117,7 +114,7 @@ export default function ClippedDrawer(props) {
           }}
         >
           <Toolbar />
-          
+          <Profile/>
           <Divider/>
           <div className={classes.drawerContainer}>
             <div style={{display:"flex",justifyContent:"center"}}>

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { baseURL } from "../../axios";
 import axios from "axios";
 import API from "../../axios";
-import {normalLoader} from './loaderSlice'
+import {normalLoader,profileLoader} from './loaderSlice'
 
 export const authSlice = createSlice({
   name: "auth",
@@ -46,10 +46,13 @@ export const loginAsync = (data, props) => (dispatch) => {
 };
 
 export const getProfileAsync = (id)=>(dispatch)=>{
+  dispatch(profileLoader())
   API.get(`/api/profile/?id=${id}`).then(res=>{
     dispatch(login(res.data))
+    dispatch(profileLoader())
   }).catch(err=>{
     console.log(err)
+    dispatch(profileLoader())
   })
 }
 
