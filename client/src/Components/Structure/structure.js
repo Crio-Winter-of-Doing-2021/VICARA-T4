@@ -33,7 +33,7 @@ import { default as UILink } from "@material-ui/core/Link";
 
 import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
-import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
+import FolderRoundedIcon from '@material-ui/icons/FolderRounded';
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
@@ -41,8 +41,10 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
+import {getProfileAsync} from '../../store/slices/authSlice'
+
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import StarTwoToneIcon from '@material-ui/icons/StarTwoTone';
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
@@ -51,7 +53,7 @@ import { typeTest } from "../../Utilities/fileType";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: "#3a4750",
     color: theme.palette.common.white,
   },
   body: {
@@ -95,13 +97,11 @@ export default function Structure(props) {
   let unique_id = props.match.params.id;
 
   let loading = useSelector(skeletonLoading);
-
-  const creator = window.localStorage.getItem("author");
-  console.log(creator);
   const structureState = useSelector(selectStructure);
 
-  let tableData = [];
+  let root_id=window.localStorage.getItem("id")
 
+  let tableData = [];
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));
@@ -110,7 +110,8 @@ export default function Structure(props) {
       type: "FOLDER",
     };
     dispatch(pathAsync(newData));
-  }, [unique_id, dispatch]);
+    dispatch(getProfileAsync(root_id))
+  }, [unique_id, dispatch,root_id]);
 
   tableData = structureState;
 
@@ -146,11 +147,6 @@ export default function Structure(props) {
       key: index,
     };
 
-    // let userDetails = {
-    //   CREATOR: creator,
-    //   id: data.id,
-    // };
-
     let privReverse = {
       payload: {
         id: data.id,
@@ -181,7 +177,7 @@ export default function Structure(props) {
                 inputProps={{ "aria-label": "primary checkbox" }}
               />
               {data.type === "folder" ? (
-                <FolderOpenTwoToneIcon />
+                <FolderRoundedIcon style={{color:"#67C5F0"}} />
               ) : (
                 typeTest(data.name)
               )}
@@ -212,15 +208,13 @@ export default function Structure(props) {
                 <IconButton
                   onClick={(e) => handleFavouriteClick(e, favReverseData)}
                   style={{ margin: "0 10px" }}
-                  color="primary"
                 >
-                  <StarRoundedIcon />
+                  <StarTwoToneIcon style={{color:"#EDD712"}}  />
                 </IconButton>
               ) : (
                 <IconButton
                   onClick={(e) => handleFavouriteClick(e, favReverseData)}
                   style={{ margin: "0 10px" }}
-                  color="primary"
                 >
                   <StarBorderRoundedIcon />
                 </IconButton>
@@ -278,8 +272,8 @@ export default function Structure(props) {
       {console.log("loader", loading)}
       {console.log("table data", tableData)}
       <div style={{ display: "flex" }}>
+      <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
-        <UploadMenu parent={unique_id} />
         <Update />
         <Trash />
         <Delete />

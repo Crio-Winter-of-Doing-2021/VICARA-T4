@@ -176,6 +176,7 @@ export const getFileAsync = (data) => (dispatch) => {
   })
     .then((res) => {
       console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+      window.open(res.data.url)
       // saveAs(res.data["url"], "image.jpg");
       dispatch(normalLoader());
     })

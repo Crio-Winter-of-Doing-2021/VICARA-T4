@@ -6,6 +6,7 @@ export const loaderSlice= createSlice({
     fileUploadLoading:false,
     normalLoading:false,
     skeletonLoading:false,
+    profileLoading:false
   },
   reducers: {
    fileUploadLoader:(state)=>{
@@ -16,6 +17,9 @@ export const loaderSlice= createSlice({
    },
    skeletonLoader:(state)=>{
      state.skeletonLoading=!state.skeletonLoading
+   },
+   profileLoader:(state)=>{
+     state.profileLoading=!state.profileLoading
    }
   },
 });
@@ -23,11 +27,13 @@ export const loaderSlice= createSlice({
 export const {
   fileUploadLoader,
   normalLoader,
-  skeletonLoader
+  skeletonLoader,
+  profileLoader
 } = loaderSlice.actions;
 
 export const fileLoading = (state) => state.loader.fileUploadLoading;
 export const normalLoading = (state) => state.loader.normalLoading;
 export const skeletonLoading=(state)=>state.loader.skeletonLoading
+export const profileLoading=(state)=>state.loader.profileLoading
 
 export default loaderSlice.reducer;

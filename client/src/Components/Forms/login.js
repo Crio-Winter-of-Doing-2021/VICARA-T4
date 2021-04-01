@@ -19,7 +19,7 @@ import { Link as RouteLink } from "react-router-dom";
 
 import { loginAsync } from "../../store/slices/authSlice";
 
-function Copyright() {
+export function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
@@ -58,8 +58,7 @@ export default function SignIn(props) {
   const dispatch = useDispatch();
 
   window.localStorage.removeItem("session");
-  window.localStorage.removeItem("author");
-
+  window.localStorage.removeItem("id");
 
   let [state, setState] = useState({
     username: "",
