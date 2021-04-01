@@ -113,7 +113,7 @@ class Filesystem(APIView):
 
                 client = get_client_server(request)["client"]
                 title_kwargs = {
-                    "sender_name": request.user.profile.get_full_name() + f"({request.user.username})",
+                    "sender_name": request.user.username,
                     "resource_name": f'a folder "{folder.name}"'
                 }
                 body_kwargs = {
