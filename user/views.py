@@ -1,4 +1,5 @@
 
+import secrets
 from django.db.models import Q
 from cloudinary.uploader import upload
 from rest_framework.parsers import MultiPartParser, JSONParser
@@ -81,7 +82,8 @@ class GoogleLogin(APIView):
                 username=username,
                 email=request.data.get('username'),
             )
-            user.set_password(str(request.data.get('password')))
+            random_token = secrets.token_hex(4)
+            user.set_password(random_token)
             user.first_name = request.data.get('givenName')
             user.last_name = request.data.get('familyName')
             user.save()
