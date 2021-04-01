@@ -1,6 +1,6 @@
 from django.core.mail import EmailMessage
 import re
-from mysite.settings import LOCAL_SERVER, PROD_SERVER
+from mysite.settings import LOCAL_SERVER, PROD_SERVER, LOCAL_CLIENT, PROD_CLIENT
 email_regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 
 
@@ -17,9 +17,9 @@ def get_client_server(request):
     server = request.META.get('wsgi.file_wrapper', None)
     data = {}
     if server is not None and server.__module__ == 'django.core.servers.basehttp':
-        data["client"] = "http://localhost:3000"
-        data["server"] = "http://localhost:8000"
+        data["client"] = LOCAL_CLIENT
+        data["server"] = LOCAL_SERVER
     else:
-        data["client"] = "https://vicara.netlify.app"
-        data["server"] = "https://vicara-drf-backend.herokuapp.com"
+        data["client"] = PROD_CLIENT
+        data["server"] = PROD_SERVER
     return data
