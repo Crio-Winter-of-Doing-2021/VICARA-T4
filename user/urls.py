@@ -1,12 +1,13 @@
 from .views import LoginView, Logout, Recent, Register, ListOfUsers,\
-    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile, ProfilePicture
+    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile, ProfilePicture, SearchUsers
 from django.urls import path
 
 urlpatterns = [
     path('auth/login/', LoginView.as_view(), name="login"),
     path('auth/register/', Register.as_view(), name="signup"),
     path('auth/logout/', Logout.as_view(), name="signup"),
-    path('auth/users/', ListOfUsers.as_view(), name="users"),
+    path('users/', ListOfUsers.as_view(), name="users"),
+    path('users/search/',  SearchUsers.as_view(), name="search-users"),
     path('profile/', ProfileView.as_view(), name="profile"),
     path('profile-picture/', ProfilePicture.as_view(), name="profile-picture"),
     path('path/', Path.as_view(), name="path"),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('shared-with-me/',  SharedWithMe.as_view(), name="shared-with-me"),
     path('recover-folder/',  RecoverFolder.as_view(), name="recover-folder"),
     path('recover-file/',  RecoverFile.as_view(), name="recover-file"),
+
 ]

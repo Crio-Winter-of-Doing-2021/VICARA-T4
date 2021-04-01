@@ -1,4 +1,5 @@
 
+from django.db.models import Q
 from cloudinary.uploader import upload
 from rest_framework.parsers import MultiPartParser, JSONParser
 from itertools import chain
@@ -10,7 +11,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-
+from django.contrib.auth.models import update_last_login
 # local imports
 from .models import Profile
 from folder.models import Folder
@@ -32,6 +33,7 @@ class LoginView(ObtainAuthToken):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        update_last_login(None, user)
         token, created = Token.objects.get_or_create(user=user)
         profile = Profile.objects.get(user=user)
         data = ProfileSerializer(profile).data
@@ -48,6 +50,7 @@ class Register(APIView):
         )
         user.set_password(str(request.data.get('password')))
         user.save()
+        update_last_login(None, user)
         token, created = Token.objects.get_or_create(user=user)
         profile = Profile.objects.get(user=user)
         root_folder = Folder(name="ROOT", owner=user)
@@ -140,6 +143,20 @@ class ListOfUsers(APIView):
 
     def get(self, request):
         data = UserSerializer(User.objects.all(), many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class SearchUsers(APIView):
+
+    @check_request_attr(["query"])
+    def get(self, request):
+        query = request.GET["query"]
+        users = User.objects.filter(
+            Q(username__contains=query) |
+            Q(email__contains=query) |
+            Q(first_name__contains=query) |
+            Q(last_name__contains=query))
+        data = UserSerializer(users, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
 
