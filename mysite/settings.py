@@ -185,8 +185,19 @@ CORS_ALLOW_HEADERS = default_headers + (
     'Access-Control-Allow-Origin',
 )
 
-
+# un comment to store results in backend as well
 # CELERY_RESULT_BACKEND = 'django-db'
+
 # CELERY_ACCEPT_CONTENT = ['application/json']
 # CELERY_RESULT_SERIALIZER = 'json'
 # CELERY_TASK_SERIALIZER = 'json'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'vicara.t4@gmail.com'
+EMAIL_HOST_PASSWORD = 'password_vicara_t4'
+EMAIL_PORT = 587
+
+
+LOCAL_SERVER = config("LOCAL_SERVER")
+PROD_SERVER = config("PROD_SERVER")

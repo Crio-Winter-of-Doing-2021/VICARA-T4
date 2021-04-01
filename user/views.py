@@ -1,5 +1,5 @@
 
-import cloudinary.uploader
+from cloudinary.uploader import upload
 from rest_framework.parsers import MultiPartParser, JSONParser
 from itertools import chain
 # django imports
@@ -81,6 +81,10 @@ class ProfileView(APIView):
 
         if("email" in request.data):
             new_email = request.data["email"]
+            user_with_given_mail = Profile.custom_objects.get_or_none(
+                user__email=new_email)
+            if(user_with_given_mail != None and user_with_given_mail != request.user):
+                return Response(data={"message": "Another User with given mail already exists"}, status=status.HTTP_400_BAD_REQUEST)
             if(is_valid_email(new_email)):
                 updated = True
                 profile.user.email = new_email
@@ -119,9 +123,9 @@ class ProfilePicture(APIView):
 
     def post(self, request, format=None):
         try:
-            file = request.data.get('picture')
+            file = request.FILES.get('picture')
             user_profile = Profile.objects.get(user=request.user)
-            cloudinary_response = cloudinary.uploader(
+            cloudinary_response = upload(
                 file, width=450, height=450, crop="thumb", gravity="faces", zoom=0.65, radius="max")
             user_profile.profile_picture_url = cloudinary_response["secure_url"]
             user_profile.save()

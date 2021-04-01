@@ -28,6 +28,9 @@ from .serializers import FolderSerializer, FolderSerializerWithoutChildren
 from .models import Folder
 from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete, create_folder, create_folder_rec
 from file.utils import create_file
+from user.utils import get_server
+from user.tasks import send_mail
+from user.serializers import UserSerializer
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
@@ -105,7 +108,22 @@ class Filesystem(APIView):
             try:
                 users = [User.objects.get(pk=id)
                          for id in ids]
-            except:
+
+                users_json = UserSerializer(users, many=True).data
+
+                server = get_server(request)
+                title_kwargs = {
+                    "sender_name": request.user.profile.get_full_name() + f"({request.user.username})",
+                    "resource_name": f'a folder "{folder.name}"'
+                }
+                body_kwargs = {
+                    "resource_url": f"{server}/api/folder/share/?id={folder.id}&CREATOR={request.user.id}"
+                }
+
+                send_mail.delay("SHARED_WITH_ME", users_json,
+                                title_kwargs, body_kwargs)
+            except Exception as e:
+                print(e)
                 return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
             set_recursive_shared_among(folder, users)
             folder.present_in_shared_me_of.set(users)

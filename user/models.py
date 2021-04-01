@@ -25,7 +25,6 @@ class Profile(models.Model):
     storage_avail = models.IntegerField(default=100000000)
     storage_used = models.IntegerField(default=0)
     gender = models.SmallIntegerField(default=4)
-    gender = models.SmallIntegerField(default=4)
     profile_picture_url = models.TextField(
         default=default_profile_picture_url, max_length=300)
     objects = models.Manager()
@@ -33,6 +32,9 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}  | id = {self.user.id}"
+
+    def get_full_name(self):
+        return f"{self.user.first_name} {self.user.last_name} "
 
 
 @receiver(post_save, sender=User)

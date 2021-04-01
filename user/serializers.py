@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # fields = ('username', 'first_name', 'last_name')
+        fields = '__all__'
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -22,11 +22,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     storage_data = serializers.SerializerMethodField()
     storage_used = serializers.SerializerMethodField()
     storage_avail = serializers.SerializerMethodField()
+    id = serializers.IntegerField(source="user.id", read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'root_id', 'gender', 'storage_data', 'storage_used', 'storage_avail')
+        fields = ('id', 'username', 'email', 'first_name',
+                  'last_name', 'root_id', 'gender', 'storage_data', 'storage_used', 'storage_avail', 'profile_picture_url')
 
     def get_gender(self, obj):
         options = {
