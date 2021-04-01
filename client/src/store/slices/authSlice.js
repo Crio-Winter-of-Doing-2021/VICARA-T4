@@ -62,6 +62,26 @@ export const getProfileAsync = (id) => (dispatch) => {
     });
 };
 
+export const googleLogin = (data) => (dispatch) => {
+  dispatch(normalLoader());
+  axios
+    .post(`${baseURL}/api/auth/google-login/`, data)
+    .then((res) => {
+      console.log(res.data);
+      let token = res.data.token;
+      API.defaults.headers.common["Authorization"] = `Token ${token}`;
+      window.open(`/drive/${res.data.root_id}`);
+      dispatch(setUser(res.data.username));
+      window.localStorage.setItem("session", token);
+      window.localStorage.setItem("id", res.data.root_id);
+      dispatch(normalLoader());
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch(normalLoader());
+    });
+};
+
 export const selectUser = (state) => state.auth.username;
 export const selectUserData = (state) => state.auth.userData;
 
