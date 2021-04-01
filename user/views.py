@@ -191,12 +191,12 @@ class SearchUsers(APIView):
 
     @check_request_attr(["query"])
     def get(self, request):
-        query = request.GET["query"]
+        query = request.GET["query"].lower()
         users = User.objects.filter(
-            Q(username__contains=query) |
-            Q(email__contains=query) |
-            Q(first_name__contains=query) |
-            Q(last_name__contains=query))
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query))
         data = UserSerializer(users, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
