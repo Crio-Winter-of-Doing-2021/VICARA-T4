@@ -1,7 +1,6 @@
 from file.tasks import remove_file
 import humanize
 # django imports
-from django.http import StreamingHttpResponse
 import requests
 import os
 from django.contrib.auth.models import AnonymousUser
@@ -117,18 +116,18 @@ class FileView(APIView):
                 users = [User.objects.get(pk=id)
                          for id in ids]
 
-                # users_json = UserSerializer(users, many=True).data
+                users_json = UserSerializer(users, many=True).data
 
-                # client = get_client_server(request)["client"]
-                # title_kwargs = {
-                #     "sender_name": request.user.username,
-                #     "resource_name": f'a file "{file.name}"'
-                # }
-                # body_kwargs = {
-                #     "resource_url": f"{client}/api/file/share/?id={file.id}&CREATOR={request.user.id}"
-                # }
-                # send_mail.delay("SHARED_WITH_ME", users_json,
-                #                 title_kwargs, body_kwargs)
+                client = get_client_server(request)["client"]
+                title_kwargs = {
+                    "sender_name": request.user.username,
+                    "resource_name": f'a file "{file.name}"'
+                }
+                body_kwargs = {
+                    "resource_url": f"{client}/api/file/share/?id={file.id}&CREATOR={request.user.id}"
+                }
+                send_mail.delay("SHARED_WITH_ME", users_json,
+                                title_kwargs, body_kwargs)
             except Exception as e:
                 print(e)
                 return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
@@ -219,8 +218,8 @@ class UploadByDriveUrl(APIView):
                     owner=request.user,
                     parent=parent_folder)
         file.save()
-        os.remove(s3_name)
-        # remove_file.delay(s3_name)
+        # os.remove(s3_name)
+        remove_file.delay(s3_name)
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 

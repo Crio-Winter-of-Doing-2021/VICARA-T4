@@ -109,19 +109,19 @@ class Filesystem(APIView):
                 users = [User.objects.get(pk=id)
                          for id in ids]
 
-                # users_json = UserSerializer(users, many=True).data
+                users_json = UserSerializer(users, many=True).data
 
-                # client = get_client_server(request)["client"]
-                # title_kwargs = {
-                #     "sender_name": request.user.username,
-                #     "resource_name": f'a folder "{folder.name}"'
-                # }
-                # body_kwargs = {
-                #     "resource_url": f"{client}/api/folder/share/?id={folder.id}&CREATOR={request.user.id}"
-                # }
+                client = get_client_server(request)["client"]
+                title_kwargs = {
+                    "sender_name": request.user.username,
+                    "resource_name": f'a folder "{folder.name}"'
+                }
+                body_kwargs = {
+                    "resource_url": f"{client}/api/folder/share/?id={folder.id}&CREATOR={request.user.id}"
+                }
 
-                # send_mail.delay("SHARED_WITH_ME", users_json,
-                #                 title_kwargs, body_kwargs)
+                send_mail.delay("SHARED_WITH_ME", users_json,
+                                title_kwargs, body_kwargs)
             except Exception as e:
                 print(e)
                 return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
@@ -284,9 +284,9 @@ class DownloadFolder(APIView):
                     parent=None)
         file.save()
         url = get_presigned_url(file.get_s3_key())
-        # remove_file.delay(new_folder_zip)
-        # remove_folder.delay(str(zip_dir))
+        remove_file.delay(new_folder_zip)
+        remove_folder.delay(str(zip_dir))
 
-        shutil.rmtree(zip_dir)
-        os.remove(f"{new_folder_zipped_name}.zip")
+        # shutil.rmtree(zip_dir)
+        # os.remove(f"{new_folder_zipped_name}.zip")
         return Response(data={"url": url}, status=status.HTTP_200_OK)
