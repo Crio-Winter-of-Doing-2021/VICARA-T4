@@ -1,4 +1,4 @@
-from mysite.celery import remove_file, remove_dir
+//from mysite.celery import remove_file, remove_dir
 from file.decorators import check_storage_available
 import humanize
 from collections import defaultdict
