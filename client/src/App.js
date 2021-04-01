@@ -1,29 +1,31 @@
-import React, { Component } from "react";
-import GoogleLogin from "react-google-login";
+import React from "react";
+import Dashboard from "./Components/Dashboard/dashboard";
+import { Route, Switch } from "react-router-dom";
+import NormalLoader from "./Components/Loaders/normalBackdrop";
+import Login from "./Components/Forms/login";
+import SignUp from "./Components/Forms/signup";
+import PrivateRoute from "./Utilities/protectedRoute";
+import AuthorizationCheck from "./Utilities/authorizationCheck";
 
-import googleLogin from "./googleLogin";
-
-class App extends Component {
-  render() {
-    const responseGoogle = async (response) => {
-      // let googleResponse = await googleLogin(response.accessToken);
-      // console.log(googleResponse);
-      console.log(response);
-    };
-
-    return (
-      <div className="App">
-        <h1>LOGIN WITH FACEBOOK AND GOOGLE</h1>
-
-        <GoogleLogin
-          clientId="575084088742-2eidkevqutnod9lord9vf2sri50ko7ct.apps.googleusercontent.com"
-          buttonText="LOGIN WITH GOOGLE"
-          onSuccess={responseGoogle}
-          onFailure={responseGoogle}
+function App() {
+  return (
+    <div style={{ padding: "0 !important" }} className="App">
+      <NormalLoader />
+      <Switch>
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/signup" component={SignUp} />
+        <PrivateRoute
+          exact
+          path="/share/:user/:key"
+          component={AuthorizationCheck}
         />
-      </div>
-    );
-  }
+        <Dashboard />
+        {/* <Route path="/" component={SignUp}>
+          <Dashboard />
+        </Route> */}
+      </Switch>
+    </div>
+  );
 }
 
 export default App;

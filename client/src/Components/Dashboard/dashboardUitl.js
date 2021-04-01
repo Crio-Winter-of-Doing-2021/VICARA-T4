@@ -1,5 +1,5 @@
-import React from "react";
-import { useDispatch} from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -22,20 +22,20 @@ import { Link } from "react-router-dom";
 import { emptykeys } from "../../store/slices/checkBoxSlice";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-import Profile from '../Profile/profile'
-import {Copyright} from '../Forms/login'
-
+import Profile from "../Profile/profile";
+import { Copyright } from "../Forms/login";
+import { getProfileAsync } from "../../store/slices/authSlice";
 const drawerWidth = 280;
 
 const theme = createMuiTheme({
   typography: {
-    fontFamily: "Nunito"
+    fontFamily: "Nunito",
   },
-  palette:{
-    primary:{
-      main:"#1e2022",
-    }
-  }
+  palette: {
+    primary: {
+      main: "#1e2022",
+    },
+  },
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -71,11 +71,15 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys());
   };
 
-  let id=window.localStorage.getItem("id")
+  let id = window.localStorage.getItem("id");
+
+  useEffect(() => {
+    dispatch(getProfileAsync(id));
+  }, [id, dispatch]);
 
   const handleLogout = () => {
     window.localStorage.removeItem("session");
-    window.localStorage.removeItem("id")
+    window.localStorage.removeItem("id");
   };
 
   return (
@@ -85,12 +89,16 @@ export default function ClippedDrawer(props) {
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
             <div
-              style={{display:"flex",width:"100%",justifyContent:"space-between",margin:"0 20px"}}
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                margin: "0 20px",
+              }}
             >
-
-            <Typography style={{ fontWeight: "bold" }} variant="h6">
-              Vicara-T4
-            </Typography>
+              <Typography style={{ fontWeight: "bold" }} variant="h6">
+                Vicara-T4
+              </Typography>
               <Link
                 style={{ textDecoration: "none", color: "white" }}
                 to="/login"
@@ -115,10 +123,10 @@ export default function ClippedDrawer(props) {
           }}
         >
           <Toolbar />
-          <Profile/>
-          <Divider/>
+          <Profile />
+          <Divider />
           <div className={classes.drawerContainer}>
-            <div style={{display:"flex",justifyContent:"center"}}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
               <List>
                 {sideNav.map((data, index) => (
                   <Link
@@ -131,15 +139,18 @@ export default function ClippedDrawer(props) {
                       key={data.name}
                     >
                       <ListItemIcon>{data.icon}</ListItemIcon>
-                      <ListItemText style={{color:"black"}} primary={data.name} />
+                      <ListItemText
+                        style={{ color: "black" }}
+                        primary={data.name}
+                      />
                     </ListItem>
                   </Link>
                 ))}
               </List>
             </div>
             <Divider />
-            <div style={{marginTop:"25px"}}>
-              <Copyright/>
+            <div style={{ marginTop: "25px" }}>
+              <Copyright />
             </div>
           </div>
         </Drawer>

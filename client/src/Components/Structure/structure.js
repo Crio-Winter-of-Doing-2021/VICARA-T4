@@ -33,7 +33,7 @@ import { default as UILink } from "@material-ui/core/Link";
 
 import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
-import FolderRoundedIcon from '@material-ui/icons/FolderRounded';
+import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
@@ -41,10 +41,8 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
-import {getProfileAsync} from '../../store/slices/authSlice'
-
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarTwoToneIcon from '@material-ui/icons/StarTwoTone';
+import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
@@ -99,7 +97,7 @@ export default function Structure(props) {
   let loading = useSelector(skeletonLoading);
   const structureState = useSelector(selectStructure);
 
-  let root_id=window.localStorage.getItem("id")
+  let root_id = window.localStorage.getItem("id");
 
   let tableData = [];
   const dispatch = useDispatch();
@@ -110,8 +108,7 @@ export default function Structure(props) {
       type: "FOLDER",
     };
     dispatch(pathAsync(newData));
-    dispatch(getProfileAsync(root_id))
-  }, [unique_id, dispatch,root_id]);
+  }, [unique_id, dispatch, root_id]);
 
   tableData = structureState;
 
@@ -177,7 +174,7 @@ export default function Structure(props) {
                 inputProps={{ "aria-label": "primary checkbox" }}
               />
               {data.type === "folder" ? (
-                <FolderRoundedIcon style={{color:"#67C5F0"}} />
+                <FolderRoundedIcon style={{ color: "#67C5F0" }} />
               ) : (
                 typeTest(data.name)
               )}
@@ -209,7 +206,7 @@ export default function Structure(props) {
                   onClick={(e) => handleFavouriteClick(e, favReverseData)}
                   style={{ margin: "0 10px" }}
                 >
-                  <StarTwoToneIcon style={{color:"#EDD712"}}  />
+                  <StarTwoToneIcon style={{ color: "#EDD712" }} />
                 </IconButton>
               ) : (
                 <IconButton
@@ -272,7 +269,7 @@ export default function Structure(props) {
       {console.log("loader", loading)}
       {console.log("table data", tableData)}
       <div style={{ display: "flex" }}>
-      <UploadMenu parent={unique_id} />
+        <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
         <Update />
         <Trash />

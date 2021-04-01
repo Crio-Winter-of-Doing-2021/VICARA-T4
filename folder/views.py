@@ -7,7 +7,7 @@ import json
 # python imports
 from file.utils import get_presigned_url
 import os
-from django.core.files import File as DjangoCoreFile
+from django.core.files import File as DjangoCoreFile, storage
 import shutil
 import secrets
 from mysite.settings import BASE_DIR
@@ -30,7 +30,7 @@ from .utils import set_recursive_shared_among, set_recursive_privacy, set_recurs
 from file.utils import create_file
 from user.utils import get_client_server
 from user.tasks import send_mail
-from user.serializers import UserSerializer
+from user.serializers import ProfileSerializer, UserSerializer
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
@@ -137,8 +137,11 @@ class Filesystem(APIView):
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         folder = Folder.objects.get(id=id)
-        recursive_delete(folder)
-        return Response(data={"id": id}, status=status.HTTP_200_OK)
+        profile = request.user.profile
+        recursive_delete(folder, profile)
+        profile.save()
+        storage_data = ProfileSerializer(profile).data["storage_data"]
+        return Response(data={"id": id, **storage_data}, status=status.HTTP_200_OK)
 
 
 class ShareFolder(APIView):
@@ -259,7 +262,9 @@ class UploadFolder(APIView):
             request.user.profile.save()
 
         data = FolderSerializerWithoutChildren(base_folder).data
-        return Response(data=data, status=status.HTTP_200_OK)
+        storage_data = ProfileSerializer(
+            request.user.profile).data["storage_data"]
+        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
 
 
 class DownloadFolder(APIView):

@@ -31,11 +31,12 @@ def set_recursive_shared_among(folder, value):
     folder.save()
 
 
-def recursive_delete(folder):
+def recursive_delete(folder, profile):
     for child_folder in folder.children_folder.all():
-        recursive_delete(child_folder)
+        recursive_delete(child_folder, profile)
     for child_file in folder.children_file.all():
         child_file.delete()
+        profile.storage_used -= child_file.get_size()
     folder.delete()
 
 

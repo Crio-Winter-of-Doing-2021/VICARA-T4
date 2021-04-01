@@ -9,7 +9,6 @@ class FileSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
-    storage_data = serializers.SerializerMethodField()
 
     class Meta:
         model = File
@@ -31,16 +30,3 @@ class FileSerializer(serializers.ModelSerializer):
                 "id": user.id
             })
         return shared_among
-
-    def get_storage_data(self, obj):
-        used = obj.owner.profile.storage_used
-        avail = obj.owner.profile.storage_avail
-        readable_used = humanize.naturalsize(used)
-        readable_avail = humanize.naturalsize(avail)
-
-        data = {
-            "readable": f"{readable_used} of {readable_avail}",
-            "ratio": used/avail
-        }
-
-        return data

@@ -59,7 +59,9 @@ class FileView(APIView):
             request.user.profile.save()
             new_file = FileSerializer(new_file).data
             data.append(new_file)
-        return Response(data=data, status=status.HTTP_201_CREATED)
+        storage_data = ProfileSerializer(
+            request.user.profile).data["storage_data"]
+        return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
 
     @check_valid_name
     @check_id_file
@@ -222,7 +224,12 @@ class UploadByDriveUrl(APIView):
         os.remove(s3_name)
         # remove_file.delay(s3_name)
         data = FileSerializer(file).data
-        return Response(data=data, status=status.HTTP_200_OK)
+        profile = request.user.profile
+        profile.storage_used += file.get_size()
+        profile.save()
+        storage_data = ProfileSerializer(
+            file.owner.profile).data["storage_data"]
+        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
 
 
 class DownloadFile(APIView):
