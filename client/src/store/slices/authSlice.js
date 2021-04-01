@@ -36,7 +36,6 @@ export const loginAsync = (data, props) => (dispatch) => {
       dispatch(setUser(res.data.username))
       window.localStorage.setItem("session", token);
       window.localStorage.setItem("id", res.data.root_id)
-     
       dispatch(normalLoader())
     })
     .catch((err) => {

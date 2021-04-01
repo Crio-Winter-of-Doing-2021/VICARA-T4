@@ -19,7 +19,7 @@ import { Link as RouteLink } from "react-router-dom";
 
 import { loginAsync } from "../../store/slices/authSlice";
 
-function Copyright() {
+export function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}

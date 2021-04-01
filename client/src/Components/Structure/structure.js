@@ -102,7 +102,6 @@ export default function Structure(props) {
   let root_id=window.localStorage.getItem("id")
 
   let tableData = [];
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(structureAsync(unique_id));

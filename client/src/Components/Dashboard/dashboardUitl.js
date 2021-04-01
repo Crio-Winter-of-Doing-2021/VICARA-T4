@@ -23,6 +23,7 @@ import { emptykeys } from "../../store/slices/checkBoxSlice";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import Profile from '../Profile/profile'
+import {Copyright} from '../Forms/login'
 
 const drawerWidth = 280;
 
@@ -137,6 +138,9 @@ export default function ClippedDrawer(props) {
               </List>
             </div>
             <Divider />
+            <div style={{marginTop:"25px"}}>
+              <Copyright/>
+            </div>
           </div>
         </Drawer>
         <main className={classes.content}>
