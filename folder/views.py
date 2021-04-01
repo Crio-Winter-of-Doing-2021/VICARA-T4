@@ -1,4 +1,5 @@
-from mysite.celery import remove_file, remove_dir
+from file.tasks import remove_file
+from folder.tasks import remove_folder
 from file.decorators import check_storage_available
 import humanize
 from collections import defaultdict
@@ -266,7 +267,7 @@ class DownloadFolder(APIView):
         file.save()
         url = get_presigned_url(file.get_s3_key())
         remove_file.delay(new_folder_zip)
-        remove_dir.delay(zip_dir)
+        remove_folder.delay(str(zip_dir))
 
         # shutil.rmtree(zip_dir)
         # os.remove(f"{new_folder_zipped_name}.zip")

@@ -1,3 +1,4 @@
+from file.tasks import remove_file
 import humanize
 # django imports
 from django.http import StreamingHttpResponse
@@ -200,7 +201,8 @@ class UploadByDriveUrl(APIView):
                     owner=request.user,
                     parent=parent_folder)
         file.save()
-        os.remove(s3_name)
+        # os.remove(s3_name)
+        remove_file.delay(s3_name)
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 

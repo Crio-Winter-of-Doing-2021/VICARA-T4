@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
 from corsheaders.defaults import default_headers
 import django_heroku
 import cloudinary
@@ -47,11 +46,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
+    'django_celery_results',
     # Local Apps (Your project's apps)
     'user.apps.UserConfig',
     'file.apps.FileConfig',
     'folder.apps.FolderConfig',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -183,3 +184,9 @@ ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_HEADERS = default_headers + (
     'Access-Control-Allow-Origin',
 )
+
+
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
