@@ -117,15 +117,7 @@ export default function ClippedDrawer(props) {
           }}
         >
           <Toolbar />
-          <div style={{margin:"15px 0"}}>
-            <UserImage/>
-            <div style={{display:"flex",justifyContent:"center"}}>
-              <Typography style={{color:"grey",fontStyle:"italic"}}>@{userData.username}</Typography>
-            </div>
-            <div style={{display:"flex",justifyContent:"center"}}>
-              <Typography>Pratik Chaudhary</Typography>
-            </div>
-          </div>
+          
           <Divider/>
           <div className={classes.drawerContainer}>
             <div style={{display:"flex",justifyContent:"center"}}>

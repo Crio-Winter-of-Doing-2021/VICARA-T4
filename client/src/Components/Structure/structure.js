@@ -41,6 +41,8 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
+import {getProfileAsync} from '../../store/slices/authSlice'
+
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarTwoToneIcon from '@material-ui/icons/StarTwoTone';
 import IconButton from "@material-ui/core/IconButton";
@@ -109,8 +111,8 @@ export default function Structure(props) {
       type: "FOLDER",
     };
     dispatch(pathAsync(newData));
-    dispatch()
-  }, [unique_id, dispatch]);
+    dispatch(getProfileAsync(root_id))
+  }, [unique_id, dispatch,root_id]);
 
   tableData = structureState;
 
