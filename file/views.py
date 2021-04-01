@@ -18,7 +18,7 @@ from .serializers import FileSerializer
 from user.serializers import ProfileSerializer
 from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
 from user.tasks import send_mail
-from user.utils import get_server
+from user.utils import get_client_server
 from user.serializers import UserSerializer
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
@@ -119,13 +119,13 @@ class FileView(APIView):
 
                 users_json = UserSerializer(users, many=True).data
 
-                server = get_server(request)
+                client = get_client_server(request)["client"]
                 title_kwargs = {
                     "sender_name": request.user.profile.get_full_name() + f"({request.user.username})",
                     "resource_name": f'a file "{file.name}"'
                 }
                 body_kwargs = {
-                    "resource_url": f"{server}/api/file/share/?id={file.id}&CREATOR={request.user.id}"
+                    "resource_url": f"{client}/api/file/share/?id={file.id}&CREATOR={request.user.id}"
                 }
                 send_mail.delay("SHARED_WITH_ME", users_json,
                                 title_kwargs, body_kwargs)

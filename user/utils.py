@@ -13,9 +13,13 @@ def sendMail(title, body, to):
     email.send()
 
 
-def get_server(request):
+def get_client_server(request):
     server = request.META.get('wsgi.file_wrapper', None)
+    data = {}
     if server is not None and server.__module__ == 'django.core.servers.basehttp':
-        return LOCAL_SERVER
+        data["client"] = "http://localhost:3000"
+        data["server"] = "http://localhost:8000"
     else:
-        return PROD_SERVER
+        data["client"] = "https://vicara.netlify.app"
+        data["server"] = "https://vicara-drf-backend.herokuapp.com"
+    return data
