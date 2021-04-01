@@ -67,16 +67,17 @@ function App({ parent, modalClose }) {
           //handle success
           console.log(res);
           let k;
-          for (k = 0; k < res.data.length; k++) {
+          for (k = 0; k < res.data.file_data.length; k++) {
             let newData = {
-              resData: res.data[k],
+              resData: res.data.file_data[k],
               type: "file",
             };
             dispatch(pushToCurrentStack(newData));
           }
           modalClose();
           console.log("data = ", res.data);
-          dispatch(updateStorageData(res.data.storage_data));
+          const { readable, ratio } = res.data;
+          dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
         })
         .catch(function (response) {

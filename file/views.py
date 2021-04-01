@@ -61,7 +61,7 @@ class FileView(APIView):
             data.append(new_file)
         storage_data = ProfileSerializer(
             request.user.profile).data["storage_data"]
-        return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
+        return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
 
     @check_valid_name
     @check_id_file

@@ -80,7 +80,7 @@ class GoogleLogin(APIView):
             username = request.data.get("email")[:-len("@gmail.com")]
             user = User.objects.create(
                 username=username,
-                email=request.data.get('username'),
+                email=request.data.get('email'),
             )
             random_token = secrets.token_hex(4)
             user.set_password(random_token)

@@ -70,7 +70,8 @@ function App({ modalClose, parent }) {
           };
           dispatch(pushToCurrentStack(newData));
           modalClose();
-          dispatch(updateStorageData(res.data.storage_data));
+          const { readable, ratio } = res.data;
+          dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
         })
         .catch(function (response) {

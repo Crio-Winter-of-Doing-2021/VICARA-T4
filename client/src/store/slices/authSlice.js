@@ -19,8 +19,8 @@ export const authSlice = createSlice({
     },
     updateStorageData: (state, action) => {
       console.log("update data", action.payload);
-      state.userData.storageData.readable = action.payload.readable;
-      state.userData.storageData.ratio = action.payload.ratio;
+      state.userData.storage_data.readable = action.payload.readable;
+      state.userData.storage_data.ratio = action.payload.ratio;
     },
   },
 });
@@ -62,7 +62,7 @@ export const getProfileAsync = (id) => (dispatch) => {
     });
 };
 
-export const googleLogin = (data) => (dispatch) => {
+export const googleLogin = (data, props) => (dispatch) => {
   dispatch(normalLoader());
   axios
     .post(`${baseURL}/api/auth/google-login/`, data)
@@ -70,7 +70,7 @@ export const googleLogin = (data) => (dispatch) => {
       console.log(res.data);
       let token = res.data.token;
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
-      window.open(`/drive/${res.data.root_id}`);
+      props.history.push(`/drive/${res.data.root_id}`);
       dispatch(setUser(res.data.username));
       window.localStorage.setItem("session", token);
       window.localStorage.setItem("id", res.data.root_id);

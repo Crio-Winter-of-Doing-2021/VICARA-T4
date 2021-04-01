@@ -77,7 +77,8 @@ export default function SignIn(props) {
     dispatch(loginAsync(data, props));
   };
   const googleResponse = ({ profileObj }) => {
-    dispatch(googleLogin(profileObj));
+    console.log(profileObj);
+    dispatch(googleLogin(profileObj, props));
   };
 
   return (
