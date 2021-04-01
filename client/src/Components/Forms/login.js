@@ -14,12 +14,12 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { baseURL } from "../../axios";
-import NormalLoader from '../Loaders/normalBackdrop'
+import NormalLoader from "../Loaders/normalBackdrop";
 import { Link as RouteLink } from "react-router-dom";
+import GoogleLogin from "react-google-login";
+import { googleLogin, loginAsync } from "../../store/slices/authSlice";
 
-import { loginAsync } from "../../store/slices/authSlice";
-
-function Copyright() {
+export function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
@@ -58,8 +58,7 @@ export default function SignIn(props) {
   const dispatch = useDispatch();
 
   window.localStorage.removeItem("session");
-  window.localStorage.removeItem("author");
-
+  window.localStorage.removeItem("id");
 
   let [state, setState] = useState({
     username: "",
@@ -77,10 +76,14 @@ export default function SignIn(props) {
     e.preventDefault();
     dispatch(loginAsync(data, props));
   };
+  const googleResponse = ({ profileObj }) => {
+    console.log(profileObj);
+    dispatch(googleLogin(profileObj, props));
+  };
 
   return (
     <Container component="main" maxWidth="xs">
-      <NormalLoader/>
+      <NormalLoader />
       <CssBaseline />
       {console.log(state)}
       <div className={classes.paper}>
@@ -142,6 +145,12 @@ export default function SignIn(props) {
             </Grid>
           </Grid>
         </form>
+        <GoogleLogin
+          clientId="575084088742-2eidkevqutnod9lord9vf2sri50ko7ct.apps.googleusercontent.com"
+          buttonText="LOGIN WITH GOOGLE"
+          onSuccess={googleResponse}
+          onFailure={googleResponse}
+        />
       </div>
       <Box mt={8}>
         <Copyright />

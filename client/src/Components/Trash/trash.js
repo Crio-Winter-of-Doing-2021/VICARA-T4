@@ -35,6 +35,8 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
+// import {getProfileAsync} from '../../store/slices/authSlice'
+
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import IconButton from "@material-ui/core/IconButton";
@@ -87,17 +89,17 @@ let loaderStructure = [1, 2, 3, 4, 5, 6.7, 8].map((key) => {
 export default function Structure(props) {
   const classes = useStyles();
   let loading = useSelector(skeletonLoading);
-
-  const creator = window.localStorage.getItem("author");
-  console.log(creator);
   const structureState = useSelector(selectTrashStructure);
 
   let tableData = [];
 
+  let root_id=window.localStorage.getItem("id")
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(trashStructureAsync());
-  }, [dispatch]);
+    // dispatch(getProfileAsync(root_id))
+  }, [dispatch,root_id]);
 
   tableData = structureState;
 
@@ -130,11 +132,6 @@ export default function Structure(props) {
       type: data.type,
       key: index,
     };
-
-    // let userDetails = {
-    //   CREATOR: creator,
-    //   id: data.id,
-    // };
 
     let privReverse = {
       payload: {

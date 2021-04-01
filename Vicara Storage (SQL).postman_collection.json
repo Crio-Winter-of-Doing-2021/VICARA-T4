@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admin6\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"ashutosh\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,9 +20,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/auth/register/",
+					"raw": "{{PROD}}/api/auth/register/",
 					"host": [
-						"{{LOCAL}}"
+						"{{PROD}}"
 					],
 					"path": [
 						"api",
@@ -118,7 +118,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"admisdn5\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"ashutoshPanda_1\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -176,7 +176,7 @@
 			"response": []
 		},
 		{
-			"name": "/api/auth/users/",
+			"name": "/api/users/",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -185,8 +185,8 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{auth_token_string}}"
 					}
 				],
 				"body": {
@@ -199,15 +199,58 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/auth/users/",
+					"raw": "{{LOCAL}}/api/users/",
 					"host": [
 						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
-						"auth",
 						"users",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/users/search",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/api/users/search/?query=admin",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"search",
+						""
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "admin"
+						}
 					]
 				}
 			},
@@ -269,7 +312,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"gender\":1\n}",
+					"raw": "{\n    \"email\":\"iamashutoshpanda@gmail.com\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -354,7 +397,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/path/?id=24&TYPE=FOLDER",
+					"raw": "{{LOCAL}}/api/path/?id=4&TYPE=FOLDER",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -366,7 +409,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "24"
+							"value": "4"
 						},
 						{
 							"key": "TYPE",
@@ -433,7 +476,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\":\"Level 3.1\",\n    \"PARENT\":3\n}",
+					"raw": "{\n    \"name\":\"Level 3.1\",\n    \"PARENT\":\"ROOT\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -467,7 +510,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"shared_among\":[1,2],\n    \"id\":2\n}",
+					"raw": "{\n    \"shared_among\":[4],\n    \"id\":8\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -801,7 +844,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{LOCAL}}/api/file/?id=1",
+					"raw": "{{LOCAL}}/api/file/?id=47",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -813,7 +856,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "47"
 						}
 					]
 				}
@@ -833,7 +876,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\":2,\n    \"privacy\":\"false\",\n    \"trash\":\"true\"\n}",
+					"raw": "{\n    \"id\":47,\n    \"shared_among\":[4]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -898,7 +941,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"PARENT\":\"ROOT\",\n    \"DRIVE_URL\":\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png\",\n    \"NAME\":\"hellsdfsdfo.png\"\n}",
+					"raw": "{\n    \"PARENT\":\"ROOT\",\n    \"DRIVE_URL\":\"https://www.google.com/webhp?hl=en&sa=X&ved=0ahUKEwj506e7ht3vAhWHV30KHcWhB0sQPAgI\",\n    \"NAME\":\"google.png\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

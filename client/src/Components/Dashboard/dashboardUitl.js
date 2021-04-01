@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -22,11 +22,19 @@ import { Link } from "react-router-dom";
 import { emptykeys } from "../../store/slices/checkBoxSlice";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-const drawerWidth = 240;
+import Profile from "../Profile/profile";
+import { Copyright } from "../Forms/login";
+import { getProfileAsync } from "../../store/slices/authSlice";
+const drawerWidth = 280;
 
 const theme = createMuiTheme({
   typography: {
     fontFamily: "Nunito",
+  },
+  palette: {
+    primary: {
+      main: "#1e2022",
+    },
   },
 });
 
@@ -63,9 +71,15 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys());
   };
 
+  let id = window.localStorage.getItem("id");
+
+  useEffect(() => {
+    dispatch(getProfileAsync(id));
+  }, [id, dispatch]);
+
   const handleLogout = () => {
     window.localStorage.removeItem("session");
-    window.localStorage.removeItem("author");
+    window.localStorage.removeItem("id");
   };
 
   return (
@@ -74,16 +88,17 @@ export default function ClippedDrawer(props) {
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
-            <Typography style={{ fontWeight: "bold" }} variant="h6">
-              Vicara-T4
-            </Typography>
             <div
               style={{
                 display: "flex",
-                justifyContent: "flex-end",
-                width: "90%",
+                width: "100%",
+                justifyContent: "space-between",
+                margin: "0 20px",
               }}
             >
+              <Typography style={{ fontWeight: "bold" }} variant="h6">
+                Vicara-T4
+              </Typography>
               <Link
                 style={{ textDecoration: "none", color: "white" }}
                 to="/login"
@@ -108,25 +123,35 @@ export default function ClippedDrawer(props) {
           }}
         >
           <Toolbar />
+          <Profile />
+          <Divider />
           <div className={classes.drawerContainer}>
-            <List>
-              {sideNav.map((data, index) => (
-                <Link
-                  style={{ textDecoration: "none" }}
-                  to={data.name === "Home" ? "/drive/ROOT" : `/${data.name}`}
-                >
-                  <ListItem
-                    button
-                    onClick={(e) => handlePageChange(e, data.name)}
-                    key={data.name}
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <List>
+                {sideNav.map((data, index) => (
+                  <Link
+                    style={{ textDecoration: "none" }}
+                    to={data.name === "Home" ? `/drive/${id}` : `/${data.name}`}
                   >
-                    <ListItemIcon>{data.icon}</ListItemIcon>
-                    <ListItemText primary={data.name} />
-                  </ListItem>
-                </Link>
-              ))}
-            </List>
+                    <ListItem
+                      button
+                      onClick={(e) => handlePageChange(e, data.name)}
+                      key={data.name}
+                    >
+                      <ListItemIcon>{data.icon}</ListItemIcon>
+                      <ListItemText
+                        style={{ color: "black" }}
+                        primary={data.name}
+                      />
+                    </ListItem>
+                  </Link>
+                ))}
+              </List>
+            </div>
             <Divider />
+            <div style={{ marginTop: "25px" }}>
+              <Copyright />
+            </div>
           </div>
         </Drawer>
         <main className={classes.content}>
