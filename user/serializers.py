@@ -55,6 +55,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_date_joined(self, obj):
         return humanize.naturaldate(obj.user.date_joined)
 
+    def get_last_login(self, obj):
+        return humanize.naturaltime(obj.user.last_login)
+
     def get_storage_used(self, obj):
         return humanize.naturalsize(obj.storage_used)
 
