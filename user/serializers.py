@@ -1,14 +1,24 @@
 import humanize
-from rest_framework import serializers
+from rest_framework import fields, serializers
 from .models import Profile
 
 from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    date_joined = serializers.SerializerMethodField()
+    last_login = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        # fields = ('username', 'first_name', 'last_name')
+        fields = ('id', 'username', 'email', 'first_name',
+                  'last_name', 'last_login', 'date_joined')
+
+    def get_last_login(self, obj):
+        return humanize.naturaltime(obj.last_login)
+
+    def get_date_joined(self, obj):
+        return humanize.naturaldate(obj.date_joined)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -22,11 +32,16 @@ class ProfileSerializer(serializers.ModelSerializer):
     storage_data = serializers.SerializerMethodField()
     storage_used = serializers.SerializerMethodField()
     storage_avail = serializers.SerializerMethodField()
+    id = serializers.IntegerField(source="user.id", read_only=True)
+    date_joined = serializers.SerializerMethodField()
+    last_login = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'root_id', 'gender', 'storage_data', 'storage_used', 'storage_avail')
+        fields = ('id', 'username', 'email', 'first_name',
+                  'last_name', 'root_id', 'gender', 'storage_data',
+                  'storage_used', 'storage_avail', 'profile_picture_url',
+                  'date_joined', 'last_login')
 
     def get_gender(self, obj):
         options = {
@@ -36,6 +51,12 @@ class ProfileSerializer(serializers.ModelSerializer):
             4: "Not Set",
         }
         return options[obj.gender]
+
+    def get_date_joined(self, obj):
+        return humanize.naturaldate(obj.user.date_joined)
+
+    def get_last_login(self, obj):
+        return humanize.naturaltime(obj.user.last_login)
 
     def get_storage_used(self, obj):
         return humanize.naturalsize(obj.storage_used)

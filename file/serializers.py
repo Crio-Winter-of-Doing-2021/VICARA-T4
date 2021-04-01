@@ -28,7 +28,7 @@ class FileSerializer(serializers.ModelSerializer):
         for user in obj.shared_among.all():
             shared_among.append({
                 "username": user.username,
-                "id": id
+                "id": user.id
             })
         return shared_among
 

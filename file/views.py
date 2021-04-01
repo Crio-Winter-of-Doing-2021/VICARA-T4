@@ -1,3 +1,4 @@
+from file.tasks import remove_file
 import humanize
 # django imports
 from django.http import StreamingHttpResponse
@@ -16,6 +17,9 @@ from folder.decorators import allow_parent_root, check_is_owner_parent_folder, c
 from .serializers import FileSerializer
 from user.serializers import ProfileSerializer
 from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
+from user.tasks import send_mail
+from user.utils import get_client_server
+from user.serializers import UserSerializer
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
@@ -92,6 +96,7 @@ class FileView(APIView):
 
             rename_s3(old_file_key, new_file_key)
             file.file.name = s3_new_filename
+            file.name = new_name_file_system
 
         if("privacy" in request.data):
             updated = True
@@ -103,15 +108,29 @@ class FileView(APIView):
         if("shared_among" in request.data):
             updated = True
             ids = request.data["shared_among"]
-
             # make unique & discard owner
+            ids = set(ids)
             ids.discard(file.owner.id)
             ids = list(ids)
 
             try:
                 users = [User.objects.get(pk=id)
                          for id in ids]
-            except:
+
+                # users_json = UserSerializer(users, many=True).data
+
+                # client = get_client_server(request)["client"]
+                # title_kwargs = {
+                #     "sender_name": request.user.username,
+                #     "resource_name": f'a file "{file.name}"'
+                # }
+                # body_kwargs = {
+                #     "resource_url": f"{client}/api/file/share/?id={file.id}&CREATOR={request.user.id}"
+                # }
+                # send_mail.delay("SHARED_WITH_ME", users_json,
+                #                 title_kwargs, body_kwargs)
+            except Exception as e:
+                print(e)
                 return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
             file.shared_among.set(users)
             file.present_in_shared_me_of.set(users)
@@ -201,6 +220,7 @@ class UploadByDriveUrl(APIView):
                     parent=parent_folder)
         file.save()
         os.remove(s3_name)
+        # remove_file.delay(s3_name)
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 

@@ -1,5 +1,6 @@
 
-import cloudinary.uploader
+from django.db.models import Q
+from cloudinary.uploader import upload
 from rest_framework.parsers import MultiPartParser, JSONParser
 from itertools import chain
 # django imports
@@ -10,7 +11,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-
+from django.contrib.auth.models import update_last_login
 # local imports
 from .models import Profile
 from folder.models import Folder
@@ -32,6 +33,7 @@ class LoginView(ObtainAuthToken):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        update_last_login(None, user)
         token, created = Token.objects.get_or_create(user=user)
         profile = Profile.objects.get(user=user)
         data = ProfileSerializer(profile).data
@@ -48,6 +50,7 @@ class Register(APIView):
         )
         user.set_password(str(request.data.get('password')))
         user.save()
+        update_last_login(None, user)
         token, created = Token.objects.get_or_create(user=user)
         profile = Profile.objects.get(user=user)
         root_folder = Folder(name="ROOT", owner=user)
@@ -81,6 +84,10 @@ class ProfileView(APIView):
 
         if("email" in request.data):
             new_email = request.data["email"]
+            user_with_given_mail = Profile.custom_objects.get_or_none(
+                user__email=new_email)
+            if(user_with_given_mail != None and user_with_given_mail != request.user):
+                return Response(data={"message": "Another User with given mail already exists"}, status=status.HTTP_400_BAD_REQUEST)
             if(is_valid_email(new_email)):
                 updated = True
                 profile.user.email = new_email
@@ -119,9 +126,9 @@ class ProfilePicture(APIView):
 
     def post(self, request, format=None):
         try:
-            file = request.data.get('picture')
+            file = request.FILES.get('picture')
             user_profile = Profile.objects.get(user=request.user)
-            cloudinary_response = cloudinary.uploader(
+            cloudinary_response = upload(
                 file, width=450, height=450, crop="thumb", gravity="faces", zoom=0.65, radius="max")
             user_profile.profile_picture_url = cloudinary_response["secure_url"]
             user_profile.save()
@@ -136,6 +143,20 @@ class ListOfUsers(APIView):
 
     def get(self, request):
         data = UserSerializer(User.objects.all(), many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class SearchUsers(APIView):
+
+    @check_request_attr(["query"])
+    def get(self, request):
+        query = request.GET["query"]
+        users = User.objects.filter(
+            Q(username__contains=query) |
+            Q(email__contains=query) |
+            Q(first_name__contains=query) |
+            Q(last_name__contains=query))
+        data = UserSerializer(users, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
 
