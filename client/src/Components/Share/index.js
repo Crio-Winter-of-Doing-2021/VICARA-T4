@@ -8,20 +8,46 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import ShareIcon from "@material-ui/icons/Share";
 
-import {Divider, ListItem, ListItemText,MenuItem,ListItemIcon} from '@material-ui/core'
+import UserSearchField from './users'
+
+import {Divider, ListItem, ListItemText,MenuItem,ListItemIcon, Typography,Avatar,Chip} from '@material-ui/core'
 import { useDispatch, useSelector } from "react-redux";
+
+import {setPatchUsersDefault,selectPatchUsers,updatePatchUsers} from '../../store/slices/shareSlice'
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch=useDispatch()
+
+  let patchUsers=[]
+  patchUsers=useSelector(selectPatchUsers)
+
+  const handleDelete = (e,user) => {
+    e.preventDefault();
+    dispatch(updatePatchUsers(user))
+  };
+
+  let patchUsersRenderer= patchUsers.map(user=>{
+    return(
+      <Chip
+        style={{margin:"2px"}}
+        icon={<Avatar style={{width:"20px",height:"20px"}} alt={user.username} src={user.profile_picture_url} />}
+        label={user.username}
+        onDelete={(e)=>handleDelete(e,user)}
+        color="primary"
+      />
+    )
+  })
+
   const handleClose = () => {
     setOpen(false);
   };
+  
 
   return (
     <div>
-      <MenuItem onClick={()=>{props.menuClose();setOpen(true)}}>
+      <MenuItem onClick={()=>{props.menuClose();setOpen(true);dispatch(setPatchUsersDefault(props.data.shared_among))}}>
           <ListItemIcon>
             <ShareIcon color="primary" />
           </ListItemIcon>
@@ -34,14 +60,16 @@ export default function FormDialog(props) {
           <DialogContentText>
             Share link, or add users to share with-
           </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="Add"
-            label="Add people"
-            type=""
-            fullWidth
-          />
+            {patchUsersRenderer.length!==0?<div>
+              <div>
+                <Typography>Users Shared with-</Typography>
+              </div>
+              <div>
+                {patchUsersRenderer}
+              </div>
+            </div>:null}
+
+          <UserSearchField/>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

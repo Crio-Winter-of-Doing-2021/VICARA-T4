@@ -1,12 +1,13 @@
 import { createSlice} from "@reduxjs/toolkit";
 import API from '../../axios'
-import {normalLoader} from './loaderSlice'
+import {normalLoader,searchLoader} from './loaderSlice'
 import {privOpp} from '../../Components/Structure/structure'
 
 export const shareSlice= createSlice({
   name: "share",
   initialState: {
-    patchUsers:[]
+    patchUsers:[],
+    searchResult:[]
   },
   reducers: {
       updateSharePrivacy:(state)=>{
@@ -18,7 +19,7 @@ export const shareSlice= createSlice({
       updatePatchUsers:(state,action)=>{
         let value=action.payload
         function check(user) {
-          return value === user;
+          return value.username === user.username;
         }
 
         let index=state.patchUsers.findIndex(check);
@@ -29,8 +30,14 @@ export const shareSlice= createSlice({
           state.patchUsers.splice(index,1)
         }
       },
-      setPatchUsersDefault:(state)=>{
-        state.patchUsers=state.fileData.USERS
+      setPatchUsersDefault:(state,action)=>{
+        state.patchUsers=action.payload
+      },
+      setResultUsers:(state,action)=>{
+        state.searchResult=action.payload
+      },
+      pushForPatch:(state,action)=>{
+        state.patchUsers.push(action.payload)
       }
   },
 });
@@ -38,7 +45,28 @@ export const shareSlice= createSlice({
 export const {
     updateSharePrivacy,
     updatePatchUsers,
-    setPatchUsersDefault
+    setPatchUsersDefault,
+    setResultUsers,
+    pushForPatch
 } = shareSlice.actions;
+
+export const searchUserAsync=(value)=>(dispatch)=>{
+  dispatch(searchLoader())
+  API.get(`api/users/search/`,{
+    params:{
+      query:value
+    }
+  }).then(res=>{
+    console.log(res)
+    dispatch(setResultUsers(res.data))
+    dispatch(searchLoader())
+  }).catch(err=>{
+    console.log(err)
+    dispatch(searchLoader())
+  })
+}
+
+export const selectPatchUsers = (state)=> state.share.patchUsers
+export const selectSearchResults=(state)=> state.share.searchResult
 
 export default shareSlice.reducer;
