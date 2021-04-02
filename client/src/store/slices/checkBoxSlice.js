@@ -153,12 +153,12 @@ export const updateAsync = (fileData, folderData) => (dispatch) => {
         dispatch(updateFileName(newData));
         dispatch(updateFavFileName(newData));
         dispatch(updateRecentFileName(newData));
-        dispatch(
-          updateSelectedKeys({
-            type: "folder",
-            ...folderData.payload,
-          })
-        );
+        // dispatch(
+        //   updateSelectedKeys({
+        //     type: "folder",
+        //     ...folderData.payload,
+        //   })
+        // );
 
         dispatch(normalLoader());
       })
@@ -182,12 +182,12 @@ export const updateAsync = (fileData, folderData) => (dispatch) => {
         dispatch(updateFileName(newData));
         dispatch(updateFavFileName(newData));
         dispatch(updateRecentFileName(newData));
-        dispatch(
-          updateSelectedKeys({
-            type: "file",
-            ...folderData.payload,
-          })
-        );
+        // dispatch(
+        //   updateSelectedKeys({
+        //     type: "file",
+        //     ...folderData.payload,
+        //   })
+        // );
         dispatch(normalLoader());
       })
       .catch((err) => {

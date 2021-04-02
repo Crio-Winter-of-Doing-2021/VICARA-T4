@@ -6,40 +6,28 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import ShareIcon from '@material-ui/icons/Share';
+import ShareIcon from "@material-ui/icons/Share";
 
-import {Divider} from '@material-ui/core'
-
-import {
-  selectCheckedFolderKeys,
-  selectCheckedFileKeys,
-} from "../../store/slices/checkBoxSlice";
+import {Divider, ListItem, ListItemText,MenuItem,ListItemIcon} from '@material-ui/core'
 import { useDispatch, useSelector } from "react-redux";
 
-export default function FormDialog() {
+export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
 
   const dispatch = useDispatch();
-  const checkedFolderKeys = useSelector(selectCheckedFolderKeys);
-  const checkedFileKeys = useSelector(selectCheckedFileKeys);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
 
-  let deactive =
-    checkedFolderKeys.length + checkedFileKeys.length !== 1 ? true : false;
-
   return (
-    <div style={{margin:"10px"}}>
-      <Button disabled={deactive} startIcon={<ShareIcon/>} variant="outlined" style={{color:"blue"}} onClick={handleClickOpen}>
-        Share
-      </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+    <div>
+      <MenuItem onClick={()=>{props.menuClose();setOpen(true)}}>
+          <ListItemIcon>
+            <ShareIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText>Share</ListItemText>
+      </MenuItem>
+      <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Share with Users</DialogTitle>
         <Divider/>
         <DialogContent>
@@ -49,7 +37,7 @@ export default function FormDialog() {
           <TextField
             autoFocus
             margin="dense"
-            id="name"
+            id="Add"
             label="Add people"
             type=""
             fullWidth
@@ -60,7 +48,7 @@ export default function FormDialog() {
             Cancel
           </Button>
           <Button onClick={handleClose} color="primary">
-            Subscribe
+            Save Changes
           </Button>
         </DialogActions>
       </Dialog>
