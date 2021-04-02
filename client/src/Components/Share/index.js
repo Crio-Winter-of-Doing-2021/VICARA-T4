@@ -10,8 +10,18 @@ import ShareIcon from '@material-ui/icons/Share';
 
 import {Divider} from '@material-ui/core'
 
+import {
+  selectCheckedFolderKeys,
+  selectCheckedFileKeys,
+} from "../../store/slices/checkBoxSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
+
+  const dispatch = useDispatch();
+  const checkedFolderKeys = useSelector(selectCheckedFolderKeys);
+  const checkedFileKeys = useSelector(selectCheckedFileKeys);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -21,9 +31,12 @@ export default function FormDialog() {
     setOpen(false);
   };
 
+  let deactive =
+    checkedFolderKeys.length + checkedFileKeys.length !== 1 ? true : false;
+
   return (
     <div style={{margin:"10px"}}>
-      <Button startIcon={<ShareIcon/>} variant="outlined" style={{color:"blue"}} onClick={handleClickOpen}>
+      <Button disabled={deactive} startIcon={<ShareIcon/>} variant="outlined" style={{color:"blue"}} onClick={handleClickOpen}>
         Share
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
