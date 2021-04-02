@@ -197,9 +197,9 @@ class SearchUsers(APIView):
         qs = User.objects.all()
         qs = qs.annotate(
             full_name=Concat(
-                'user__first_name',
+                'first_name',
                 Value(' '),
-                'user__last_name',
+                'last_name',
                 output_field=CharField()
             )
         ).filter(
