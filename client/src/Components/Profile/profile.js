@@ -7,7 +7,8 @@ import {profileLoading} from '../../store/slices/loaderSlice'
 import Skeleton from '@material-ui/lab/Skeleton'
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { withStyles } from '@material-ui/core/styles';
-
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import {IconButton} from "@material-ui/core"
 let progress=0
 
 const BorderLinearProgress = withStyles((theme) => ({
@@ -45,10 +46,11 @@ export default function Profile() {
                 </div>
                 <Divider/>
                 <div style={{display:"flex",justifyContent:"center",margin:"20px 0 10px"}}>
-                    <Typography>Storage Data:</Typography>
+                    <Typography>Storage Data:{progress>=80?<IconButton><ErrorOutlineIcon/></IconButton>:null}</Typography>
                 </div>
                 <div style={{display:"flex",justifyContent:"center"}}>
                     <BorderLinearProgress style={{width:"85%"}} variant="determinate" value={progress} />
+                    
                 </div>
                 <div style={{display:"flex",justifyContent:"center",color:"grey"}}>
                     {userData.storage_data!==undefined?userData.storage_data.readable:"Calculating..."}
