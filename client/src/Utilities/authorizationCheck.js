@@ -8,7 +8,7 @@ export default function AuthorizationCheck(props) {
   let [success, setSuccess] = useState(null);
 
   useEffect(() => {
-    API.get("/api/share/", {
+    API.get("/api/share-file/", {
       params: {
         id: key,
         CREATOR: author,

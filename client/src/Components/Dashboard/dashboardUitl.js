@@ -136,7 +136,7 @@ export default function ClippedDrawer(props) {
                 {sideNav.map((data, index) => (
                   <Link
                     style={{ textDecoration: "none" }}
-                    to={data.name === "Home" ? `/drive/${id}` : `/${data.name}`}
+                    to={data.name === "Home" ? `/drive/${id}` : data.name==="Shared with Me"?`/shared-with-me`:`/${data.name}`}
                   >
                     <ListItem
                       button

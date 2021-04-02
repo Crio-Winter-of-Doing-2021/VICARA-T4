@@ -24,7 +24,7 @@ export default function Dashboard() {
               <PrivateRoute exact path="/favourites" component={Favourite} />
               <PrivateRoute exact path="/recent" component={Recent} />
               <PrivateRoute exact path="/trash" component={Trash} />
-              <PrivateRoute exact path="/shared with me" component={SharedWithMe} />
+              <PrivateRoute exact path="/shared-with-me" component={SharedWithMe} />
               <Route path="*">
                 <div style={{fontSize:"30px",position:"absolute",top:"40%",left:"40%"}}>
                   404 not found

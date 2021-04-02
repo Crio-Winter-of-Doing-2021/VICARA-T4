@@ -7,13 +7,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import ShareIcon from "@material-ui/icons/Share";
-
+import CopyLink from './copyClipboard'
 import UserSearchField from './users'
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 import {Divider, ListItem, ListItemText,MenuItem,ListItemIcon, Typography,Avatar,Chip} from '@material-ui/core'
 import { useDispatch, useSelector } from "react-redux";
 
-import {setPatchUsersDefault,selectPatchUsers,updatePatchUsers} from '../../store/slices/shareSlice'
+import {setPatchUsersDefault,selectPatchUsers,updatePatchUsers,sharePatchAsync} from '../../store/slices/shareSlice'
+import {privacyAsync,updateAfterShare} from '../../store/slices/structureSlice'
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -43,7 +46,38 @@ export default function FormDialog(props) {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
+  let privReverse = {
+    payload: {
+      id: props.data.id,
+      privacy: !props.data.privacy,
+    },
+    type: props.data.type,
+    key: props.index,
+  };
+
+  let k=0;
+  let new_patch_data=[]
+
+  console.log(patchUsers)
+
+  for(k=0;k<patchUsers.length;k++){
+    new_patch_data.push(patchUsers[k].id)
+  }
+
+  let patchData={
+    payload:{
+      id:props.data.id,
+      shared_among:new_patch_data
+    },
+    type:props.data.type,
+    index:props.index
+  }
+
+  let updateData={
+    index:props.index,
+    users:patchUsers
+  }
 
   return (
     <div>
@@ -54,15 +88,45 @@ export default function FormDialog(props) {
           <ListItemText>Share</ListItemText>
       </MenuItem>
       <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Share with Users</DialogTitle>
+        <div id="form-dialog-title" style={{display:"flex",justifyContent:"space-between",margin:"15px 15px 10px"}}>
+          <div>
+            <Typography variant="h6">
+              Share with users
+            </Typography>
+          </div>
+          <div>
+            <Button size="small" onClick={()=>{
+              handleClose();
+              dispatch(sharePatchAsync(patchData));
+              dispatch(updateAfterShare(updateData))}} color="primary">
+              Save Changes
+            </Button>
+            <Button size="small" style={{marginLeft:"5px"}} onClick={handleClose} color="secondary">
+              Cancel
+            </Button>
+          </div>
+        </div>
         <Divider/>
-        <DialogContent>
+        <DialogContent style={{marginTop:"5px"}}>
           <DialogContentText>
             Share link, or add users to share with-
+            <CopyLink author={props.data.owner} id={props.data.id} />
+            <Divider/>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",margin:"15px 0"}}>
+              {props.data.privacy?<Typography>
+                Only people with access can view the file.
+              </Typography>:<Typography>
+                Anyone with the link can view the file.
+              </Typography>}
+              <Button onClick={()=>dispatch(privacyAsync(privReverse))} startIcon={props.data.privacy?<VisibilityIcon/>:<VisibilityOffIcon/>} style={{color:props.data.privacy?"green":"blue"}} size="small" variant="outlined">
+                {props.data.privacy?"Make Public":"Make Private"}
+              </Button>
+            </div>
+            <Divider/>
           </DialogContentText>
             {patchUsersRenderer.length!==0?<div>
               <div>
-                <Typography>Users Shared with-</Typography>
+                <Typography>Users having access-</Typography>
               </div>
               <div>
                 {patchUsersRenderer}
@@ -71,14 +135,6 @@ export default function FormDialog(props) {
 
           <UserSearchField/>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Save Changes
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );

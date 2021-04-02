@@ -51,7 +51,7 @@ export default function ContextMenu(props) {
           </ListItemIcon>
           <ListItemText style={{ paddingRight: "15px" }}>Rename</ListItemText>
         </MenuItem>
-        <Share data={props.data} menuClose={handleClose} />
+        <Share index={props.index} data={props.data} menuClose={handleClose} />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <DeleteOutlineIcon color="secondary" />

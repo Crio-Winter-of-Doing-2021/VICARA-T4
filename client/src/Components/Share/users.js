@@ -74,12 +74,12 @@ export default function Users(){
     }
 
     return(
-        <div style={{marginTop:"10px"}}>
+        <div style={{marginTop:"20px"}}>
             <TextField
                 autoFocus
                 margin="dense"
                 id="Add"
-                label="Add people"
+                label="Add people to give access-"
                 type=""
                 onChange={handleChange}
                 fullWidth

@@ -57,6 +57,12 @@ export const structureSlice = createSlice({
     updatePath: (state, action) => {
       state.currentPath = action.payload;
     },
+    updateAfterShare:(state,action)=>{
+      let index=action.payload.index
+      let users=action.payload.users
+
+      state.currentDisplayStructure[index].shared_among=users
+    }
   },
 });
 
@@ -68,6 +74,7 @@ export const {
   updateFav,
   updatePath,
   updatePrivacy,
+  updateAfterShare
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {

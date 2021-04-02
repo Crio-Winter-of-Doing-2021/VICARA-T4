@@ -38,6 +38,9 @@ export const shareSlice= createSlice({
       },
       pushForPatch:(state,action)=>{
         state.patchUsers.push(action.payload)
+      },
+      finalUpdate:(state,action)=>{
+        
       }
   },
 });
@@ -64,6 +67,27 @@ export const searchUserAsync=(value)=>(dispatch)=>{
     console.log(err)
     dispatch(searchLoader())
   })
+}
+
+export const sharePatchAsync=(data)=>(dispatch)=>{
+  dispatch(normalLoader())
+  if(data.type==='file'){
+    API.patch(`/api/file/`,data.payload).then(res=>{
+      console.log(res)
+      dispatch(normalLoader())
+    }).catch(err=>{
+      console.log(err)
+      dispatch(normalLoader())
+    })
+  }else{
+    API.patch(`/api/folder/`,data.payload).then(res=>{
+      console.log(res)
+      dispatch(normalLoader())
+    }).catch(err=>{
+      console.log(err)
+      dispatch(normalLoader())
+    })
+  }
 }
 
 export const selectPatchUsers = (state)=> state.share.patchUsers
