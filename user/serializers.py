@@ -8,11 +8,13 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     date_joined = serializers.SerializerMethodField()
     last_login = serializers.SerializerMethodField()
+    profile_picture_url = serializers.CharField(
+        source="profile.profile_picture_url", read_only=True)
 
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name',
-                  'last_name', 'last_login', 'date_joined')
+                  'last_name', 'last_login', 'date_joined', 'profile_picture_url')
 
     def get_last_login(self, obj):
         return humanize.naturaltime(obj.last_login)

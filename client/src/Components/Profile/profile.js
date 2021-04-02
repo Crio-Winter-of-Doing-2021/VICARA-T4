@@ -7,7 +7,6 @@ import { profileLoading } from "../../store/slices/loaderSlice";
 import Skeleton from "@material-ui/lab/Skeleton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { withStyles } from "@material-ui/core/styles";
-
 let progress = 0;
 
 const BorderLinearProgress = withStyles((theme) => ({

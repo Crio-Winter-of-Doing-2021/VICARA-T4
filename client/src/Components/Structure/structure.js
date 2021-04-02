@@ -160,15 +160,10 @@ export default function Structure(props) {
       name: data.name,
     };
 
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
-
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-          <RightClickUtil data={typeData}>
+          <RightClickUtil index={index} data={data}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Checkbox
                 onChange={(e) => handleCheckedChange(keyData, e)}
@@ -231,13 +226,13 @@ export default function Structure(props) {
 
         <StyledTableCell component="th" scope="row">
           {data.privacy === true ? (
-            <Tooltip title="File is Private">
+            <Tooltip title="Private Resource">
               <IconButton onClick={(e) => handlePrivacy(e, privReverse)}>
                 <VisibilityOffIcon />
               </IconButton>
             </Tooltip>
           ) : (
-            <Tooltip title="File is Public">
+            <Tooltip title="Publicly Accessible">
               <IconButton
                 onClick={(e) => handlePrivacy(e, privReverse)}
                 color="primary"

@@ -6,7 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import ShareIcon from "@material-ui/icons/Share";
+
 import { ListItemText } from "@material-ui/core";
 
 import Share from "../Share/index";
@@ -51,14 +51,7 @@ export default function ContextMenu(props) {
           </ListItemIcon>
           <ListItemText style={{ paddingRight: "15px" }}>Rename</ListItemText>
         </MenuItem>
-        {props.data.type === "FILE" ? (
-          <MenuItem onClick={handleClose}>
-            <ListItemIcon>
-              <ShareIcon color="primary" />
-            </ListItemIcon>
-            <Share data={props.data.id} />
-          </MenuItem>
-        ) : null}
+        <Share index={props.index} data={props.data} menuClose={handleClose} />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <DeleteOutlineIcon color="secondary" />

@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
-import { baseURL, token as AuthToken } from "../../axios";
+import API from "../../axios";
 
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
@@ -43,23 +42,17 @@ function App({ modalClose, parent }) {
       formData.append("PATH", blob);
       // comment this for multi-file             [END]
       formData.append("PATH", blob);
-      const url = `${baseURL}/api/folder/upload-folder/`;
-      const token = AuthToken;
-      const headers = {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-        Authorization: `Token ${token}`,
-      };
-      await axios({
-        method: "post",
-        url,
-        data: formData,
+
+      API.post("/api/folder/upload-folder/", formData, {
         onUploadProgress: (ev) => {
           const prog = (ev.loaded / ev.total) * 100;
           setProgress(Math.round(prog));
           console.log({ progress });
         },
-        headers,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Accept: "application/json",
+        },
       })
         .then(function (res) {
           //handle success
