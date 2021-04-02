@@ -17,6 +17,7 @@ export const checkBoxSlice = createSlice({
   reducers: {
     updateSelectedKeys: (state, action) => {
       let type = action.payload.type;
+      let name = action.payload.name;
       console.log(type);
       if (type === "folder") {
         let data = action.payload.id;
@@ -29,6 +30,7 @@ export const checkBoxSlice = createSlice({
           state.selectedFolderKeys.push({
             id: data,
             index: action.payload.index,
+            name,
           });
         } else {
           state.selectedFolderKeys.splice(currentKeyIndex, 1);
@@ -44,6 +46,7 @@ export const checkBoxSlice = createSlice({
           state.selectedFileKeys.push({
             id: data,
             index: action.payload.index,
+            name,
           });
         } else {
           state.selectedFileKeys.splice(currentKeyIndex, 1);
@@ -150,6 +153,13 @@ export const updateAsync = (fileData, folderData) => (dispatch) => {
         dispatch(updateFileName(newData));
         dispatch(updateFavFileName(newData));
         dispatch(updateRecentFileName(newData));
+        dispatch(
+          updateSelectedKeys({
+            type: "folder",
+            ...folderData.payload,
+          })
+        );
+
         dispatch(normalLoader());
       })
       .catch((err) => {
@@ -172,6 +182,12 @@ export const updateAsync = (fileData, folderData) => (dispatch) => {
         dispatch(updateFileName(newData));
         dispatch(updateFavFileName(newData));
         dispatch(updateRecentFileName(newData));
+        dispatch(
+          updateSelectedKeys({
+            type: "file",
+            ...folderData.payload,
+          })
+        );
         dispatch(normalLoader());
       })
       .catch((err) => {

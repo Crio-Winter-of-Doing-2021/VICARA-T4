@@ -157,6 +157,7 @@ export default function Structure(props) {
       id: data.id,
       type: data.type,
       index: index,
+      name: data.name,
     };
 
     let typeData = {

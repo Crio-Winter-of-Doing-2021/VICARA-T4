@@ -45,14 +45,14 @@ export default function FormDialog(props) {
   };
 
   return (
-    <div style={{margin:"10px"}}>
+    <div style={{ margin: "10px" }}>
       <Button
         startIcon={<CreateNewFolderIcon />}
         variant="outlined"
         color="primary"
         onClick={handleClickOpen}
       >
-        Create Folder
+        Folder
       </Button>
       <Dialog
         open={open}
