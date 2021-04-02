@@ -17,6 +17,7 @@ import CreateFolder from "../Buttons/createFolder";
 import Delete from "../Buttons/delete";
 import Update from "../Buttons/update";
 import Trash from "../Buttons/moveToTrash";
+import Share from "../Share/index"
 
 import UploadMenu from "../UploadMenu/index";
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -167,7 +168,7 @@ export default function Structure(props) {
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-          <RightClickUtil data={typeData}>
+          {/* <RightClickUtil data={typeData}> */}
             <div style={{ display: "flex", alignItems: "center" }}>
               <Checkbox
                 onChange={(e) => handleCheckedChange(keyData, e)}
@@ -217,7 +218,7 @@ export default function Structure(props) {
                 </IconButton>
               )}
             </div>
-          </RightClickUtil>
+          {/* </RightClickUtil> */}
         </StyledTableCell>
 
         <StyledTableCell
@@ -271,6 +272,7 @@ export default function Structure(props) {
       <div style={{ display: "flex" }}>
         <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
+        <Share/>
         <Update />
         <Trash />
         <Delete />

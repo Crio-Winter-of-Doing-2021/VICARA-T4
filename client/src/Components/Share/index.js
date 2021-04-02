@@ -6,6 +6,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import ShareIcon from '@material-ui/icons/Share';
+
+import {Divider} from '@material-ui/core'
 
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
@@ -19,16 +22,16 @@ export default function FormDialog() {
   };
 
   return (
-    <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open form dialog
+    <div style={{margin:"10px"}}>
+      <Button startIcon={<ShareIcon/>} variant="outlined" style={{color:"blue"}} onClick={handleClickOpen}>
+        Share
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogTitle id="form-dialog-title">Share with Users</DialogTitle>
+        <Divider/>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
+            Share link, or add users to share with-
           </DialogContentText>
           <TextField
             autoFocus
