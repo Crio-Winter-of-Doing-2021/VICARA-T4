@@ -156,47 +156,6 @@ class FileView(APIView):
         return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
 
 
-class ShareFile(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get(self, request):
-        creator = request.GET["CREATOR"]
-        try:
-            creator = User.objects.get(id=creator)
-        except:
-            creator = None
-        if(creator == None):
-            return Response(data={"message": "Invalid creator"}, status=status.HTTP_400_BAD_REQUEST)
-        id = request.GET["id"]
-        try:
-            file = File.objects.get(id=id)
-        except:
-            file = None
-
-        if(file == None):
-            return Response(data={"message": "Invalid file id"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if(file.owner != creator):
-            return Response(data={"message": "Bad creator & id combination"}, status=status.HTTP_400_BAD_REQUEST)
-
-        visitor = request.user
-        allowed = False
-        if(isinstance(visitor, AnonymousUser) and file.privacy == "PUBLIC"):
-            allowed = True
-        if(file.privacy == "PUBLIC"):
-            allowed = True
-        if(visitor == file.owner or visitor in file.shared_among.all()):
-            allowed = True
-        if(allowed):
-            data = FileSerializer(file).data
-            s3_key = file.get_s3_key()
-            signed_url = get_presigned_url(s3_key)
-            data["URL"] = signed_url
-            return Response(data=data, status=status.HTTP_200_OK)
-        else:
-            return Response(data={"message": "action is UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
-
-
 class UploadByDriveUrl(APIView):
 
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)

@@ -15,6 +15,7 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = Folder

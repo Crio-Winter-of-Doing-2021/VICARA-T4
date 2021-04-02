@@ -238,7 +238,7 @@ class Recent(APIView):
     def get(self, request):
         # folders
         folders = Folder.objects.filter(
-            owner=request.user, trash=False).exclude(id=request.user.root.id)
+            owner=request.user, trash=False).exclude(id=request.user.profile.root.id)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
         for folder in folders:
             folder["type"] = "folder"
