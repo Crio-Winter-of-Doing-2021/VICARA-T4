@@ -7,6 +7,8 @@ from django.contrib.humanize.templatetags import humanize
 from django.contrib.auth.models import User
 from file.serializers import FileSerializer
 
+from user.serializers import UserSerializer
+
 
 class FolderSerializerWithoutChildren(serializers.ModelSerializer):
 
@@ -28,10 +30,8 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     def get_shared_among(self, obj):
         shared_among = []
         for user in obj.shared_among.all():
-            shared_among.append({
-                "username": user.username,
-                "id": user.id
-            })
+            user_data = UserSerializer(user).data
+            shared_among.append(user_data)
         return shared_among
 
 
