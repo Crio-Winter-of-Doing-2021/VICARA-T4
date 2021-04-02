@@ -77,7 +77,7 @@ export let privOpp = (privacy) => {
 let loaderStructure = [1, 2, 3, 4, 5, 6.7, 8].map((key) => {
   return (
     <StyledTableRow>
-      {[1, 2, 3, 4,5].map((el) => (
+      {[1, 2, 3, 4, 5].map((el) => (
         <StyledTableCell component="th" scope="row">
           <Skeleton variant="text" />
         </StyledTableCell>
@@ -117,12 +117,10 @@ export default function Structure(props) {
   const handleFavouriteClick = (e, data) => {
     e.preventDefault();
     console.log(data);
-
   };
 
   const handlePrivacy = (e, data) => {
     e.preventDefault();
-
   };
 
   let tableRenderer = tableData.map((data, index) => {
@@ -199,7 +197,7 @@ export default function Structure(props) {
           component="th"
           scope="row"
         >
-          {data.owner}
+          {data.owner.username}
         </StyledTableCell>
 
         <StyledTableCell
@@ -219,10 +217,7 @@ export default function Structure(props) {
             </Tooltip>
           ) : (
             <Tooltip title="File is Public">
-              <IconButton
-                disabled
-                color="primary"
-              >
+              <IconButton disabled color="primary">
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>

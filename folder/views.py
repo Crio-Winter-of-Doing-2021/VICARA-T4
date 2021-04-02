@@ -49,7 +49,7 @@ class Filesystem(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     @check_request_attr(POST_FOLDER)
-    @check_valid_name
+    # @check_valid_name
     @allow_parent_root
     @check_id_parent_folder
     @check_is_owner_parent_folder
@@ -62,7 +62,7 @@ class Filesystem(APIView):
         data = FolderSerializer(new_folder).data
         return Response(data=data, status=status.HTTP_201_CREATED)
 
-    @check_valid_name
+    # @check_valid_name
     @check_id_folder
     @check_id_not_root
     @check_is_owner_folder

@@ -39,7 +39,7 @@ class FileView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     @check_request_attr(POST_FILE)
-    @check_valid_name_request_file
+    # @check_valid_name_request_file
     @allow_parent_root
     @check_id_parent_folder
     @check_is_owner_parent_folder
@@ -63,7 +63,7 @@ class FileView(APIView):
             request.user.profile).data["storage_data"]
         return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
 
-    @check_valid_name
+    # @check_valid_name
     @check_id_file
     @check_is_owner_file
     @check_file_not_trashed
@@ -202,7 +202,7 @@ class UploadByDriveUrl(APIView):
     @check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
     @allow_parent_root
     @check_id_parent_folder
-    @check_valid_name_request_body
+    # @check_valid_name_request_body
     @check_already_present(to_check="req_data_name")
     def post(self, request, *args, **kwargs):
 

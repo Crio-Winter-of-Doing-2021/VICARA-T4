@@ -97,17 +97,8 @@ export default function MenuListComposition(props) {
                     id="menu-list-grow"
                     onKeyDown={handleListKeyDown}
                   >
-                    {/* <MenuItem>
-                      <div style={{display:"flex",justifyContent:"center"}}>
-                        <UploadFile parent={props.parent}/>
-                      </div>
-                    </MenuItem>
-                    <MenuItem>
-                      <div style={{display:"flex",justifyContent:"center"}}>
-                        <UploadFolder parent={props.parent}/>
-                      </div>
-                    </MenuItem> */}
                     <UploadFile
+                      onClick={() => setOpen(false)}
                       modalClose={handleClose}
                       parent={props.parent}
                     />
