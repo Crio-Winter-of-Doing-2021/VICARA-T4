@@ -10,9 +10,6 @@ import {
   selectSharedStructure,
 } from "../../store/slices/sharedWithMeSlice";
 
-import Delete from "../Buttons/delete";
-import Update from "../Buttons/update";
-
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
@@ -29,16 +26,10 @@ import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
-import Checkbox from "@material-ui/core/Checkbox";
-import {
-  updateSelectedKeys,
-  emptykeys,
-} from "../../store/slices/checkBoxSlice";
+import { emptykeys } from "../../store/slices/checkBoxSlice";
 
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
-import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
@@ -109,46 +100,7 @@ export default function Structure(props) {
     dispatch(emptykeys());
   };
 
-  const handleCheckedChange = (key, e) => {
-    console.log("checked");
-    dispatch(updateSelectedKeys(key));
-  };
-
-  const handleFavouriteClick = (e, data) => {
-    e.preventDefault();
-    console.log(data);
-  };
-
-  const handlePrivacy = (e, data) => {
-    e.preventDefault();
-  };
-
   let tableRenderer = tableData.map((data, index) => {
-    let favReverseData = {
-      payload: {
-        id: data.id,
-        favourite: !data.favourite,
-      },
-      type: data.type,
-      key: index,
-    };
-
-    let privReverse = {
-      payload: {
-        id: data.id,
-        privacy: !data.privacy,
-      },
-      type: data.type,
-      key: index,
-    };
-
-    let keyData = {
-      id: data.id,
-      type: data.type,
-      index: index,
-      name: data.name,
-    };
-
     let typeData = {
       type: data.type,
       id: data.id,
