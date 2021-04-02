@@ -210,13 +210,13 @@ export default function Structure(props) {
 
         <StyledTableCell component="th" scope="row">
           {data.privacy === true ? (
-            <Tooltip title="File is Private">
+            <Tooltip title="Private Resource">
               <IconButton disabled>
                 <VisibilityOffIcon />
               </IconButton>
             </Tooltip>
           ) : (
-            <Tooltip title="File is Public">
+            <Tooltip title="Publicly Accessible">
               <IconButton disabled color="primary">
                 <VisibilityIcon />
               </IconButton>

@@ -93,13 +93,13 @@ export default function Structure(props) {
 
   let tableData = [];
 
-  let root_id=window.localStorage.getItem("id")
+  let root_id = window.localStorage.getItem("id");
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(trashStructureAsync());
     // dispatch(getProfileAsync(root_id))
-  }, [dispatch,root_id]);
+  }, [dispatch, root_id]);
 
   tableData = structureState;
 
@@ -225,7 +225,7 @@ export default function Structure(props) {
 
         <StyledTableCell component="th" scope="row">
           {data.privacy === true ? (
-            <Tooltip title="File is Private">
+            <Tooltip title="Private Resource">
               <IconButton
                 disabled
                 onClick={(e) => handlePrivacy(e, privReverse)}
@@ -234,7 +234,7 @@ export default function Structure(props) {
               </IconButton>
             </Tooltip>
           ) : (
-            <Tooltip title="File is Public">
+            <Tooltip title="Publicly Accessible">
               <IconButton
                 disabled
                 onClick={(e) => handlePrivacy(e, privReverse)}
