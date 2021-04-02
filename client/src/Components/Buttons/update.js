@@ -1,12 +1,6 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-// import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from "@material-ui/core/DialogTitle";
-// import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import EditIcon from "@material-ui/icons/Edit";
 
 import {
@@ -17,6 +11,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 // import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
 
+import FocusInput from "./FocusInput";
 export default function FormDialog() {
   const [open, setOpen] = React.useState(false);
 
@@ -28,19 +23,20 @@ export default function FormDialog() {
 
   const checkedFolderKeys = useSelector(selectCheckedFolderKeys);
   const checkedFileKeys = useSelector(selectCheckedFileKeys);
+  console.log({ checkedFolderKeys, checkedFileKeys });
 
-  const [data, setData] = React.useState("");
+  let nameOfSelected = "";
+  if (checkedFileKeys.length !== 0) nameOfSelected = checkedFileKeys[0].name;
+  if (checkedFolderKeys.length !== 0)
+    nameOfSelected = checkedFolderKeys[0].name;
 
-  let inputChangeHandler = (e) => {
-    e.preventDefault();
-    setData(e.target.value);
-  };
+  console.log("name of selected = ", nameOfSelected);
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = (data) => {
     handleClose();
 
     console.log("Files", checkedFileKeys);
@@ -51,21 +47,21 @@ export default function FormDialog() {
 
     if (checkedFileKeys.length !== 0) {
       newFileData = {
-        payload:{
+        payload: {
           id: checkedFileKeys[0].id,
           name: data,
         },
-        index:checkedFileKeys[0].index
+        index: checkedFileKeys[0].index,
       };
     }
 
     if (checkedFolderKeys.length !== 0) {
       newFolderData = {
-        payload:{
+        payload: {
           id: checkedFolderKeys[0].id,
           name: data,
         },
-        index:checkedFolderKeys[0].index
+        index: checkedFolderKeys[0].index,
       };
     }
 
@@ -90,30 +86,13 @@ export default function FormDialog() {
         open={open}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
+        fullWidth
       >
-        <DialogTitle id="form-dialog-title">Update Name</DialogTitle>
-        <DialogContent>
-          {/* <DialogContentText>
-            Location - <DisabledTabs/>
-          </DialogContentText> */}
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="New Name"
-            type="text"
-            onChange={inputChangeHandler}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdate} color="primary">
-            Update
-          </Button>
-        </DialogActions>
+        <FocusInput
+          nameOfSelected={nameOfSelected}
+          handleClose={handleClose}
+          handleUpdate={handleUpdate}
+        />
       </Dialog>
     </div>
   );

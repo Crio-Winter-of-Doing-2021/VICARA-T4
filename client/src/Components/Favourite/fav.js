@@ -93,7 +93,7 @@ export default function Structure(props) {
   let loading = useSelector(skeletonLoading);
   const structureState = useSelector(selectFavStructure);
 
-  let root_id=window.localStorage.getItem("id")
+  let root_id = window.localStorage.getItem("id");
 
   let tableData = [];
 
@@ -101,7 +101,7 @@ export default function Structure(props) {
   useEffect(() => {
     dispatch(favStructureAsync());
     // dispatch(getProfileAsync(root_id))
-  }, [dispatch,root_id]);
+  }, [dispatch, root_id]);
 
   tableData = structureState;
 
@@ -150,6 +150,7 @@ export default function Structure(props) {
       id: data.id,
       type: data.type,
       index: index,
+      name: data.name,
     };
 
     let typeData = {
