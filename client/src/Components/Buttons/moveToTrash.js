@@ -41,7 +41,7 @@ export default function OutlinedButtons() {
         onClick={() => trashSelected(checkedFileKeys, checkedFolderKeys)}
         variant="outlined"
       >
-        Move To Trash
+        Trash
       </Button>
     </div>
   );

@@ -12,8 +12,7 @@ import UploadFile from "../UploadFileModal/index";
 import UploadFolder from "../UploadFolderModal/index";
 // import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Divider } from "@material-ui/core";
-import AddIcon from '@material-ui/icons/Add';
-
+import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -66,7 +65,7 @@ export default function MenuListComposition(props) {
           aria-controls={open ? "menu-list-grow" : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
-          startIcon={<AddIcon/>}
+          startIcon={<InsertDriveFileIcon />}
           variant="contained"
           color="primary"
         >

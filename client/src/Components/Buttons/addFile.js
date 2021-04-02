@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import DevicesIcon from '@material-ui/icons/Devices';
+import DevicesIcon from "@material-ui/icons/Devices";
+
 import axios from "axios";
 
 import { fileUploadLoader, fileLoading } from "../../store/slices/loaderSlice";
@@ -58,10 +59,10 @@ export default function UploadButtons(props) {
       },
     })
       .then((res) => {
-        let newData={
-          data:res.data,
-          type:"file"
-        }
+        let newData = {
+          data: res.data,
+          type: "file",
+        };
         dispatch(pushToCurrentStack(newData));
         dispatch(fileUploadLoader());
         props.modalClose();
@@ -86,10 +87,10 @@ export default function UploadButtons(props) {
       <label htmlFor="contained-button-file">
         <Button
           disableElevation
-          startIcon={<DevicesIcon/>}
+          startIcon={<DevicesIcon />}
           variant="contained"
           style={{
-            backgroundColor:"lightgrey"
+            backgroundColor: "lightgrey",
           }}
           component="span"
         >
