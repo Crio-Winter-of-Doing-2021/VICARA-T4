@@ -7,6 +7,7 @@ import { baseURL, token as AuthToken } from "../../axios";
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
 import { pushToCurrentStack } from "../../store/slices/structureSlice";
+import { updateStorageData } from "../../store/slices/authSlice";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
@@ -66,14 +67,17 @@ function App({ parent, modalClose }) {
           //handle success
           console.log(res);
           let k;
-          for (k = 0; k < res.data.length; k++) {
+          for (k = 0; k < res.data.file_data.length; k++) {
             let newData = {
-              resData: res.data[k],
+              resData: res.data.file_data[k],
               type: "file",
             };
             dispatch(pushToCurrentStack(newData));
           }
           modalClose();
+          console.log("data = ", res.data);
+          const { readable, ratio } = res.data;
+          dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
         })
         .catch(function (response) {

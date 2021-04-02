@@ -1,4 +1,5 @@
 
+import secrets
 from django.db.models import Q
 from cloudinary.uploader import upload
 from rest_framework.parsers import MultiPartParser, JSONParser
@@ -59,6 +60,46 @@ class Register(APIView):
         profile.save()
         data = ProfileSerializer(profile).data
         return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
+
+
+class GoogleLogin(APIView):
+    @check_request_attr(["email", "givenName", "familyName", "imageUrl"])
+    def post(self, request):
+        try:
+            user = User.objects.get(email=request.data.get('email'))
+        except:
+            user = None
+
+        if(user):
+            update_last_login(None, user)
+            token, _ = Token.objects.get_or_create(user=user)
+            profile = Profile.objects.get(user=user)
+            data = ProfileSerializer(profile).data
+            return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
+        else:
+            username = request.data.get("email")[:-len("@gmail.com")]
+            user = User.objects.create(
+                username=username,
+                email=request.data.get('email'),
+            )
+            random_token = secrets.token_hex(4)
+            user.set_password(random_token)
+            user.first_name = request.data.get('givenName')
+            user.last_name = request.data.get('familyName')
+            user.save()
+
+            update_last_login(None, user)
+            token, _ = Token.objects.get_or_create(user=user)
+
+            profile = Profile.objects.get(user=user)
+            root_folder = Folder(name="ROOT", owner=user)
+            root_folder.save()
+            profile.root = root_folder
+            profile.profile_picture_url = request.data.get('imageUrl')
+            profile.save()
+
+            data = ProfileSerializer(profile).data
+            return Response({'token': token.key, **data}, status=status.HTTP_201_CREATED)
 
 
 class Logout(APIView):
@@ -150,12 +191,12 @@ class SearchUsers(APIView):
 
     @check_request_attr(["query"])
     def get(self, request):
-        query = request.GET["query"]
+        query = request.GET["query"].lower()
         users = User.objects.filter(
-            Q(username__contains=query) |
-            Q(email__contains=query) |
-            Q(first_name__contains=query) |
-            Q(last_name__contains=query))
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query))
         data = UserSerializer(users, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
