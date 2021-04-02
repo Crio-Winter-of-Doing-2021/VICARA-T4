@@ -25,6 +25,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import Profile from "../Profile/profile";
 import { Copyright } from "../Forms/login";
 import { getProfileAsync } from "../../store/slices/authSlice";
+import {asyncLocalStorage} from '../../Utilities/localStoreAsync'
 const drawerWidth = 280;
 
 const theme = createMuiTheme({
@@ -71,11 +72,15 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys());
   };
 
-  let id = window.localStorage.getItem("id");
+  let id=window.localStorage.getItem('id')
+  
 
   useEffect(() => {
-    dispatch(getProfileAsync(id));
-  }, [id, dispatch]);
+    asyncLocalStorage.getItem('id').then(res=>{
+      dispatch(getProfileAsync(res));
+    })
+    // dispatch(getProfileAsync(id));
+  }, [dispatch,id]);
 
   const handleLogout = () => {
     window.localStorage.removeItem("session");
