@@ -1,4 +1,6 @@
 
+from django.db.models import CharField, Value
+from django.db.models.functions import Concat
 import secrets
 from django.db.models import Q
 from cloudinary.uploader import upload
@@ -192,12 +194,19 @@ class SearchUsers(APIView):
     @check_request_attr(["query"])
     def get(self, request):
         query = request.GET["query"].lower()
-        users = User.objects.filter(
+        qs = User.objects.all()
+        qs = qs.annotate(
+            full_name=Concat(
+                'user__first_name',
+                Value(' '),
+                'user__last_name',
+                output_field=CharField()
+            )
+        ).filter(
             Q(username__icontains=query) |
             Q(email__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query))
-        data = UserSerializer(users, many=True).data
+            Q(full_name__icontains=query))
+        data = UserSerializer(qs, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
 
@@ -247,21 +256,33 @@ class Recent(APIView):
 
 class Trash(APIView):
 
+    def parent_trashed(self, obj):
+        copy_obj = obj
+        while(copy_obj.parent != None):
+            if(copy_obj.parent.trash):
+                return False
+            else:
+                copy_obj = copy_obj.parent
+        return True
+
     def get(self, request):
         # folders
         folders = Folder.objects.filter(owner=request.user, trash=True)
+        folders = filter(self.parent_trashed, folders)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
+
         for folder in folders:
             folder["type"] = "folder"
         # files
         files = File.objects.filter(owner=request.user, trash=True)
+        files = filter(self.parent_trashed, files)
         files = FileSerializer(files, many=True).data
+
         for file in files:
             file["type"] = "file"
 
         # combined
         result_list = list(chain(folders, files))
-
         return Response(data=result_list, status=status.HTTP_200_OK)
 
 
