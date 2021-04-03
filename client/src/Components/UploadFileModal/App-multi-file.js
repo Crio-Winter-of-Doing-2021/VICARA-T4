@@ -12,6 +12,7 @@ import { updateStorageData } from "../../store/slices/authSlice";
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
+ import {error,success} from '../../store/slices/logSlice'
 
 function App({ parent, modalClose }) {
   const dispatch = useDispatch();
@@ -63,12 +64,14 @@ function App({ parent, modalClose }) {
           const { readable, ratio } = res.data;
           dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
+          dispatch(success("Your Action was Successful"))
         })
-        .catch(function (response) {
+        .catch(function (err) {
           //handle error
+          console.log(err.response)
+          dispatch(error(err.response.data.message))
           dispatch(fileUploadLoader());
           modalClose();
-          console.log(response);
         });
     },
     [dispatch, modalClose, parent, progress]

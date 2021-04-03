@@ -25,6 +25,7 @@ import { pushToCurrentStack } from "../../store/slices/structureSlice";
 import DescriptionIcon from "@material-ui/icons/Description";
 
 import API from '../../axios'
+import {error,success} from '../../store/slices/logSlice'
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -74,12 +75,14 @@ export default function FormDialog(props) {
         };
         dispatch(pushToCurrentStack(newData));
         dispatch(normalLoader());
+        dispatch(success("Your Action was Successful"))
         handleClose();
       })
       .catch((err) => {
         dispatch(normalLoader());
         handleClose();
-        console.log(err);
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   };
 

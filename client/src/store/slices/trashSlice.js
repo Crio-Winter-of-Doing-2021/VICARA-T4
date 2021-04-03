@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { skeletonLoader } from "./loaderSlice";
+import {error} from './logSlice'
 // import axios from "axios";
 
 export const trashStructureSlice = createSlice({
@@ -43,8 +44,9 @@ export const trashStructureAsync = () => (dispatch) => {
       // dispatch(pathParse(res.data));
     })
     .catch((err) => {
-      console.log(err);
       dispatch(skeletonLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
     });
 };
 
