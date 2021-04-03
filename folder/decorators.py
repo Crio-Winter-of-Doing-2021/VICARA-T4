@@ -166,15 +166,17 @@ def check_request_attr(REQUIRED_PARAMS):
         @functools.wraps(func)
         def wrapper(self, request, *args, **kwargs):
             if(request.method == "POST" or request.method == "PATCH"):
-                if not all(attr in request.data for attr in REQUIRED_PARAMS):
-                    return Response(data={"message": f"Insufficient Post params req {REQUIRED_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-                result = func(self, request, *args, **kwargs)
-                return result
+                request_data = request.data
             else:
-                if not all(attr in request.GET for attr in REQUIRED_PARAMS):
-                    return Response(data={"message": f"Insufficient GET params req {REQUIRED_PARAMS}"}, status=status.HTTP_400_BAD_REQUEST)
-                result = func(self, request, *args, **kwargs)
-                return result
+                request_data = request.GET
+
+            for attr in REQUIRED_PARAMS:
+                if(attr not in request_data):
+                    return Response(data={"message": f"{attr} is missing"}, status=status.HTTP_400_BAD_REQUEST)
+                if(isinstance(attr, str) and request_data[attr] == ""):
+                    return Response(data={"message": f"{attr} is can't be blank"}, status=status.HTTP_400_BAD_REQUEST)
+            result = func(self, request, *args, **kwargs)
+            return result
         return wrapper
     return decorator_fun
 
@@ -187,6 +189,22 @@ def check_valid_name(func):
             name = request.data["name"]
             if re.match(REGEX_NAME, name) is None:
                 return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_valid_name(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        # in patch there might be cases when name is not changed
+        if("name" in request.data):
+            name = request.data["name"]
+            # if re.match(REGEX_NAME, name) is None:
+            #     return Response(data={"message": "Invalid Name"}, status=status.HTTP_400_BAD_REQUEST)
+            if(name == ""):
+                return Response(data={"message": "Name can't be blank"}, status=status.HTTP_400_BAD_REQUEST)
+
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

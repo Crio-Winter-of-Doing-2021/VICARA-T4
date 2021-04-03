@@ -64,10 +64,10 @@ export default function Users() {
     setAnchorEl(event.currentTarget);
     if (event.target.value.length !== 0) {
       setOpen(true);
+      dispatch(searchUserAsync(event.target.value));
     } else {
       setOpen(false);
     }
-    dispatch(searchUserAsync(event.target.value));
   };
 
   return (
