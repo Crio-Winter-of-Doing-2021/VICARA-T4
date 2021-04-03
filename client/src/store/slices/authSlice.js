@@ -23,10 +23,13 @@ export const authSlice = createSlice({
       state.userData.storage_data.readable = action.payload.readable;
       state.userData.storage_data.ratio = action.payload.ratio;
     },
+    setProfilePicture:(state,action)=>{
+      state.userData.profile_picture_url=action.payload
+    }
   },
 });
 
-export const { login, setUser, updateStorageData } = authSlice.actions;
+export const { login, setUser, updateStorageData,setProfilePicture } = authSlice.actions;
 
 export const signupAsync = (data) => (dispatch) => {};
 

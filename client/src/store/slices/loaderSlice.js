@@ -10,6 +10,7 @@ export const loaderSlice= createSlice({
     skeletonLoading:false,
     profileLoading:false,
     searchLoading:false,
+    pictureLoading:false,
     currentPage:"Home"
   },
   reducers: {
@@ -28,6 +29,9 @@ export const loaderSlice= createSlice({
    searchLoader:(state)=>{
      state.searchLoading=!state.searchLoading
    },
+   pictureLoader:(state)=>{
+    state.pictureLoading=!state.pictureLoading
+   },
    setCurrentPage:(state,action)=>{
      state.currentPage=action.payload
    }
@@ -40,7 +44,8 @@ export const {
   skeletonLoader,
   profileLoader,
   searchLoader,
-  setCurrentPage
+  setCurrentPage,
+  pictureLoader
 } = loaderSlice.actions;
 
 export const downloadAsync=(data)=>(dispatch)=>{
@@ -90,5 +95,6 @@ export const skeletonLoading=(state)=>state.loader.skeletonLoading
 export const profileLoading=(state)=>state.loader.profileLoading
 export const searchLoading=(state)=>state.loader.searchLoading
 export const selectPage  = (state)=>state.loader.currentPage
+export const pictureLoading =(state)=>state.loader.pictureLoading
 
 export default loaderSlice.reducer;
