@@ -18,3 +18,4 @@ django-heroku
 celery==5.0.5
 django-celery-results
 redis
+coverage

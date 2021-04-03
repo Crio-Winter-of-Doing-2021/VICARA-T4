@@ -29,11 +29,8 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
         return humanize.naturaltime(obj.last_modified)
 
     def get_shared_among(self, obj):
-        shared_among = []
-        for user in obj.shared_among.all():
-            user_data = UserSerializer(user).data
-            shared_among.append(user_data)
-        return shared_among
+        data = UserSerializer(obj.shared_among.all(), many=True).data
+        return data
 
 
 class FolderSerializer(FolderSerializerWithoutChildren):
