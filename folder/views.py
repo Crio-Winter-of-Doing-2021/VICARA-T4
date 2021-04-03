@@ -201,10 +201,11 @@ class UploadFolder(APIView):
             for level in range(1, len(path_list)-1):
                 folder_name = path_list[level]
                 parent_name = path_list[level-1]
-                parent_id = parent_record[level-1][parent_name]
-                new_folder = create_folder(
-                    parent_id, request.user, folder_name)
-                parent_record[level][folder_name] = new_folder.id
+                if(folder_name not in parent_record[level]):
+                    parent_id = parent_record[level-1][parent_name]
+                    new_folder = create_folder(
+                        parent_id, request.user, folder_name)
+                    parent_record[level][folder_name] = new_folder.id
 
         # make all the files
         for index, path_list in enumerate(structure):
