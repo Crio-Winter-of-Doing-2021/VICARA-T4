@@ -4,7 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import NormalLoader from "./Components/Loaders/normalBackdrop";
 import Login from "./Components/Forms/login";
 import SignUp from "./Components/Forms/signup";
-import PrivateRoute from "./Utilities/protectedRoute";
+// import PrivateRoute from "./Utilities/protectedRoute";
 import AuthorizationCheck from "./Utilities/authorizationCheck";
 import Message from "./Components/RequestLogs/index";
 
