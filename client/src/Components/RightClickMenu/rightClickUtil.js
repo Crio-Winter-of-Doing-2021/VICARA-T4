@@ -1,13 +1,15 @@
 import React from "react";
-// import {useDispatch} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 // import Typography from '@material-ui/core/Typography';
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import EditIcon from "@material-ui/icons/Edit";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import { ListItemText } from "@material-ui/core";
+
+import {downloadAsync} from '../../store/slices/loaderSlice'
 
 import Share from "../Share/index";
 
@@ -18,6 +20,8 @@ const initialState = {
 
 export default function ContextMenu(props) {
   const [state, setState] = React.useState(initialState);
+
+  const dispatch=useDispatch()
 
   const handleClick = (event) => {
     event.preventDefault();
@@ -45,18 +49,15 @@ export default function ContextMenu(props) {
             : undefined
         }
       >
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <EditIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText style={{ paddingRight: "15px" }}>Rename</ListItemText>
-        </MenuItem>
         <Share index={props.index} data={props.data} menuClose={handleClose} />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={()=>{
+          handleClose();
+          dispatch(downloadAsync(props.data))
+        }}>
           <ListItemIcon>
-            <DeleteOutlineIcon color="secondary" />
+            <CloudDownloadIcon color="secondary" />
           </ListItemIcon>
-          <ListItemText style={{ paddingRight: "15px" }}>Remove</ListItemText>
+          <ListItemText style={{ paddingRight: "15px" }}>Download</ListItemText>
         </MenuItem>
       </Menu>
     </div>

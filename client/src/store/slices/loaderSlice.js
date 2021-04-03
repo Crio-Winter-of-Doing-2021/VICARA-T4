@@ -1,4 +1,5 @@
 import { createSlice} from "@reduxjs/toolkit";
+import API from '../../axios'
 
 export const loaderSlice= createSlice({
   name: "loader",
@@ -40,6 +41,43 @@ export const {
   searchLoader,
   setCurrentPage
 } = loaderSlice.actions;
+
+export const downloadAsync=(data)=>(dispatch)=>{
+  dispatch(normalLoader());
+  if(data.type==='file'){
+    API.get(`/api/file/download/`, {
+      params: {
+        id: data.id,
+      },
+    })
+      .then((res) => {
+        // console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+        window.open(res.data.url);
+        // saveAs(res.data["url"], "image.jpg");
+        dispatch(normalLoader());
+      })
+      .catch((err) => {
+        // console.log("ommaago its an errro", err);
+        dispatch(normalLoader());
+      });
+  }else{
+    API.get(`/api/folder/download/`, {
+      params: {
+        id: data.id,
+      },
+    })
+      .then((res) => {
+        // console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+        window.open(res.data.url);
+        // saveAs(res.data["url"], "image.jpg");
+        dispatch(normalLoader());
+      })
+      .catch((err) => {
+        // console.log("ommaago its an errro", err);
+        dispatch(normalLoader());
+      });
+  }
+}
 
 export const fileLoading = (state) => state.loader.fileUploadLoading;
 export const normalLoading = (state) => state.loader.normalLoading;
