@@ -1,12 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import {normalLoader,skeletonLoader} from './loaderSlice'
-import axios from "axios";
+import { skeletonLoader } from "./loaderSlice";
 
 export const SharedStructureSlice = createSlice({
   name: "sharedWithme",
   initialState: {
-    currentDisplayStructure: []
+    currentDisplayStructure: [],
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -15,10 +14,7 @@ export const SharedStructureSlice = createSlice({
   },
 });
 
-export const {
-  updateStructure,
-  updatePath
-} = SharedStructureSlice.actions;
+export const { updateStructure, updatePath } = SharedStructureSlice.actions;
 
 export const sharedStructureAsync = () => (dispatch) => {
   dispatch(skeletonLoader());
@@ -33,6 +29,7 @@ export const sharedStructureAsync = () => (dispatch) => {
     });
 };
 
-export const selectSharedStructure = (state) => state.sharedWithme.currentDisplayStructure;
+export const selectSharedStructure = (state) =>
+  state.sharedWithme.currentDisplayStructure;
 
 export default SharedStructureSlice.reducer;
