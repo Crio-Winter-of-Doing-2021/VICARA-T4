@@ -105,26 +105,30 @@ class Filesystem(APIView):
             ids = set(ids)
             ids.discard(folder.owner.id)
             ids = list(ids)
-            try:
-                users = [User.objects.get(pk=id)
-                         for id in ids]
+            # try:
+            users = [User.objects.get(pk=id)
+                     for id in ids]
 
-                users_json = UserSerializer(users, many=True).data
+            users_for_mail = []
+            for user in users:
+                if(user not in folder.shared_among.all()):
+                    users_for_mail.append(user)
 
-                client = get_client_server(request)["client"]
-                title_kwargs = {
-                    "sender_name": f"{request.user.first_name} {request.user.last_name} ({request.user.username})",
-                    "resource_name": f'a folder "{folder.name}"'
-                }
-                body_kwargs = {
-                    "resource_url": f"{client}/share/folder/{folder.id}"
-                }
+            users_json = UserSerializer(users_for_mail, many=True).data
+            print(users_json)
 
-                sync_send_mail("SHARED_WITH_ME", users_json,
-                               title_kwargs, body_kwargs)
-            except Exception as e:
-                print(e)
-                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
+            client = get_client_server(request)["client"]
+            title_kwargs = {
+                "sender_name": f"{request.user.first_name} {request.user.last_name} ({request.user.username})",
+                "resource_name": f'a folder "{folder.name}"'
+            }
+            body_kwargs = {
+                "resource_url": f"{client}/share/folder/{folder.id}"
+            }
+
+            sync_send_mail("SHARED_WITH_ME", users_json,
+                           title_kwargs, body_kwargs)
+
             set_recursive_shared_among(folder, users)
             folder.present_in_shared_me_of.set(users)
 

@@ -114,12 +114,16 @@ class FileView(APIView):
             ids = set(ids)
             ids.discard(file.owner.id)
             ids = list(ids)
-
             try:
                 users = [User.objects.get(pk=id)
                          for id in ids]
 
-                users_json = UserSerializer(users, many=True).data
+                users_for_mail = []
+                for user in users:
+                    if(user not in file.shared_among.all()):
+                        users_for_mail.append(user)
+
+                users_json = UserSerializer(users_for_mail, many=True).data
 
                 client = get_client_server(request)["client"]
                 title_kwargs = {
