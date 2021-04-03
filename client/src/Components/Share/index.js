@@ -31,13 +31,22 @@ import {
 } from "../../store/slices/shareSlice";
 import {
   privacyAsync,
-  updateAfterShare,
 } from "../../store/slices/structureSlice";
+import {
+  privacyAsync as recentPrivacyAsync,
+} from "../../store/slices/recentSlice";
+import {
+  privacyAsync as favPrivacyAsync,
+} from "../../store/slices/favSlice";
+
+import {selectPage} from '../../store/slices/loaderSlice'
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
 
   const dispatch = useDispatch();
+
+  let page=useSelector(selectPage)
 
   let patchUsers = [];
   patchUsers = useSelector(selectPatchUsers);
@@ -94,11 +103,11 @@ export default function FormDialog(props) {
     },
     type: props.data.type,
     index: props.index,
-  };
-
-  let updateData = {
-    index: props.index,
-    users: patchUsers,
+    updateData:{
+      index: props.index,
+      users: patchUsers,
+    },
+    page:page
   };
 
   return (
@@ -138,7 +147,6 @@ export default function FormDialog(props) {
               onClick={() => {
                 handleClose();
                 dispatch(sharePatchAsync(patchData));
-                dispatch(updateAfterShare(updateData));
               }}
               color="primary"
             >
@@ -158,7 +166,7 @@ export default function FormDialog(props) {
         <DialogContent style={{ marginTop: "5px" }}>
           <DialogContentText>
             Share link, or add users to share with-
-            <CopyLink author={props.data.owner} id={props.data.id} />
+            <CopyLink type={props.data.type} id={props.data.id} />
             <Divider />
             <div
               style={{
@@ -176,7 +184,17 @@ export default function FormDialog(props) {
                 <Typography>Anyone with the link can view the file.</Typography>
               )}
               <Button
-                onClick={() => dispatch(privacyAsync(privReverse))}
+                onClick={() =>{
+                  if(page==="Home"){
+                    dispatch(privacyAsync(privReverse))
+                  }
+                  if(page==="Favourites"){
+                    dispatch(favPrivacyAsync(privReverse))
+                  }
+                  if(page==="Recent"){
+                    dispatch(recentPrivacyAsync(privReverse))
+                  }
+                }}
                 startIcon={
                   props.data.privacy ? (
                     <VisibilityIcon />

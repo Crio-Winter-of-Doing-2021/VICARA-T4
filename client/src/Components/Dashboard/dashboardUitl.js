@@ -26,6 +26,8 @@ import Profile from "../Profile/profile";
 import { Copyright } from "../Forms/login";
 import { getProfileAsync } from "../../store/slices/authSlice";
 import {asyncLocalStorage} from '../../Utilities/localStoreAsync'
+import {setCurrentPage} from '../../store/slices/loaderSlice'
+
 const drawerWidth = 280;
 
 const theme = createMuiTheme({
@@ -136,6 +138,7 @@ export default function ClippedDrawer(props) {
                 {sideNav.map((data, index) => (
                   <Link
                     style={{ textDecoration: "none" }}
+                    onClick={()=>dispatch(setCurrentPage(data.name))}
                     to={data.name === "Home" ? `/drive/${id}` : data.name==="Shared with Me"?`/shared-with-me`:`/${data.name}`}
                   >
                     <ListItem

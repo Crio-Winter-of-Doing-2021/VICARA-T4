@@ -57,6 +57,12 @@ export const recentStructureSlice = createSlice({
         PATH: path,
       };
     },
+    recentUpdateAfterShare: (state, action) => {
+      let index = action.payload.index;
+      let users = action.payload.users;
+
+      state.currentDisplayStructure[index].shared_among = users;
+    },
   },
 });
 
@@ -67,6 +73,7 @@ export const {
   updatePath,
   updatePrivacy,
   popFromCurrentRecentStack,
+  recentUpdateAfterShare
 } = recentStructureSlice.actions;
 
 export const pathParse = (data) => (dispatch) => {

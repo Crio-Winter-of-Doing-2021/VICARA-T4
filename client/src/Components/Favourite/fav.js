@@ -29,7 +29,7 @@ import { default as UILink } from "@material-ui/core/Link";
 
 import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
-import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
+import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
@@ -37,10 +37,12 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
+import {getFileAsync} from '../../store/slices/structureSlice'
+
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
@@ -153,22 +155,22 @@ export default function Structure(props) {
       name: data.name,
     };
 
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
+    // let typeData = {
+    //   type: data.type,
+    //   id: data.id,
+    // };
 
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-          <RightClickUtil data={typeData}>
+          <RightClickUtil index={index} data={data}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <Checkbox
                 onChange={(e) => handleCheckedChange(keyData, e)}
                 inputProps={{ "aria-label": "primary checkbox" }}
               />
               {data.type === "folder" ? (
-                <FolderOpenTwoToneIcon />
+                <FolderRoundedIcon style={{ color: "#67C5F0" }}/>
               ) : (
                 typeTest(data.name)
               )}
@@ -189,9 +191,7 @@ export default function Structure(props) {
                   component="button"
                   variant="body2"
                   style={{ marginLeft: "5px" }}
-                  onClick={() => {
-                    console.log("clicked");
-                  }}
+                  onClick={() => dispatch(getFileAsync(data.id))}
                 >
                   {data.name}
                 </UILink>
@@ -203,7 +203,7 @@ export default function Structure(props) {
                   style={{ margin: "0 10px" }}
                   color="primary"
                 >
-                  <StarRoundedIcon />
+                  <StarTwoToneIcon style={{ color: "#EDD712" }} />
                 </IconButton>
               ) : (
                 <IconButton

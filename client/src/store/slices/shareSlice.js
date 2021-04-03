@@ -2,6 +2,10 @@ import { createSlice} from "@reduxjs/toolkit";
 import API from '../../axios'
 import {normalLoader,searchLoader} from './loaderSlice'
 import {privOpp} from '../../Components/Structure/structure'
+import {recentUpdateAfterShare} from './recentSlice'
+import {favUpdateAfterShare} from './favSlice'
+import {updateAfterShare} from './structureSlice'
+
 
 export const shareSlice= createSlice({
   name: "share",
@@ -38,9 +42,6 @@ export const shareSlice= createSlice({
       },
       pushForPatch:(state,action)=>{
         state.patchUsers.push(action.payload)
-      },
-      finalUpdate:(state,action)=>{
-        
       }
   },
 });
@@ -74,6 +75,15 @@ export const sharePatchAsync=(data)=>(dispatch)=>{
   if(data.type==='file'){
     API.patch(`/api/file/`,data.payload).then(res=>{
       console.log(res)
+      if(data.page==="Home"){
+        dispatch(updateAfterShare(data.updateData))
+      }
+      if(data.page==="Favourites"){
+        dispatch(favUpdateAfterShare(data.updateData))
+      }
+      if(data.page==="Recent"){
+        dispatch(recentUpdateAfterShare(data.updateData))
+      }
       dispatch(normalLoader())
     }).catch(err=>{
       console.log(err)
@@ -82,6 +92,15 @@ export const sharePatchAsync=(data)=>(dispatch)=>{
   }else{
     API.patch(`/api/folder/`,data.payload).then(res=>{
       console.log(res)
+      if(data.page==="Home"){
+        dispatch(updateAfterShare(data.updateData))
+      }
+      if(data.page==="Favourites"){
+        dispatch(favUpdateAfterShare(data.updateData))
+      }
+      if(data.page==="Recent"){
+        dispatch(recentUpdateAfterShare(data.updateData))
+      }
       dispatch(normalLoader())
     }).catch(err=>{
       console.log(err)

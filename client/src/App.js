@@ -16,7 +16,7 @@ function App() {
         <Route exact path="/signup" component={SignUp} />
         <PrivateRoute
           exact
-          path="/share/:user/:key"
+          path="/share/:type/:key"
           component={AuthorizationCheck}
         />
         <Dashboard />

@@ -63,6 +63,12 @@ export const favStructureSlice = createSlice({
         PATH: path,
       };
     },
+    favUpdateAfterShare: (state, action) => {
+      let index = action.payload.index;
+      let users = action.payload.users;
+
+      state.currentDisplayStructure[index].shared_among = users;
+    },
   },
 });
 
@@ -73,6 +79,7 @@ export const {
   updateFav,
   updatePath,
   updatePrivacy,
+  favUpdateAfterShare
 } = favStructureSlice.actions;
 
 export const pathParse = (data) => (dispatch) => {
