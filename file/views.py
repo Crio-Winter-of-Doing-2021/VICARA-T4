@@ -17,7 +17,7 @@ from folder.decorators import allow_parent_root, check_is_owner_parent_folder, c
 from .serializers import FileSerializer
 from user.serializers import ProfileSerializer
 from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
-from user.tasks import send_mail
+from user.tasks import send_mail, sync_send_mail
 from user.utils import get_client_server
 from user.serializers import UserSerializer
 POST_FILE = ["file", "PARENT"]
@@ -119,18 +119,18 @@ class FileView(APIView):
                 users = [User.objects.get(pk=id)
                          for id in ids]
 
-                # users_json = UserSerializer(users, many=True).data
+                users_json = UserSerializer(users, many=True).data
 
-                # client = get_client_server(request)["client"]
-                # title_kwargs = {
-                #     "sender_name": request.user.username,
-                #     "resource_name": f'a file "{file.name}"'
-                # }
-                # body_kwargs = {
-                #     "resource_url": f"{client}/api/file/share/?id={file.id}&CREATOR={request.user.id}"
-                # }
-                # send_mail.delay("SHARED_WITH_ME", users_json,
-                #                 title_kwargs, body_kwargs)
+                client = get_client_server(request)["client"]
+                title_kwargs = {
+                    "sender_name": request.user.username,
+                    "resource_name": f'a file "{file.name}"'
+                }
+                body_kwargs = {
+                    "resource_url": f"{client}/share/file/{file.id}"
+                }
+                sync_send_mail.delay("SHARED_WITH_ME", users_json,
+                                     title_kwargs, body_kwargs)
             except Exception as e:
                 print(e)
                 return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)

@@ -29,7 +29,7 @@ from .models import Folder
 from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete, create_folder, create_folder_rec
 from file.utils import create_file
 from user.utils import get_client_server
-from user.tasks import send_mail
+from user.tasks import send_mail, sync_send_mail
 from user.serializers import ProfileSerializer, UserSerializer
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
@@ -109,19 +109,19 @@ class Filesystem(APIView):
                 users = [User.objects.get(pk=id)
                          for id in ids]
 
-                # users_json = UserSerializer(users, many=True).data
+                users_json = UserSerializer(users, many=True).data
 
-                # client = get_client_server(request)["client"]
-                # title_kwargs = {
-                #     "sender_name": request.user.username,
-                #     "resource_name": f'a folder "{folder.name}"'
-                # }
-                # body_kwargs = {
-                #     "resource_url": f"{client}/api/folder/share/?id={folder.id}&CREATOR={request.user.id}"
-                # }
+                client = get_client_server(request)["client"]
+                title_kwargs = {
+                    "sender_name": request.user.username,
+                    "resource_name": f'a folder "{folder.name}"'
+                }
+                body_kwargs = {
+                    "resource_url": f"{client}/share/folder/{folder.id}"
+                }
 
-                # send_mail.delay("SHARED_WITH_ME", users_json,
-                #                 title_kwargs, body_kwargs)
+                sync_send_mail("SHARED_WITH_ME", users_json,
+                               title_kwargs, body_kwargs)
             except Exception as e:
                 print(e)
                 return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
