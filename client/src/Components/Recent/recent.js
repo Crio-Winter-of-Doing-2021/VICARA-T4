@@ -43,7 +43,7 @@ import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
-import {Typography,Divider} from '@material-ui/core'
+// import {Typography,Divider} from '@material-ui/core'
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
 
@@ -157,10 +157,10 @@ export default function Structure(props) {
       name: data.name,
     };
 
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
+    // let typeData = {
+    //   type: data.type,
+    //   id: data.id,
+    // };
 
     return (
       <StyledTableRow key={data.id}>

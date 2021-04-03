@@ -25,7 +25,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import RightClickUtil from "../RightClickMenu/rightClickUtil";
+// import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
@@ -150,10 +150,10 @@ export default function Structure(props) {
       index: index,
     };
 
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
+    // let typeData = {
+    //   type: data.type,
+    //   id: data.id,
+    // };
 
     return (
       <StyledTableRow key={data.id}>

@@ -155,10 +155,10 @@ export default function Structure(props) {
       name: data.name,
     };
 
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
+    // let typeData = {
+    //   type: data.type,
+    //   id: data.id,
+    // };
 
     return (
       <StyledTableRow key={data.id}>

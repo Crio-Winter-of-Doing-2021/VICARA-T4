@@ -22,7 +22,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import RightClickUtil from "../RightClickMenu/rightClickUtil";
+// import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
 import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
 
@@ -32,8 +32,8 @@ import { emptykeys } from "../../store/slices/checkBoxSlice";
 
 import {getFileAsync} from '../../store/slices/structureSlice'
 
-import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+// import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
+// import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
@@ -105,10 +105,10 @@ export default function Structure(props) {
   };
 
   let tableRenderer = tableData.map((data, index) => {
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
+    // let typeData = {
+    //   type: data.type,
+    //   id: data.id,
+    // };
 
     return (
       <StyledTableRow key={data.id}>
