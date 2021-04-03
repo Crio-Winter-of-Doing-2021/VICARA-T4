@@ -7,7 +7,7 @@ import { updateFavFileName, popFromCurrentFavStack } from "./favSlice";
 import { updateRecentFileName, popFromCurrentRecentStack } from "./recentSlice";
 import { popFromCurrentTrashStack } from "./trashSlice";
 import { getProfileAsync } from "./authSlice";
-
+import {success,error} from './logSlice'
 export const checkBoxSlice = createSlice({
   name: "checkbox",
   initialState: {
@@ -88,14 +88,17 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
             dispatch(popFromCurrentFavStack(newdata));
             dispatch(popFromCurrentRecentStack(newdata));
             dispatch(popFromCurrentTrashStack(newdata));
+            
           }
           dispatch(getProfileAsync(id));
           dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"))
         })
       )
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -127,11 +130,13 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
           }
           dispatch(getProfileAsync(id));
           dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"))
         })
       )
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -161,10 +166,12 @@ export const updateAsync = (fileData, folderData) => (dispatch) => {
         // );
 
         dispatch(normalLoader());
+        dispatch(success("Your Action was Successful"))
       })
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -189,10 +196,12 @@ export const updateAsync = (fileData, folderData) => (dispatch) => {
         //   })
         // );
         dispatch(normalLoader());
+        dispatch(success("Your Action was Successful"))
       })
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -227,11 +236,13 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
             dispatch(popFromCurrentRecentStack(newdata));
           }
           dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"))
         })
       )
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -262,13 +273,16 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
             dispatch(popFromCurrentStack(newdata));
             dispatch(popFromCurrentFavStack(newdata));
             dispatch(popFromCurrentRecentStack(newdata));
+            
           }
           dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"))
         })
       )
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -303,11 +317,13 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
             dispatch(popFromCurrentTrashStack(newdata));
           }
           dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"))
         })
       )
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }
@@ -338,11 +354,13 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
             dispatch(popFromCurrentTrashStack(newdata));
           }
           dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"))
         })
       )
       .catch((err) => {
-        console.log(err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
         dispatch(emptykeys());
       });
   }

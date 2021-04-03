@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { skeletonLoader } from "./loaderSlice";
 import axios from "axios";
+import {error} from './logSlice'
 
 export const recentStructureSlice = createSlice({
   name: "recent",
@@ -107,8 +108,9 @@ export const recentStructureAsync = () => (dispatch) => {
       // dispatch(pathParse(res.data));
     })
     .catch((err) => {
-      console.log(err);
-      dispatch(skeletonLoader());
+        dispatch(skeletonLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
     });
 };
 
@@ -119,7 +121,8 @@ export const addFavouriteAsync = (data) => (dispatch) => {
         dispatch(updateFav(data));
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   } else {
     API.patch("/api/folder/", data.payload)
@@ -127,7 +130,8 @@ export const addFavouriteAsync = (data) => (dispatch) => {
         dispatch(updateFav(data));
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   }
 };
@@ -140,7 +144,8 @@ export const privacyAsync = (data) => (dispatch) => {
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   } else {
     API.patch("/api/folder/", data.payload)
@@ -149,7 +154,9 @@ export const privacyAsync = (data) => (dispatch) => {
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
-        console.log(err);
+        
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   }
 };

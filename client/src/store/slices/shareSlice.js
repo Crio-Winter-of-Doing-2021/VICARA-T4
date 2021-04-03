@@ -5,7 +5,7 @@ import {privOpp} from '../../Components/Structure/structure'
 import {recentUpdateAfterShare} from './recentSlice'
 import {favUpdateAfterShare} from './favSlice'
 import {updateAfterShare} from './structureSlice'
-
+import {success,error} from './logSlice'
 
 export const shareSlice= createSlice({
   name: "share",
@@ -65,8 +65,9 @@ export const searchUserAsync=(value)=>(dispatch)=>{
     dispatch(setResultUsers(res.data))
     dispatch(searchLoader())
   }).catch(err=>{
-    console.log(err)
-    dispatch(searchLoader())
+    dispatch(searchLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
   })
 }
 
@@ -85,9 +86,11 @@ export const sharePatchAsync=(data)=>(dispatch)=>{
         dispatch(recentUpdateAfterShare(data.updateData))
       }
       dispatch(normalLoader())
+      dispatch(success("Your Action was Successful"))
     }).catch(err=>{
-      console.log(err)
-      dispatch(normalLoader())
+      dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
     })
   }else{
     API.patch(`/api/folder/`,data.payload).then(res=>{
@@ -103,8 +106,9 @@ export const sharePatchAsync=(data)=>(dispatch)=>{
       }
       dispatch(normalLoader())
     }).catch(err=>{
-      console.log(err)
-      dispatch(normalLoader())
+      dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
     })
   }
 }

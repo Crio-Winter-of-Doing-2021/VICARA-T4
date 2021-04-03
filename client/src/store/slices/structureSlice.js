@@ -3,6 +3,7 @@ import API from "../../axios";
 import { normalLoader, skeletonLoader } from "./loaderSlice";
 
 // import {updateSharePrivacy} from './shareSlice'
+import {success,error} from './logSlice'
 
 export const structureSlice = createSlice({
   name: "structure",
@@ -92,6 +93,7 @@ export const structureAsync = (uni_id) => (dispatch) => {
     .catch((err) => {
       console.log(err);
       dispatch(skeletonLoader());
+      dispatch(error(err.response.data.message))
     });
 };
 
@@ -106,10 +108,13 @@ export const addFolderAsync = (data) => (dispatch) => {
       };
       dispatch(pushToCurrentStack(newData));
       dispatch(normalLoader());
+      dispatch(success("Your Action was Successful"))
     })
     .catch((err) => {
-      console.log(err);
+      console.log("entered")
       dispatch(normalLoader());
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
     });
 };
 
@@ -128,7 +133,8 @@ export const addFavouriteAsync = (data) => (dispatch) => {
         dispatch(updateFav(data));
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   }
 };
@@ -150,7 +156,8 @@ export const privacyAsync = (data) => (dispatch) => {
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
-        console.log(err);
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
       });
   }
 };
@@ -169,7 +176,8 @@ export const pathAsync = (data) => (dispatch) => {
       dispatch(updatePath(res.data));
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
     });
 };
 
@@ -190,6 +198,8 @@ export const getFileAsync = (data) => (dispatch) => {
     .catch((err) => {
       // console.log("ommaago its an errro", err);
       dispatch(normalLoader());
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
     });
 };
 

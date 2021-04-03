@@ -1,5 +1,6 @@
 import { createSlice} from "@reduxjs/toolkit";
 import API from '../../axios'
+import {error} from './logSlice'
 
 export const loaderSlice= createSlice({
   name: "loader",
@@ -59,6 +60,8 @@ export const downloadAsync=(data)=>(dispatch)=>{
       .catch((err) => {
         // console.log("ommaago its an errro", err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   }else{
     API.get(`/api/folder/download/`, {
@@ -75,6 +78,8 @@ export const downloadAsync=(data)=>(dispatch)=>{
       .catch((err) => {
         // console.log("ommaago its an errro", err);
         dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
       });
   }
 }

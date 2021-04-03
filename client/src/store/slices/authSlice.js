@@ -3,6 +3,7 @@ import { baseURL } from "../../axios";
 import axios from "axios";
 import API from "../../axios";
 import { normalLoader, profileLoader } from "./loaderSlice";
+import {error} from './logSlice'
 
 export const authSlice = createSlice({
   name: "auth",
@@ -44,8 +45,9 @@ export const loginAsync = (data, props) => (dispatch) => {
       dispatch(normalLoader());
     })
     .catch((err) => {
-      console.log(err);
       dispatch(normalLoader());
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
     });
 };
 
@@ -57,8 +59,9 @@ export const getProfileAsync = (id) => (dispatch) => {
       dispatch(profileLoader());
     })
     .catch((err) => {
-      console.log(err);
       dispatch(profileLoader());
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
     });
 };
 
@@ -77,8 +80,9 @@ export const googleLogin = (data, props) => (dispatch) => {
       dispatch(normalLoader());
     })
     .catch((err) => {
-      console.log(err);
       dispatch(normalLoader());
+      console.log(err.response)
+      dispatch(error(err.response.data.message))
     });
 };
 
