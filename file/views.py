@@ -123,7 +123,7 @@ class FileView(APIView):
 
                 client = get_client_server(request)["client"]
                 title_kwargs = {
-                    "sender_name": request.user.username,
+                    "sender_name": f"{request.user.first_name} {request.user.last_name} ({request.user.username})",
                     "resource_name": f'a file "{file.name}"'
                 }
                 body_kwargs = {
