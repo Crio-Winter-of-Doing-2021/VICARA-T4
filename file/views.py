@@ -129,76 +129,76 @@ class FileView(APIView):
                 body_kwargs = {
                     "resource_url": f"{client}/share/file/{file.id}"
                 }
-                sync_send_mail.delay("SHARED_WITH_ME", users_json,
+                sync_send_mail("SHARED_WITH_ME", users_json,
                                      title_kwargs, body_kwargs)
             except Exception as e:
                 print(e)
-                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={"message": "invalid share id list", "ex": str)}, status = status.HTTP_400_BAD_REQUEST)
             file.shared_among.set(users)
             file.present_in_shared_me_of.set(users)
 
         if(updated):
             file.save()
-        data = FileSerializer(file).data
-        return Response(data=data, status=status.HTTP_200_OK)
+        data=FileSerializer(file).data
+        return Response(data = data, status = status.HTTP_200_OK)
 
-    @check_id_file
-    @check_is_owner_file
+    @ check_id_file
+    @ check_is_owner_file
     def delete(self, request, * args, **kwargs):
-        id = get_id(request)
-        file = File.objects.get(id=id)
-        size = file.get_size()
+        id=get_id(request)
+        file=File.objects.get(id = id)
+        size=file.get_size()
         file.owner.profile.storage_used -= size
         file.owner.profile.save()
         file.delete()
-        storage_data = ProfileSerializer(
+        storage_data=ProfileSerializer(
             file.owner.profile).data["storage_data"]
-        return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
+        return Response(data = {"id": id, "storage_data": storage_data}, status = status.HTTP_200_OK)
 
 
 class UploadByDriveUrl(APIView):
 
-    @check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
-    @allow_parent_root
-    @check_id_parent_folder
+    @ check_request_attr(REQUIRED_PARAMS = REQUIRED_DRIVE_POST_PARAMS)
+    @ allow_parent_root
+    @ check_id_parent_folder
     # @check_valid_name_request_body
-    @check_already_present(to_check="req_data_name")
+    @ check_already_present(to_check = "req_data_name")
     def post(self, request, *args, **kwargs):
 
-        parent = request.data["PARENT"]
-        drive_url = request.data["DRIVE_URL"]
-        name = request.data["NAME"]
+        parent=request.data["PARENT"]
+        drive_url=request.data["DRIVE_URL"]
+        name=request.data["NAME"]
 
-        parent_folder = Folder.objects.get(id=parent)
-        s3_name = get_s3_filename(name)
-        r = requests.get(drive_url, allow_redirects=True)
+        parent_folder=Folder.objects.get(id = parent)
+        s3_name=get_s3_filename(name)
+        r=requests.get(drive_url, allow_redirects = True)
         open(s3_name, 'wb').write(r.content)
-        local_file = open(s3_name, 'rb')
-        djangofile = DjangoCoreFile(local_file)
-        file = File(file=djangofile,
-                    name=name,
-                    owner=request.user,
-                    parent=parent_folder)
+        local_file=open(s3_name, 'rb')
+        djangofile=DjangoCoreFile(local_file)
+        file=File(file = djangofile,
+                    name = name,
+                    owner = request.user,
+                    parent = parent_folder)
         file.save()
         os.remove(s3_name)
         # remove_file.delay(s3_name)
-        data = FileSerializer(file).data
-        profile = request.user.profile
+        data=FileSerializer(file).data
+        profile=request.user.profile
         profile.storage_used += file.get_size()
         profile.save()
-        storage_data = ProfileSerializer(
+        storage_data=ProfileSerializer(
             file.owner.profile).data["storage_data"]
-        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
+        return Response(data = {**data, **storage_data}, status = status.HTTP_200_OK)
 
 
 class DownloadFile(APIView):
 
-    @check_id_file
-    @check_has_access_file
-    @check_file_not_trashed
-    @update_last_modified_file
+    @ check_id_file
+    @ check_has_access_file
+    @ check_file_not_trashed
+    @ update_last_modified_file
     def get(self, request, *args, **kwargs):
-        id = request.GET["id"]
-        file = File.objects.get(id=id)
-        url = get_presigned_url(file.get_s3_key())
-        return Response(data={"url": url}, status=status.HTTP_200_OK)
+        id=request.GET["id"]
+        file=File.objects.get(id = id)
+        url=get_presigned_url(file.get_s3_key())
+        return Response(data = {"url": url}, status = status.HTTP_200_OK)
