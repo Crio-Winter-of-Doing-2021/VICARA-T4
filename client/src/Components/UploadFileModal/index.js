@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch} from "react-redux";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -19,7 +19,7 @@ import {
 import AddFile from "./App-multi-file";
 // import { token, baseURL } from "../../axios";
 // import axios from "axios";
-import { fileUploadLoader } from "../../store/slices/loaderSlice";
+import {normalLoader} from "../../store/slices/loaderSlice";
 import { pushToCurrentStack } from "../../store/slices/structureSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 import DescriptionIcon from "@material-ui/icons/Description";
@@ -58,7 +58,7 @@ export default function FormDialog(props) {
   let uploadLink = () => {
     // /api/file/upload-by-url/
     setProgress(0);
-    dispatch(fileUploadLoader());
+    dispatch(normalLoader());
 
     API.post("/api/file/upload-by-url/",state,{
       onUploadProgress: (ev) => {
@@ -73,11 +73,11 @@ export default function FormDialog(props) {
           type: "file",
         };
         dispatch(pushToCurrentStack(newData));
-        dispatch(fileUploadLoader());
+        dispatch(normalLoader());
         handleClose();
       })
       .catch((err) => {
-        dispatch(fileUploadLoader());
+        dispatch(normalLoader());
         handleClose();
         console.log(err);
       });
@@ -86,7 +86,7 @@ export default function FormDialog(props) {
   return (
     <div>
       {/* <FileBackdropLoader progress={progress} show={loading} /> */}
-      {console.log(state)}
+      {/* {console.log(state)} */}
       <ListItem
         style={{ cursor: "pointer" }}
         onClick={() => {
