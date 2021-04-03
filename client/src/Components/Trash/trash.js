@@ -25,7 +25,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
 
-import RightClickUtil from "../RightClickMenu/rightClickUtil";
+// import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
 import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
@@ -38,10 +38,12 @@ import {
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
+
+import {getFileAsync} from '../../store/slices/structureSlice'
 
 import { typeTest } from "../../Utilities/fileType";
 
@@ -148,15 +150,15 @@ export default function Structure(props) {
       index: index,
     };
 
-    let typeData = {
-      type: data.type,
-      id: data.id,
-    };
+    // let typeData = {
+    //   type: data.type,
+    //   id: data.id,
+    // };
 
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-          <RightClickUtil data={typeData}>
+          {/* <RightClickUtil data={typeData}> */}
             <div style={{ display: "flex", alignItems: "center" }}>
               <Checkbox
                 onChange={(e) => handleCheckedChange(keyData, e)}
@@ -184,9 +186,7 @@ export default function Structure(props) {
                   component="button"
                   variant="body2"
                   style={{ marginLeft: "5px" }}
-                  onClick={() => {
-                    console.log("clicked");
-                  }}
+                  onClick={() => dispatch(getFileAsync(data.id))}
                 >
                   {data.name}
                 </UILink>
@@ -199,7 +199,7 @@ export default function Structure(props) {
                   color="primary"
                   disabled
                 >
-                  <StarRoundedIcon />
+                  <StarTwoToneIcon style={{ color: "#EDD712" }} />
                 </IconButton>
               ) : (
                 <IconButton
@@ -212,7 +212,7 @@ export default function Structure(props) {
                 </IconButton>
               )}
             </div>
-          </RightClickUtil>
+          {/* </RightClickUtil> */}
         </StyledTableCell>
 
         <StyledTableCell
