@@ -35,7 +35,7 @@ export default function CustomizedSnackbars() {
 
   return (
     <div className={classes.root}>
-      <Snackbar open={data.show} onClose={handleClose}>
+      <Snackbar autoHideDuration={5000} open={data.show} onClose={handleClose}>
         <Alert onClose={handleClose} severity={data.type}>
           {data.feed}
         </Alert>

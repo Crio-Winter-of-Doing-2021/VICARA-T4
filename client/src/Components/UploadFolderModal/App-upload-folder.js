@@ -11,6 +11,7 @@ import FolderIcon from "@material-ui/icons/Folder";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
+import {error,success} from '../../store/slices/logSlice'
 
 function App({ modalClose, parent }) {
   const dispatch = useDispatch();
@@ -66,13 +67,14 @@ function App({ modalClose, parent }) {
           const { readable, ratio } = res.data;
           dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
+          dispatch(success("Your Action was Successful"))
         })
-        .catch(function (response) {
+        .catch(function (err) {
           //handle error
-
+          console.log(err.response)
+          dispatch(error(err.response.data.message))
           dispatch(fileUploadLoader());
           modalClose();
-          console.log(response);
         });
     },
     [dispatch, modalClose, parent, progress]
