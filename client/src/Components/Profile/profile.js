@@ -42,7 +42,7 @@ export default function Profile() {
       {loading === false ? (
         <Fragment>
           <UserImage />
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ marginTop:"10px",display: "flex", justifyContent: "center" }}>
             <Typography style={{ color: "grey", fontStyle: "italic" }}>
               @{userData.username}
             </Typography>
