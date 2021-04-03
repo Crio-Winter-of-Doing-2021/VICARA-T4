@@ -24,6 +24,8 @@ import { pushToCurrentStack } from "../../store/slices/structureSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 import DescriptionIcon from "@material-ui/icons/Description";
 
+import API from '../../axios'
+
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [state, setState] = React.useState({
@@ -54,20 +56,16 @@ export default function FormDialog(props) {
   };
 
   let uploadLink = () => {
+    // /api/file/upload-by-url/
     setProgress(0);
     dispatch(fileUploadLoader());
-    axios({
-      method: "post",
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-      data: state,
-      url: `${baseURL}/api/file/upload-by-url/`,
+
+    API.post("/api/file/upload-by-url/",state,{
       onUploadProgress: (ev) => {
         const prog = (ev.loaded / ev.total) * 100;
         setProgress(Math.round(prog));
         console.log({ progress });
-      },
+      }
     })
       .then((res) => {
         let newData = {
