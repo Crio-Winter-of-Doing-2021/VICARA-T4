@@ -124,7 +124,7 @@ class ProfileView(APIView):
 
         if(not(profile.user == request.user or request.user.is_staff)):
             return Response(data={"message": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
-
+        updated = False
         if("email" in request.data):
             new_email = request.data["email"]
             user_with_given_mail = Profile.custom_objects.get_or_none(

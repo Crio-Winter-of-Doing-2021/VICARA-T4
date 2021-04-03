@@ -114,12 +114,16 @@ class FileView(APIView):
             ids = set(ids)
             ids.discard(file.owner.id)
             ids = list(ids)
-
             try:
                 users = [User.objects.get(pk=id)
                          for id in ids]
 
-                users_json = UserSerializer(users, many=True).data
+                users_for_mail = []
+                for user in users:
+                    if(user not in file.shared_among.all()):
+                        users_for_mail.append(user)
+
+                users_json = UserSerializer(users_for_mail, many=True).data
 
                 client = get_client_server(request)["client"]
                 title_kwargs = {
@@ -129,11 +133,11 @@ class FileView(APIView):
                 body_kwargs = {
                     "resource_url": f"{client}/share/file/{file.id}"
                 }
-                sync_send_mail.delay("SHARED_WITH_ME", users_json,
-                                     title_kwargs, body_kwargs)
+                sync_send_mail("SHARED_WITH_ME", users_json,
+                               title_kwargs, body_kwargs)
             except Exception as e:
                 print(e)
-                return Response(data={"message": "invalid share id list"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={"message": "invalid share id list", "exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             file.shared_among.set(users)
             file.present_in_shared_me_of.set(users)
 
@@ -142,8 +146,8 @@ class FileView(APIView):
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 
-    @check_id_file
-    @check_is_owner_file
+    @ check_id_file
+    @ check_is_owner_file
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
@@ -158,11 +162,11 @@ class FileView(APIView):
 
 class UploadByDriveUrl(APIView):
 
-    @check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
-    @allow_parent_root
-    @check_id_parent_folder
+    @ check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
+    @ allow_parent_root
+    @ check_id_parent_folder
     # @check_valid_name_request_body
-    @check_already_present(to_check="req_data_name")
+    @ check_already_present(to_check="req_data_name")
     def post(self, request, *args, **kwargs):
 
         parent = request.data["PARENT"]
@@ -193,10 +197,10 @@ class UploadByDriveUrl(APIView):
 
 class DownloadFile(APIView):
 
-    @check_id_file
-    @check_has_access_file
-    @check_file_not_trashed
-    @update_last_modified_file
+    @ check_id_file
+    @ check_has_access_file
+    @ check_file_not_trashed
+    @ update_last_modified_file
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
         file = File.objects.get(id=id)
