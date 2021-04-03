@@ -63,7 +63,7 @@ class FileView(APIView):
             request.user.profile).data["storage_data"]
         return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
 
-    # @check_valid_name
+    @check_valid_name
     @check_id_file
     @check_is_owner_file
     @check_file_not_trashed
@@ -162,6 +162,8 @@ class FileView(APIView):
 
 class UploadByDriveUrl(APIView):
 
+    @check_request_attr(["PARENT", "DRIVE_URL", "NAME"])
+    @check_valid_name
     @ check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
     @ allow_parent_root
     @ check_id_parent_folder
@@ -175,7 +177,10 @@ class UploadByDriveUrl(APIView):
 
         parent_folder = Folder.objects.get(id=parent)
         s3_name = get_s3_filename(name)
-        r = requests.get(drive_url, allow_redirects=True)
+        try:
+            r = requests.get(drive_url, allow_redirects=True)
+        except:
+            return Response(data={"message": "Invalid URL"}, status=status.HTTP_400_BAD_REQUEST)
         open(s3_name, 'wb').write(r.content)
         local_file = open(s3_name, 'rb')
         djangofile = DjangoCoreFile(local_file)
