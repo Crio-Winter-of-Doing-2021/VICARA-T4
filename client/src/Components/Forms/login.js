@@ -18,10 +18,12 @@ import NormalLoader from "../Loaders/normalBackdrop";
 // import { Link as RouteLink } from "react-router-dom";
 import GoogleLogin from "react-google-login";
 import { googleLogin } from "../../store/slices/authSlice";
+import Developers from './developers'
 
 export function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
+    <div>
+      <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
       <Link color="inherit" href={frontURL}>
         Vicara-T4
@@ -29,6 +31,8 @@ export function Copyright() {
       {new Date().getFullYear()}
       {"."}
     </Typography>
+      <Developers/>
+    </div>
   );
 }
 
