@@ -17,8 +17,8 @@ import {
   ListItemAvatar,
 } from "@material-ui/core";
 import AddFile from "./App-multi-file";
-import { token, baseURL } from "../../axios";
-import axios from "axios";
+// import { token, baseURL } from "../../axios";
+// import axios from "axios";
 import { fileUploadLoader } from "../../store/slices/loaderSlice";
 import { pushToCurrentStack } from "../../store/slices/structureSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
@@ -69,7 +69,7 @@ export default function FormDialog(props) {
     })
       .then((res) => {
         let newData = {
-          data: res.data,
+          resData: res.data,
           type: "file",
         };
         dispatch(pushToCurrentStack(newData));
