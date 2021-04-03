@@ -24,7 +24,7 @@ export default function AuthorizationCheck(props) {
           setSuccess(false);
         });
     }else{
-      API.get("/api/folder/downlaod/", {
+      API.get("/api/folder/download/", {
         params: {
           id: key,
         },
