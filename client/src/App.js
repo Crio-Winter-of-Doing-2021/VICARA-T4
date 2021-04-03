@@ -4,7 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import NormalLoader from "./Components/Loaders/normalBackdrop";
 import Login from "./Components/Forms/login";
 import SignUp from "./Components/Forms/signup";
-// import PrivateRoute from "./Utilities/protectedRoute";
+import PrivateRoute from "./Utilities/protectedRoute";
 import AuthorizationCheck from "./Utilities/authorizationCheck";
 import Message from "./Components/RequestLogs/index";
 
@@ -16,7 +16,7 @@ function App() {
       <Switch>
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={SignUp} />
-        <Route exact path="/share/:type/:key" component={AuthorizationCheck} />
+        <PrivateRoute exact path="/share/:type/:key" component={AuthorizationCheck} />
         <Dashboard />
         {/* <Route path="/" component={SignUp}>
           <Dashboard />
