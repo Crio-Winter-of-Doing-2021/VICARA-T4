@@ -40,7 +40,7 @@ import {
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
 import {Typography,Divider} from '@material-ui/core'
@@ -207,7 +207,7 @@ export default function Structure(props) {
                   style={{ margin: "0 10px" }}
                   color="primary"
                 >
-                  <StarRoundedIcon />
+                  <StarTwoToneIcon style={{ color: "#EDD712" }} />
                 </IconButton>
               ) : (
                 <IconButton

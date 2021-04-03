@@ -27,7 +27,7 @@ import { default as UILink } from "@material-ui/core/Link";
 
 import RightClickUtil from "../RightClickMenu/rightClickUtil";
 
-import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
+import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
@@ -157,10 +157,10 @@ export default function Structure(props) {
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-          <RightClickUtil data={typeData}>
+          {/* <RightClickUtil index={index} data={data}> */}
             <div style={{ display: "flex", alignItems: "center" }}>
               {data.type === "folder" ? (
-                <FolderOpenTwoToneIcon />
+                <FolderRoundedIcon style={{ color: "#67C5F0" }}/>
               ) : (
                 typeTest(data.name)
               )}
@@ -189,7 +189,7 @@ export default function Structure(props) {
                 </UILink>
               )}
             </div>
-          </RightClickUtil>
+          {/* </RightClickUtil> */}
         </StyledTableCell>
 
         <StyledTableCell

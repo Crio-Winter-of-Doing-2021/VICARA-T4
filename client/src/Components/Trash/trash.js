@@ -38,7 +38,7 @@ import {
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
@@ -156,7 +156,7 @@ export default function Structure(props) {
     return (
       <StyledTableRow key={data.id}>
         <StyledTableCell component="th" scope="row">
-          <RightClickUtil data={typeData}>
+          {/* <RightClickUtil data={typeData}> */}
             <div style={{ display: "flex", alignItems: "center" }}>
               <Checkbox
                 onChange={(e) => handleCheckedChange(keyData, e)}
@@ -199,7 +199,7 @@ export default function Structure(props) {
                   color="primary"
                   disabled
                 >
-                  <StarRoundedIcon />
+                  <StarTwoToneIcon style={{ color: "#EDD712" }} />
                 </IconButton>
               ) : (
                 <IconButton
@@ -212,7 +212,7 @@ export default function Structure(props) {
                 </IconButton>
               )}
             </div>
-          </RightClickUtil>
+          {/* </RightClickUtil> */}
         </StyledTableCell>
 
         <StyledTableCell
