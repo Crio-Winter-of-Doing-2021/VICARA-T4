@@ -9,14 +9,14 @@ export default function AuthorizationCheck(props) {
 
   useEffect(() => {
     if(type==='file'){
-      API.get("/api/file/downlaod/", {
+      API.get("/api/file/download/", {
         params: {
           id: key,
         },
       })
         .then((res) => {
           setSuccess(true);
-          let link = res.data.URL;
+          let link = res.data.url;
           window.open(link);
         })
         .catch((err) => {
@@ -31,7 +31,7 @@ export default function AuthorizationCheck(props) {
       })
         .then((res) => {
           setSuccess(true);
-          let link = res.data.URL;
+          let link = res.data.url;
           window.open(link);
         })
         .catch((err) => {

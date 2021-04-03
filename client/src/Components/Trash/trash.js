@@ -43,6 +43,8 @@ import IconButton from "@material-ui/core/IconButton";
 
 import { skeletonLoading } from "../../store/slices/loaderSlice";
 
+import {getFileAsync} from '../../store/slices/structureSlice'
+
 import { typeTest } from "../../Utilities/fileType";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -184,9 +186,7 @@ export default function Structure(props) {
                   component="button"
                   variant="body2"
                   style={{ marginLeft: "5px" }}
-                  onClick={() => {
-                    console.log("clicked");
-                  }}
+                  onClick={() => dispatch(getFileAsync(data.id))}
                 >
                   {data.name}
                 </UILink>

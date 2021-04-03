@@ -37,6 +37,8 @@ import {
   emptykeys,
 } from "../../store/slices/checkBoxSlice";
 
+import {getFileAsync} from '../../store/slices/structureSlice'
+
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
@@ -189,9 +191,7 @@ export default function Structure(props) {
                   component="button"
                   variant="body2"
                   style={{ marginLeft: "5px" }}
-                  onClick={() => {
-                    console.log("clicked");
-                  }}
+                  onClick={() => dispatch(getFileAsync(data.id))}
                 >
                   {data.name}
                 </UILink>

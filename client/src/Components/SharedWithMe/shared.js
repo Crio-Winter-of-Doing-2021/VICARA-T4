@@ -37,6 +37,8 @@ import {
 
 // import {getProfileAsync} from '../../store/slices/authSlice'
 
+import {getFileAsync} from '../../store/slices/structureSlice'
+
 import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import IconButton from "@material-ui/core/IconButton";
@@ -181,9 +183,7 @@ export default function Structure(props) {
                   component="button"
                   variant="body2"
                   style={{ marginLeft: "5px" }}
-                  onClick={() => {
-                    console.log("clicked");
-                  }}
+                  onClick={() => dispatch(getFileAsync(data.id))}
                 >
                   {data.name}
                 </UILink>
