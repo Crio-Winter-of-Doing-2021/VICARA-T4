@@ -81,7 +81,9 @@ function App({ modalClose, parent }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div
+    <>
+       <UploadLoader progress={progress} show={loading} />
+      <div
       style={{
         height: "150px",
         position: "relative",
@@ -92,7 +94,6 @@ function App({ modalClose, parent }) {
       }}
       {...getRootProps()}
     >
-      <UploadLoader progress={progress} show={loading} />
       <input
         {...getInputProps()}
         // comment the 2 below for multi-file
@@ -144,6 +145,7 @@ function App({ modalClose, parent }) {
         </div>
       )}
     </div>
+    </>
   );
 }
 

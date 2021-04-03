@@ -17,12 +17,14 @@ import {
   ListItemAvatar,
 } from "@material-ui/core";
 import AddFile from "./App-multi-file";
-import { token, baseURL } from "../../axios";
-import axios from "axios";
+// import { token, baseURL } from "../../axios";
+// import axios from "axios";
 import { fileUploadLoader } from "../../store/slices/loaderSlice";
 import { pushToCurrentStack } from "../../store/slices/structureSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 import DescriptionIcon from "@material-ui/icons/Description";
+
+import API from '../../axios'
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -54,24 +56,20 @@ export default function FormDialog(props) {
   };
 
   let uploadLink = () => {
+    // /api/file/upload-by-url/
     setProgress(0);
     dispatch(fileUploadLoader());
-    axios({
-      method: "post",
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-      data: state,
-      url: `${baseURL}/api/file/upload-by-url/`,
+
+    API.post("/api/file/upload-by-url/",state,{
       onUploadProgress: (ev) => {
         const prog = (ev.loaded / ev.total) * 100;
         setProgress(Math.round(prog));
         console.log({ progress });
-      },
+      }
     })
       .then((res) => {
         let newData = {
-          data: res.data,
+          resData: res.data,
           type: "file",
         };
         dispatch(pushToCurrentStack(newData));
