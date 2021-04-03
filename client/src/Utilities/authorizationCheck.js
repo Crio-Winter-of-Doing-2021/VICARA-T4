@@ -2,28 +2,44 @@ import React, { useState, useEffect } from "react";
 import API from "../axios";
 
 export default function AuthorizationCheck(props) {
-  let author = props.match.params.user;
+  let type = props.match.params.type;
   let key = props.match.params.key;
 
   let [success, setSuccess] = useState(null);
 
   useEffect(() => {
-    API.get("/api/share-file/", {
-      params: {
-        id: key,
-        CREATOR: author,
-      },
-    })
-      .then((res) => {
-        setSuccess(true);
-        let link = res.data.URL;
-        window.open(link);
+    if(type==='file'){
+      API.get("/api/file/downlaod/", {
+        params: {
+          id: key,
+        },
       })
-      .catch((err) => {
-        console.log(err);
-        setSuccess(false);
-      });
-  }, [author, key]);
+        .then((res) => {
+          setSuccess(true);
+          let link = res.data.URL;
+          window.open(link);
+        })
+        .catch((err) => {
+          console.log(err);
+          setSuccess(false);
+        });
+    }else{
+      API.get("/api/folder/downlaod/", {
+        params: {
+          id: key,
+        },
+      })
+        .then((res) => {
+          setSuccess(true);
+          let link = res.data.URL;
+          window.open(link);
+        })
+        .catch((err) => {
+          console.log(err);
+          setSuccess(false);
+        });
+    }
+  }, [type, key]);
 
   return (
     <div>

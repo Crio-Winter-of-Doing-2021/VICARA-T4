@@ -167,7 +167,7 @@ export default function FormDialog(props) {
         <DialogContent style={{ marginTop: "5px" }}>
           <DialogContentText>
             Share link, or add users to share with-
-            <CopyLink author={props.data.owner.username} id={props.data.id} />
+            <CopyLink type={props.data.type} id={props.data.id} />
             <Divider />
             <div
               style={{
