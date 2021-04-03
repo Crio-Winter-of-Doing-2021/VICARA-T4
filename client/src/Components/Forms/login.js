@@ -13,17 +13,17 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { baseURL } from "../../axios";
+import { frontURL } from "../../axios";
 import NormalLoader from "../Loaders/normalBackdrop";
 // import { Link as RouteLink } from "react-router-dom";
 import GoogleLogin from "react-google-login";
-import { googleLogin} from "../../store/slices/authSlice";
+import { googleLogin } from "../../store/slices/authSlice";
 
 export function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href={baseURL}>
+      <Link color="inherit" href={frontURL}>
         Vicara-T4
       </Link>{" "}
       {new Date().getFullYear()}
@@ -145,7 +145,7 @@ export default function SignIn(props) {
             </Grid>
           </Grid>
         </form> */}
-        <div style={{marginTop:"20px"}}>
+        <div style={{ marginTop: "20px" }}>
           <GoogleLogin
             clientId="575084088742-2eidkevqutnod9lord9vf2sri50ko7ct.apps.googleusercontent.com"
             buttonText="LOGIN WITH GOOGLE"
