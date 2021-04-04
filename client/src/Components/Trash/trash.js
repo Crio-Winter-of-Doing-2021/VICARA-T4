@@ -5,6 +5,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 
+
 import {
   trashStructureAsync,
   selectTrashStructure,
@@ -31,8 +32,7 @@ import FolderOpenTwoToneIcon from "@material-ui/icons/FolderOpenTwoTone";
 
 import Checkbox from "@material-ui/core/Checkbox";
 import {
-  updateSelectedKeys,
-  emptykeys,
+  updateSelectedKeys
 } from "../../store/slices/checkBoxSlice";
 
 // import {getProfileAsync} from '../../store/slices/authSlice'
@@ -41,11 +41,14 @@ import StarBorderRoundedIcon from "@material-ui/icons/StarBorderRounded";
 import StarTwoToneIcon from "@material-ui/icons/StarTwoTone";
 import IconButton from "@material-ui/core/IconButton";
 
-import { skeletonLoading } from "../../store/slices/loaderSlice";
+import { skeletonLoading,normalLoader } from "../../store/slices/loaderSlice";
+import {error} from '../../store/slices/logSlice'
 
 import {getFileAsync} from '../../store/slices/structureSlice'
 
 import { typeTest } from "../../Utilities/fileType";
+
+import API from '../../axios'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -105,11 +108,11 @@ export default function Structure(props) {
 
   tableData = structureState;
 
-  let updateFolder = (key) => {
-    console.log("key clicked", key);
-    props.history.push(`/drive/${key}`);
-    dispatch(emptykeys());
-  };
+  // let updateFolder = (key) => {
+  //   console.log("key clicked", key);
+  //   props.history.push(`/drive/${key}`);
+  //   dispatch(emptykeys());
+  // };
 
   const handleCheckedChange = (key, e) => {
     console.log("checked");
@@ -176,7 +179,15 @@ export default function Structure(props) {
                   variant="body2"
                   style={{ marginLeft: "5px" }}
                   onClick={() => {
-                    updateFolder(data.id);
+                    dispatch(normalLoader());
+                    API.get(`/api/folder/?id=${data.id}`).then(res=>{
+                      console.log(res)
+                      dispatch(normalLoader());
+                    }).catch(err=>{
+                      dispatch(normalLoader());
+                      console.log(err.response);
+                      dispatch(error(err.response.data.message));
+                    })
                   }}
                 >
                   {data.name}
