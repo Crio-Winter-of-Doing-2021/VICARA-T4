@@ -42,7 +42,12 @@ def recursive_delete(folder, profile):
 
 def create_folder(parent_id, owner, name):
     parent = Folder.objects.get(id=parent_id)
-    new_folder = Folder(owner=owner, name=name, parent=parent)
+    new_folder = Folder(owner=owner, name=name, parent=parent,
+                        privacy=parent.privacy)
+    new_folder.save()
+    new_folder.shared_among.set(parent.shared_among.all())
+    new_folder.present_in_shared_me_of.set(
+        parent.present_in_shared_me_of.all())
     new_folder.save()
     return new_folder
 

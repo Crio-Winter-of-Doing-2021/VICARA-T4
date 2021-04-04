@@ -205,8 +205,9 @@ class SearchUsers(APIView):
         ).filter(
             Q(username__icontains=query) |
             Q(email__icontains=query) |
-            Q(full_name__icontains=query))
+            Q(full_name__icontains=query)).exclude(id=request.user.id)
         data = UserSerializer(qs, many=True).data
+
         return Response(data=data, status=status.HTTP_200_OK)
 
 
