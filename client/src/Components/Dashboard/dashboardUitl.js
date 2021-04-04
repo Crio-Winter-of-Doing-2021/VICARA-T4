@@ -75,7 +75,6 @@ export default function ClippedDrawer(props) {
   };
 
   let id=window.localStorage.getItem('id')
-  
 
   useEffect(() => {
     asyncLocalStorage.getItem('id').then(res=>{

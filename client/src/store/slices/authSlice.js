@@ -76,10 +76,12 @@ export const googleLogin = (data, props) => (dispatch) => {
       console.log(res.data);
       let token = res.data.token;
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
-      props.history.push(`/drive/${res.data.root_id}`);
-      dispatch(setUser(res.data.username));
+      // dispatch(setUser(res.data.username));
       window.localStorage.setItem("session", token);
       window.localStorage.setItem("id", res.data.root_id);
+      props.history.push(`/drive/${res.data.root_id}`);
+      
+    }).then(res=>{
       dispatch(normalLoader());
     })
     .catch((err) => {
