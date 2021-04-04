@@ -32,7 +32,7 @@ class Folder(models.Model):
         User, related_name="shared_with_me_folders")
 
     def __str__(self):
-        return f"{self.name}| id = {self.id}  | parent = {self.parent}"
+        return f"{self.name} => parent = {self.parent} "
 
     class Meta:
         ordering = ['-last_modified', 'pk']

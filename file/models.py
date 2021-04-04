@@ -39,7 +39,7 @@ class File(models.Model):
     custom_objects = FileManager()
 
     def __str__(self):
-        return f"{self.name}  | parent = {self.parent.name}"
+        return f"{self.name}  => parent = {self.parent} "
 
     class Meta:
         ordering = ['-last_modified', 'pk']

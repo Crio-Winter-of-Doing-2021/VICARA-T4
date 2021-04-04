@@ -143,7 +143,7 @@ def check_file_not_trashed(func):
         file = File.custom_objects.get(id=id)
 
         if file.trash:
-            return Response(data={"message": "File is in Trash"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": "File is in Trash. Please restore to view it."}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

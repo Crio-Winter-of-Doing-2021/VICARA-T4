@@ -1,5 +1,5 @@
 from .views import LoginView, Logout, Recent, Register, ListOfUsers,\
-    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile, ProfilePicture, SearchUsers, GoogleLogin
+    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile, ProfilePicture, SearchUsers, GoogleLogin, SearchFileFolder
 from django.urls import path
 
 urlpatterns = [
@@ -18,4 +18,6 @@ urlpatterns = [
     path('shared-with-me/',  SharedWithMe.as_view(), name="shared-with-me"),
     path('recover-folder/',  RecoverFolder.as_view(), name="recover-folder"),
     path('recover-file/',  RecoverFile.as_view(), name="recover-file"),
+    path('search-file-folder/',  SearchFileFolder.as_view(),
+         name="search-file-folder"),
 ]

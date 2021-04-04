@@ -255,7 +255,7 @@ def check_parent_folder_not_trashed(func):
         folder = Folder.custom_objects.get(id=id)
 
         if folder.trash:
-            return Response(data={"message": "Folder is in Trash"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": "Folder is in Trash. Please restore to view it."}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper
@@ -268,7 +268,7 @@ def check_folder_not_trashed(func):
         folder = Folder.custom_objects.get(id=id)
 
         if folder.trash:
-            return Response(data={"message": "Folder is in Trash"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": "Folder is in Trash. Please restore to view it."}, status=status.HTTP_400_BAD_REQUEST)
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

@@ -211,6 +211,26 @@ class SearchUsers(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
+class SearchFileFolder(APIView):
+
+    @check_request_attr(["query"])
+    def get(self, request):
+        query = request.GET["query"].lower()
+        qs = User.objects.all()
+        files = File.objects.filter(owner=request.user, name__contains=query)
+        files = FileSerializer(files, many=True).data
+        for file in files:
+            file["type"] = "file"
+        folders = Folder.objects.filter(
+            owner=request.user, name__contains=query)
+        folders = FolderSerializerWithoutChildren(folders, many=True).data
+        for folder in folders:
+            folder["type"] = "folder"
+        result_list = list(chain(folders, files))
+
+        return Response(data=result_list, status=status.HTTP_200_OK)
+
+
 class Favourites(APIView):
 
     def get(self, request):

@@ -26,7 +26,7 @@ def get_presigned_url(key):
             'Bucket': AWS_STORAGE_BUCKET_NAME,
             'Key': key
         },
-        ExpiresIn=2000
+        ExpiresIn=20
     )
     return url
 
