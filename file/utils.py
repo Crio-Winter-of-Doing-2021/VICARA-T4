@@ -8,7 +8,11 @@ from .models import File
 
 def create_file(owner, req_file, parent, req_file_name, size):
     new_file = File(owner=owner, file=req_file,
-                    parent=parent, name=req_file_name, size=size)
+                    parent=parent, name=req_file_name,
+                    size=size, privacy=parent.privacy)
+    new_file.save()
+    new_file.shared_among.set(parent.shared_among.all())
+    new_file.present_in_shared_me_of.set(parent.present_in_shared_me_of.all())
     new_file.save()
     return new_file
 

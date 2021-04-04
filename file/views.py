@@ -184,10 +184,10 @@ class UploadByDriveUrl(APIView):
         open(s3_name, 'wb').write(r.content)
         local_file = open(s3_name, 'rb')
         djangofile = DjangoCoreFile(local_file)
-        file = File(file=djangofile,
-                    name=name,
-                    owner=request.user,
-                    parent=parent_folder)
+        req_file_size = humanize.naturalsize(djangofile.size)
+        file = create_file(
+            request.user, djangofile, parent_folder, name, req_file_size)
+
         file.save()
         os.remove(s3_name)
         # remove_file.delay(s3_name)
