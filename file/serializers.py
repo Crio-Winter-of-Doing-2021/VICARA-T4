@@ -18,6 +18,9 @@ class FileSerializer(serializers.ModelSerializer):
         fields = ('created_at', 'last_modified', 'shared_among', 'name',
                   'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size')
 
+    def get_type(self, obj):
+        return "file"
+
     def get_created_at(self, obj):
         return humanize.naturaltime(obj.created_at)
 

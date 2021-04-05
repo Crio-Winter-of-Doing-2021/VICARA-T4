@@ -16,11 +16,15 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     last_modified = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Folder
         exclude = ('present_in_shared_me_of',)
         # ordering = ['-last_modified']
+
+    def get_type(self, obj):
+        return "folder"
 
     def get_created_at(self, obj):
         return humanize.naturaltime(obj.created_at)
@@ -41,8 +45,7 @@ class FolderSerializer(FolderSerializerWithoutChildren):
         # folders
         folders = obj.children_folder.filter(trash=False)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
-        for folder in folders:
-            folder["type"] = "folder"
+
         # files
         files = obj.children_file.filter(trash=False)
         files = FileSerializer(files, many=True).data
