@@ -4,9 +4,8 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 import {
-  toggleFavouriteAsync,
-  togglePrivacyAsync,
   getFileAsync,
+  updateChildAsync,
 } from "../../store/slices/structureSlice";
 
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -193,7 +192,7 @@ const privacyCell = ({ privacy, id, type, privacyOptions }) => (dispatch) => {
           <IconButton
             disabled={disabled}
             onClick={(e) =>
-              dispatch(togglePrivacyAsync({ privacy: !privacy, id, type }))
+              dispatch(updateChildAsync({ privacy: !privacy, id, type }))
             }
           >
             <VisibilityOffIcon />
@@ -204,7 +203,7 @@ const privacyCell = ({ privacy, id, type, privacyOptions }) => (dispatch) => {
           <IconButton
             disabled={disabled}
             onClick={(e) =>
-              dispatch(togglePrivacyAsync({ type, id, privacy: !privacy }))
+              dispatch(updateChildAsync({ type, id, privacy: !privacy }))
             }
             color="primary"
           >
@@ -237,7 +236,7 @@ const renderFavourite = ({ favourite, id, type, disabled }) => (dispatch) => {
           disabled={disabled}
           onClick={(e) =>
             dispatch(
-              toggleFavouriteAsync({
+              updateChildAsync({
                 id,
                 type,
                 favourite: !favourite,
@@ -253,7 +252,7 @@ const renderFavourite = ({ favourite, id, type, disabled }) => (dispatch) => {
           disabled={disabled}
           onClick={(e) =>
             dispatch(
-              toggleFavouriteAsync({
+              updateChildAsync({
                 id,
                 type,
                 favourite: !favourite,
@@ -277,8 +276,6 @@ const nameAndFavouriteCell = ({
   favouriteOptions,
   props,
 }) => (dispatch) => {
-  const index = 1;
-
   const updateFolder = (key) => {
     console.log("key clicked", key);
     props.history.push(`/drive/${key}`);
@@ -290,7 +287,7 @@ const nameAndFavouriteCell = ({
   console.log("301", { id, type });
   return (
     <StyledTableCell component="th" scope="row">
-      <RightClickUtil index={index} data={data}>
+      <RightClickUtil data={data}>
         <div style={{ display: "flex", alignItems: "center" }}>
           {type === "folder" ? (
             <FolderRoundedIcon style={{ color: "#67C5F0" }} />

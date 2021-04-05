@@ -196,53 +196,34 @@ export const addFolderAsync = (data) => (dispatch) => {
     });
 };
 
-export const toggleFavouriteAsync = (data) => (dispatch) => {
+export const updateChildAsync = (data) => (dispatch) => {
   console.log({ data });
-  const { type, id, favourite } = data;
+  const { type, ...rest } = data;
+  dispatch(normalLoader());
   if (type === "file") {
-    API.patch("/api/file/", { id, favourite })
+    API.patch("/api/file/", rest)
       .then((res) => {
         dispatch(updateChild(res.data));
+        dispatch(normalLoader());
       })
       .catch((err) => {
         console.log(err);
+        dispatch(normalLoader());
       });
   } else {
-    API.patch("/api/folder/", { id, favourite })
+    API.patch("/api/folder/", rest)
       .then((res) => {
         dispatch(updateChild(res.data));
+        dispatch(normalLoader());
       })
       .catch((err) => {
         console.log(err.response);
         dispatch(error(err.response.data.message));
+        dispatch(normalLoader());
       });
   }
 };
 export const privacyAsync = 5;
-export const togglePrivacyAsync = (data) => (dispatch) => {
-  const { type, id, privacy } = data;
-  if (type === "file") {
-    API.patch("/api/file/", { id, privacy })
-      .then((res) => {
-        dispatch(updateChild(res.data));
-        // dispatch(updateSharePrivacy())
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  } else {
-    API.patch("/api/folder/", { id, privacy })
-      .then((res) => {
-        dispatch(updateChild(res.data));
-        // dispatch(updateSharePrivacy())
-      })
-      .catch((err) => {
-        console.log(err.response);
-        dispatch(error(err.response.data.message));
-      });
-  }
-};
-
 export const pathAsync = (data) => (dispatch) => {
   console.log("asking for path ");
   console.log("token now = ", window.localStorage.getItem("session"));

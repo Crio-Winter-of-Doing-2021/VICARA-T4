@@ -10,9 +10,6 @@ import { TextField } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import {
-  setSearchResults,
-  setUsersWithAccess,
-  removeUsersWithAccess,
   selectUsersWithAccess,
   selectSearchResults,
   searchUserAsync,
@@ -43,7 +40,7 @@ export default function Users() {
     return (
       <UserStyleUtil
         show={usersWithAccess.hasOwnProperty(user.id)}
-        data={user}
+        user={user}
       />
     );
   });

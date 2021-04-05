@@ -28,10 +28,7 @@ import {
   removeUsersWithAccess,
   selectUsersWithAccess,
 } from "../../store/slices/shareSlice";
-import {
-  togglePrivacyAsync,
-  updateChild,
-} from "../../store/slices/structureSlice";
+import { updateChildAsync } from "../../store/slices/structureSlice";
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -81,7 +78,9 @@ export default function FormDialog(props) {
         onClick={() => {
           props.menuClose();
           setOpen(true);
-          dispatch(setUsersWithAccess(shared_among));
+          shared_among.forEach((user) => {
+            dispatch(setUsersWithAccess(user));
+          });
         }}
       >
         <ListItemIcon>
@@ -112,7 +111,11 @@ export default function FormDialog(props) {
               onClick={() => {
                 handleClose();
                 dispatch(
-                  updateChild({ shared_among: idsOfUserWithAccess, type, id })
+                  updateChildAsync({
+                    shared_among: idsOfUserWithAccess,
+                    type,
+                    id,
+                  })
                 );
               }}
               color="primary"
@@ -153,7 +156,7 @@ export default function FormDialog(props) {
               <Button
                 onClick={() =>
                   dispatch(
-                    togglePrivacyAsync({
+                    updateChildAsync({
                       id,
                       type,
                       privacy: !privacy,

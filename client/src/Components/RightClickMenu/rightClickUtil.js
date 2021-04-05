@@ -1,15 +1,15 @@
 import React from "react";
-import {useDispatch} from 'react-redux'
+import { useDispatch } from "react-redux";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 // import Typography from '@material-ui/core/Typography';
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 // import EditIcon from "@material-ui/icons/Edit";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 
 import { ListItemText } from "@material-ui/core";
 
-import {downloadAsync} from '../../store/slices/loaderSlice'
+import { downloadAsync } from "../../store/slices/loaderSlice";
 
 import Share from "../Share/index";
 
@@ -21,7 +21,7 @@ const initialState = {
 export default function ContextMenu(props) {
   const [state, setState] = React.useState(initialState);
 
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
 
   const handleClick = (event) => {
     event.preventDefault();
@@ -49,15 +49,28 @@ export default function ContextMenu(props) {
             : undefined
         }
       >
-        <Share index={props.index} data={props.data} menuClose={handleClose} />
-        <MenuItem onClick={()=>{
-          handleClose();
-          dispatch(downloadAsync(props.data))
-        }}>
+        <Share data={props.data} menuClose={handleClose} />
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            dispatch(downloadAsync(props.data));
+          }}
+        >
           <ListItemIcon>
             <CloudDownloadIcon color="secondary" />
           </ListItemIcon>
           <ListItemText style={{ paddingRight: "15px" }}>Download</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            dispatch(downloadAsync(props.data));
+          }}
+        >
+          <ListItemIcon>
+            <CloudDownloadIcon color="secondary" />
+          </ListItemIcon>
+          <ListItemText style={{ paddingRight: "15px" }}>Update</ListItemText>
         </MenuItem>
       </Menu>
     </div>

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { searchLoader } from "./loaderSlice";
-
+import { error } from "../slices/logSlice";
 export const shareSlice = createSlice({
   name: "share",
   initialState: {
@@ -13,9 +13,7 @@ export const shareSlice = createSlice({
       state.searchResults = action.payload;
     },
     setUsersWithAccess: (state, action) => {
-      action.payload.forEach((ele) => {
-        state.usersWithAccess[ele.id] = { ...ele };
-      });
+      state.usersWithAccess[action.payload.id] = { ...action.payload };
     },
     removeUsersWithAccess: (state, action) => {
       const { [action.payload]: value, ...rest } = state.usersWithAccess;
