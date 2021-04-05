@@ -16,10 +16,11 @@ export const logSlice = createSlice({
       state.logData.feed = action.payload;
     },
     error: (state, action) => {
-      state.logData.show = true;
+      if(action.payload===undefined) state.logData.show=false
+      else state.logData.show=true
       state.logData.feed = action.payload;
       state.logData.type = "error";
-      console.log(action.payload);
+      
     },
     defaultLog: (state) => {
       state.logData = {
