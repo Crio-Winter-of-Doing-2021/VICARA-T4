@@ -12,7 +12,7 @@ import { ListItemText } from "@material-ui/core";
 import { downloadAsync } from "../../store/slices/loaderSlice";
 
 import Share from "../Share/index";
-
+import UpdateNameModal from "../Buttons/update";
 const initialState = {
   mouseX: null,
   mouseY: null,
@@ -34,7 +34,7 @@ export default function ContextMenu(props) {
   const handleClose = () => {
     setState(initialState);
   };
-
+  const { data } = props;
   return (
     <div onContextMenu={handleClick}>
       {props.children}
@@ -61,17 +61,18 @@ export default function ContextMenu(props) {
           </ListItemIcon>
           <ListItemText style={{ paddingRight: "15px" }}>Download</ListItemText>
         </MenuItem>
-        <MenuItem
+        <UpdateNameModal handleCloseOfRightClickMenu={handleClose} {...data} />
+        {/* <MenuItem
           onClick={() => {
             handleClose();
             dispatch(downloadAsync(props.data));
           }}
         >
           <ListItemIcon>
-            <CloudDownloadIcon color="secondary" />
+            <EditIcon color="primary" />
           </ListItemIcon>
           <ListItemText style={{ paddingRight: "15px" }}>Update</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
       </Menu>
     </div>
   );

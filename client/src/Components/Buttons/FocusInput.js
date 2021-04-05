@@ -4,7 +4,12 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 
-function FocusInput({ nameOfSelected, handleClose, handleUpdate }) {
+function FocusInput({
+  nameOfSelected,
+  handleClose,
+  handleUpdate,
+  handleKeyDown,
+}) {
   const inputRef = useRef(null);
   const [data, setData] = useState(nameOfSelected);
   useEffect(() => {
@@ -30,13 +35,14 @@ function FocusInput({ nameOfSelected, handleClose, handleUpdate }) {
           }}
           onDoubleClick={handleDoubleClick}
           ref={(ele) => (inputRef.current = ele)}
+          onKeyDown={(e) => handleKeyDown(e, data)}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="secondary">
           Cancel
         </Button>
-        <Button onClick={() => handleUpdate(data)} color="primary">
+        <Button onClick={() => handleUpdate(data)} color="primary" autoFocus>
           Update
         </Button>
       </DialogActions>
