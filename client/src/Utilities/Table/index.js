@@ -5,11 +5,17 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 import {
   getFileAsync,
+  markSelectedChild,
   updateChildAsync,
+  updateSelection,
+  resetSelection,
+  selectCheckedCount,
+  selectAll,
 } from "../../store/slices/structureSlice";
 
 import Skeleton from "@material-ui/lab/Skeleton";
 
+import Checkbox from "@material-ui/core/Checkbox";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -19,7 +25,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { default as UILink } from "@material-ui/core/Link";
-
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import RightClickUtil from "../../Components/RightClickMenu/rightClickUtil";
 
 import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
@@ -88,7 +94,7 @@ export default function TableComponent({
 
   // let tableData = [];
   const dispatch = useDispatch();
-
+  const checkedCount = useSelector(selectCheckedCount);
   const tableRenderer = tableData.map((data, index) => {
     const {
       privacy,
@@ -106,9 +112,19 @@ export default function TableComponent({
 
     return (
       <TableRow key={state_id} selected={selected}>
+        <StyledTableCell>
+          <Checkbox
+            onChange={(e) =>
+              dispatch(updateSelection({ selected: !selected, id, type }))
+            }
+            inputProps={{ "aria-label": "primary checkbox" }}
+            checked={selected}
+          />
+        </StyledTableCell>
         {nameAndFavouriteCell({
           data,
           name,
+          selected,
           id,
           favourite,
           type,
@@ -130,6 +146,20 @@ export default function TableComponent({
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
+              <StyledTableCell>
+                <Checkbox
+                  onChange={(e) => {
+                    if (checkedCount === 0) {
+                      console.log("select all");
+                      dispatch(selectAll());
+                    } else {
+                      dispatch(resetSelection());
+                    }
+                  }}
+                  // checked={checkedCount !== 0}
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              </StyledTableCell>
               <StyledTableCell>Name</StyledTableCell>
               {showOwner ? <StyledTableCell>Owner</StyledTableCell> : null}
               <StyledTableCell></StyledTableCell>
@@ -138,7 +168,9 @@ export default function TableComponent({
               <StyledTableCell>Size</StyledTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{loading ? loaderStructure : tableRenderer}</TableBody>
+          <ClickAwayListener onClickAway={() => dispatch(resetSelection())}>
+            <TableBody>{loading ? loaderStructure : tableRenderer}</TableBody>
+          </ClickAwayListener>
         </Table>
       </TableContainer>
     </div>
@@ -275,6 +307,7 @@ const nameAndFavouriteCell = ({
   type,
   favouriteOptions,
   props,
+  selected,
 }) => (dispatch) => {
   const updateFolder = (key) => {
     console.log("key clicked", key);

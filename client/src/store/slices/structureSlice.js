@@ -77,15 +77,37 @@ export const structureSlice = createSlice({
     resetChildren: (state, action) => {
       state.children = {};
     },
-    selectChild: (state, action) => {
-      const { child, selected } = action.payload;
-      const id = `${child.type}_${child.id}`;
-      state.children[id] = {
-        ...child,
+    updateSelection: (state, action) => {
+      const { id, type, selected } = action.payload;
+      const stateId = `${type}_${id}`;
+      state.children[stateId] = {
+        ...state.children[stateId],
         selected,
       };
       if (selected) state.selectCount += 1;
       else state.selectCount -= 1;
+    },
+    resetSelection: (state, action) => {
+      const childrenMap = state.children;
+      state.selectCount = 0;
+      Object.keys(childrenMap).forEach(function (key, index) {
+        state.children[key] = {
+          ...state.children[key],
+          selected: false,
+        };
+      });
+    },
+    selectAll: (state, action) => {
+      console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5");
+      const childrenMap = state.children;
+      state.selectCount = Object.keys(state.children).length;
+      Object.keys(childrenMap).forEach(function (key, index) {
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
+        state.children[key] = {
+          ...state.children[key],
+          selected: true,
+        };
+      });
     },
   },
 });
@@ -101,7 +123,9 @@ export const {
   updateAfterShare,
   updateChild,
   resetChildren,
-  selectChild,
+  updateSelection,
+  resetSelection,
+  selectAll,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -119,7 +143,7 @@ export const structureAsync = (uni_id) => (dispatch) => {
     .catch((err) => {
       console.log(err);
       dispatch(skeletonLoader());
-      dispatch(error(err.response.data.message));
+      // dispatch(error(err.response.data.message));
     });
 };
 export const recentStructureAsync = () => (dispatch) => {
@@ -283,7 +307,16 @@ export const selectFavourite = (state) => {
   const favouriteArray = childrenArray.filter((ele) => ele.favourite);
   return favouriteArray;
 };
+export const selectChecked = (state) => {
+  const childrenMap = state.structure.children;
+  const childrenArray = Object.keys(childrenMap).map(function (key, index) {
+    return childrenMap[key];
+  });
+  const checkedArray = childrenArray.filter((ele) => ele.selected);
+  return checkedArray;
+};
 
+export const selectCheckedCount = (state) => state.structure.selectCount;
 export const navStructure = (state) => state.structure.currentPath;
 
 export default structureSlice.reducer;
