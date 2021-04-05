@@ -15,6 +15,7 @@ export const structureSlice = createSlice({
         id: "ROOT",
       },
     ],
+    children: {},
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -64,6 +65,17 @@ export const structureSlice = createSlice({
 
       state.currentDisplayStructure[index].shared_among = users;
     },
+    updateChild: (state, action) => {
+      const child = action.payload;
+      const id = `${child.type}_${child.id}`;
+      state.children[id] = {
+        ...child,
+        selected: false,
+      };
+    },
+    resetChildren: (state, action) => {
+      state.children = {};
+    },
   },
 });
 
@@ -76,6 +88,8 @@ export const {
   updatePath,
   updatePrivacy,
   updateAfterShare,
+  updateChild,
+  resetChildren,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -87,12 +101,68 @@ export const structureAsync = (uni_id) => (dispatch) => {
     },
   })
     .then((res) => {
-      dispatch(updateStructure(res.data));
+      res.data.children.forEach((child) => dispatch(updateChild(child)));
       dispatch(skeletonLoader());
     })
     .catch((err) => {
       console.log(err);
       dispatch(skeletonLoader());
+      dispatch(error(err.response.data.message));
+    });
+};
+export const recentStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/recent/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const favStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/favourites/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const sharedStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/shared-with-me/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+
+export const trashStructureAsync = () => (dispatch) => {
+  dispatch(skeletonLoader());
+  API.get(`/api/trash/`)
+    .then((res) => {
+      res.data.forEach((child) => dispatch(updateChild(child)));
+      dispatch(skeletonLoader());
+      // dispatch(pathParse(res.data));
+    })
+    .catch((err) => {
+      dispatch(skeletonLoader());
+      console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -102,11 +172,7 @@ export const addFolderAsync = (data) => (dispatch) => {
   API.post("/api/folder/", data)
     .then((res) => {
       console.log(res);
-      let newData = {
-        resData: res.data,
-        type: "folder",
-      };
-      dispatch(pushToCurrentStack(newData));
+      dispatch(updateChild(res.data));
       dispatch(normalLoader());
       dispatch(success("Your Action was Successful"));
     })
@@ -118,19 +184,21 @@ export const addFolderAsync = (data) => (dispatch) => {
     });
 };
 
-export const addFavouriteAsync = (data) => (dispatch) => {
-  if (data.type === "file") {
-    API.patch("/api/file/", data.payload)
+export const toggleFavouriteAsync = (data) => (dispatch) => {
+  console.log({ data });
+  const { type, id, favourite } = data;
+  if (type === "file") {
+    API.patch("/api/file/", { id, favourite })
       .then((res) => {
-        dispatch(updateFav(data));
+        dispatch(updateChild(res.data));
       })
       .catch((err) => {
         console.log(err);
       });
   } else {
-    API.patch("/api/folder/", data.payload)
+    API.patch("/api/folder/", { id, favourite })
       .then((res) => {
-        dispatch(updateFav(data));
+        dispatch(updateChild(res.data));
       })
       .catch((err) => {
         console.log(err.response);
@@ -138,21 +206,22 @@ export const addFavouriteAsync = (data) => (dispatch) => {
       });
   }
 };
-
-export const privacyAsync = (data) => (dispatch) => {
-  if (data.type === "file") {
-    API.patch("/api/file/", data.payload)
+export const privacyAsync = 5;
+export const togglePrivacyAsync = (data) => (dispatch) => {
+  const { type, id, privacy } = data;
+  if (type === "file") {
+    API.patch("/api/file/", { id, privacy })
       .then((res) => {
-        dispatch(updatePrivacy(data));
+        dispatch(updateChild(res.data));
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
         console.log(err);
       });
   } else {
-    API.patch("/api/folder/", data.payload)
+    API.patch("/api/folder/", { id, privacy })
       .then((res) => {
-        dispatch(updatePrivacy(data));
+        dispatch(updateChild(res.data));
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
@@ -205,6 +274,23 @@ export const getFileAsync = (data) => (dispatch) => {
 
 export const selectStructure = (state) =>
   state.structure.currentDisplayStructure;
+
+export const selectChildren = (state) => {
+  const childrenMap = state.structure.children;
+  const childrenArray = Object.keys(childrenMap).map(function (key, index) {
+    return childrenMap[key];
+  });
+  return childrenArray;
+};
+export const selectFavourite = (state) => {
+  const children_map = state.structure.children;
+  const childrenArray = Object.keys(children_map).map(function (key, index) {
+    return children_map[key];
+  });
+  const favouriteArray = childrenArray.filter((ele) => ele.favourite);
+  return favouriteArray;
+};
+
 export const navStructure = (state) => state.structure.currentPath;
 
 export default structureSlice.reducer;

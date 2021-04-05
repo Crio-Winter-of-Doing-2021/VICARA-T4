@@ -10,13 +10,17 @@ class FileSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
 
     class Meta:
         model = File
 
         fields = ('created_at', 'last_modified', 'shared_among', 'name',
-                  'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size')
+                  'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size', 'type')
+
+    def get_type(self, obj):
+        return "file"
 
     def get_created_at(self, obj):
         return humanize.naturaltime(obj.created_at)

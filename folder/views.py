@@ -62,6 +62,7 @@ class Filesystem(APIView):
         data = FolderSerializer(new_folder).data
         return Response(data=data, status=status.HTTP_201_CREATED)
 
+    @check_request_attr(["id"])
     @check_valid_name
     @check_id_folder
     @check_id_not_root
@@ -132,7 +133,7 @@ class Filesystem(APIView):
             set_recursive_shared_among(folder, users)
             folder.present_in_shared_me_of.set(users)
 
-        data = FolderSerializer(folder).data
+        data = FolderSerializerWithoutChildren(folder).data
         return Response(data=data, status=status.HTTP_200_OK)
 
     @check_id_folder
