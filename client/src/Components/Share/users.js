@@ -10,9 +10,12 @@ import { TextField } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import {
+  setSearchResults,
+  setUsersWithAccess,
+  removeUsersWithAccess,
+  selectUsersWithAccess,
   selectSearchResults,
   searchUserAsync,
-  selectPatchUsers,
 } from "../../store/slices/shareSlice";
 import { searchLoading } from "../../store/slices/loaderSlice";
 
@@ -32,35 +35,23 @@ export default function Users() {
   const classes = useStyles();
 
   const dispatch = useDispatch();
-  let loading = useSelector(searchLoading);
+  const loading = useSelector(searchLoading);
+  const usersWithAccess = useSelector(selectUsersWithAccess);
+  const searchResults = useSelector(selectSearchResults);
 
-  let patchUsers = [];
-
-  patchUsers = useSelector(selectPatchUsers);
-
-  let results = [];
-  results = useSelector(selectSearchResults);
-
-  let userRenderer = results.map((user) => {
-    function check(ele) {
-      return user.username === ele.username;
-    }
-
-    let show = true;
-
-    let index = patchUsers.findIndex(check);
-
-    if (index === -1) {
-      show = false;
-    }
-
-    return <UserStyleUtil show={show} data={user} />;
+  const userRenderer = searchResults.map((user) => {
+    return (
+      <UserStyleUtil
+        show={usersWithAccess.hasOwnProperty(user.id)}
+        data={user}
+      />
+    );
   });
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
-  let handleChange = (event) => {
+  const handleChange = (event) => {
     setAnchorEl(event.currentTarget);
     if (event.target.value.length !== 0) {
       setOpen(true);

@@ -16,6 +16,7 @@ export const structureSlice = createSlice({
       },
     ],
     children: {},
+    selectCount: 0,
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -76,6 +77,16 @@ export const structureSlice = createSlice({
     resetChildren: (state, action) => {
       state.children = {};
     },
+    selectChild: (state, action) => {
+      const { child, selected } = action.payload;
+      const id = `${child.type}_${child.id}`;
+      state.children[id] = {
+        ...child,
+        selected,
+      };
+      if (selected) state.selectCount += 1;
+      else state.selectCount -= 1;
+    },
   },
 });
 
@@ -90,6 +101,7 @@ export const {
   updateAfterShare,
   updateChild,
   resetChildren,
+  selectChild,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -283,9 +295,9 @@ export const selectChildren = (state) => {
   return childrenArray;
 };
 export const selectFavourite = (state) => {
-  const children_map = state.structure.children;
-  const childrenArray = Object.keys(children_map).map(function (key, index) {
-    return children_map[key];
+  const childrenMap = state.structure.children;
+  const childrenArray = Object.keys(childrenMap).map(function (key, index) {
+    return childrenMap[key];
   });
   const favouriteArray = childrenArray.filter((ele) => ele.favourite);
   return favouriteArray;

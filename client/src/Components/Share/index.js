@@ -24,39 +24,30 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-  setPatchUsersDefault,
-  selectPatchUsers,
-  updatePatchUsers,
-  sharePatchAsync,
+  setUsersWithAccess,
+  removeUsersWithAccess,
+  selectUsersWithAccess,
 } from "../../store/slices/shareSlice";
 import {
-  privacyAsync,
+  togglePrivacyAsync,
+  updateChild,
 } from "../../store/slices/structureSlice";
-import {
-  privacyAsync as recentPrivacyAsync,
-} from "../../store/slices/recentSlice";
-import {
-  privacyAsync as favPrivacyAsync,
-} from "../../store/slices/favSlice";
-
-import {selectPage} from '../../store/slices/loaderSlice'
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
 
   const dispatch = useDispatch();
-
-  let page=useSelector(selectPage)
-
-  let patchUsers = [];
-  patchUsers = useSelector(selectPatchUsers);
-
+  const usersWithAccess = useSelector(selectUsersWithAccess);
   const handleDelete = (e, user) => {
     e.preventDefault();
-    dispatch(updatePatchUsers(user));
+    dispatch(removeUsersWithAccess(user.id));
   };
 
-  let patchUsersRenderer = patchUsers.map((user) => {
+  const usersWithAccessRenderer = Object.keys(usersWithAccess).map(function (
+    key,
+    index
+  ) {
+    const user = usersWithAccess[key];
     return (
       <Chip
         style={{ margin: "2px" }}
@@ -73,50 +64,24 @@ export default function FormDialog(props) {
       />
     );
   });
+  const idsOfUserWithAccess = Object.keys(usersWithAccess).map(function (
+    key,
+    index
+  ) {
+    return key;
+  });
 
   const handleClose = () => {
     setOpen(false);
   };
-
-  let privReverse = {
-    payload: {
-      id: props.data.id,
-      privacy: !props.data.privacy,
-    },
-    type: props.data.type,
-    key: props.index,
-  };
-
-  let k = 0;
-  let new_patch_data = [];
-
-  console.log(patchUsers);
-
-  for (k = 0; k < patchUsers.length; k++) {
-    new_patch_data.push(patchUsers[k].id);
-  }
-
-  let patchData = {
-    payload: {
-      id: props.data.id,
-      shared_among: new_patch_data,
-    },
-    type: props.data.type,
-    index: props.index,
-    updateData:{
-      index: props.index,
-      users: patchUsers,
-    },
-    page:page
-  };
-
+  const { shared_among, type, id, privacy } = props.data;
   return (
     <div>
       <MenuItem
         onClick={() => {
           props.menuClose();
           setOpen(true);
-          dispatch(setPatchUsersDefault(props.data.shared_among));
+          dispatch(setUsersWithAccess(shared_among));
         }}
       >
         <ListItemIcon>
@@ -146,7 +111,9 @@ export default function FormDialog(props) {
               size="small"
               onClick={() => {
                 handleClose();
-                dispatch(sharePatchAsync(patchData));
+                dispatch(
+                  updateChild({ shared_among: idsOfUserWithAccess, type, id })
+                );
               }}
               color="primary"
             >
@@ -166,7 +133,7 @@ export default function FormDialog(props) {
         <DialogContent style={{ marginTop: "5px" }}>
           <DialogContentText>
             Share link, or add users to share with-
-            <CopyLink type={props.data.type} id={props.data.id} />
+            <CopyLink type={type} id={id} />
             <Divider />
             <div
               style={{
@@ -176,7 +143,7 @@ export default function FormDialog(props) {
                 margin: "15px 0",
               }}
             >
-              {props.data.privacy ? (
+              {privacy ? (
                 <Typography>
                   Only people with access can view the file.
                 </Typography>
@@ -184,17 +151,15 @@ export default function FormDialog(props) {
                 <Typography>Anyone with the link can view the file.</Typography>
               )}
               <Button
-                onClick={() =>{
-                  if(page==="Home"){
-                    dispatch(privacyAsync(privReverse))
-                  }
-                  if(page==="Favourites"){
-                    dispatch(favPrivacyAsync(privReverse))
-                  }
-                  if(page==="Recent"){
-                    dispatch(recentPrivacyAsync(privReverse))
-                  }
-                }}
+                onClick={() =>
+                  dispatch(
+                    togglePrivacyAsync({
+                      id,
+                      type,
+                      privacy: !privacy,
+                    })
+                  )
+                }
                 startIcon={
                   props.data.privacy ? (
                     <VisibilityIcon />
@@ -206,17 +171,17 @@ export default function FormDialog(props) {
                 size="small"
                 variant="outlined"
               >
-                {props.data.privacy ? "Make Public" : "Make Private"}
+                {privacy ? "Make Public" : "Make Private"}
               </Button>
             </div>
             <Divider />
           </DialogContentText>
-          {patchUsersRenderer.length !== 0 ? (
+          {usersWithAccessRenderer.length !== 0 ? (
             <div>
               <div>
                 <Typography>Users having access-</Typography>
               </div>
-              <div>{patchUsersRenderer}</div>
+              <div>{usersWithAccessRenderer}</div>
             </div>
           ) : null}
 
