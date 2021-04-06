@@ -36,17 +36,21 @@ const useStyles = makeStyles((theme) => ({
         // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
         transition: theme.transitions.create('width'),
-        width: '20ch',
-        [theme.breakpoints.up('md')]: {
-          width: '1250px',
+        width: '1250px',
+        [theme.breakpoints.down('lg')]: {
+          width: '50ch',
         },
+        [theme.breakpoints.down('md')]: {
+            width: '25ch',
+          }
       },
 }))
 
 export default function Search() {
     const classes = useStyles();
     return (
-        <div className={classes.search}>
+        <div>
+            <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -59,5 +63,6 @@ export default function Search() {
               inputProps={{ 'aria-label': 'search' }}
             />
           </div>
+        </div>
     )
 }
