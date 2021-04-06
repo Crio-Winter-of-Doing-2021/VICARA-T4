@@ -152,7 +152,7 @@ export default function Search(props) {
                             ) : (
                             <div className={classes.demo}>
                                 <List>
-                                    <SearchResult result={searchResultData} />
+                                    <SearchResult viewPopper={setOpen} result={searchResultData} />
                                 </List>
                             </div>
                             )}

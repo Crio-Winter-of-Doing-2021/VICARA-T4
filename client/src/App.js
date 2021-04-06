@@ -8,6 +8,7 @@ import PrivateRoute from "./Utilities/protectedRoute";
 import AuthorizationCheck from "./Utilities/authorizationCheck";
 import Message from "./Components/RequestLogs/index";
 
+
 function App() {
   return (
     <div style={{ padding: "0 !important" }} className="App">
@@ -17,7 +18,7 @@ function App() {
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={SignUp} />
         <PrivateRoute exact path="/share/:type/:key" component={AuthorizationCheck} />
-        <Dashboard />
+        <Dashboard/>
         {/* <Route path="/" component={SignUp}>
           <Dashboard />
         </Route> */}
