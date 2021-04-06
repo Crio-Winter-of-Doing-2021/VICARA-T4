@@ -23,3 +23,19 @@ def get_client_server(request):
         data["client"] = PROD_CLIENT
         data["server"] = PROD_SERVER
     return data
+
+
+def get_path(start_node):
+    path = []
+    while(start_node.parent != None):
+        path.append({
+            "name": start_node.name,
+            "id": start_node.id
+        })
+        start_node = start_node.parent
+    path.append({
+        "name": start_node.name,
+        "id": start_node.id
+    })
+    path.reverse()
+    return path

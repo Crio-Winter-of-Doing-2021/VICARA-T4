@@ -1,5 +1,6 @@
 from .views import LoginView, Logout, Recent, Register, ListOfUsers,\
-    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder, RecoverFile, ProfilePicture, SearchUsers, GoogleLogin, SearchFileFolder
+    ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder,\
+    RecoverFile, ProfilePicture, SearchUsers, GoogleLogin, SearchFileFolder, Move
 from django.urls import path
 
 urlpatterns = [
@@ -20,4 +21,6 @@ urlpatterns = [
     path('recover-file/',  RecoverFile.as_view(), name="recover-file"),
     path('search-file-folder/',  SearchFileFolder.as_view(),
          name="search-file-folder"),
+    path('move/',  Move.as_view(),
+         name="move"),
 ]

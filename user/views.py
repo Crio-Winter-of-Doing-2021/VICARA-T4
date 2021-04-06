@@ -23,9 +23,9 @@ from .decorators import *
 from file.decorators import *
 from folder.serializers import FolderSerializer, FolderSerializerWithoutChildren
 from file.serializers import FileSerializer
-from folder.decorators import allow_id_root_helper, check_id_folder, check_id_not_root, check_is_owner_folder, check_request_attr, update_last_modified_folder
+from folder.decorators import allow_id_root_helper, check_id_folder, check_id_not_root, check_id_parent_folder, check_is_owner_folder, check_is_owner_parent_folder, check_parent_folder_not_trashed, check_request_attr, update_last_modified_folder
 from folder.utils import set_recursive_trash
-from .utils import is_valid_email
+from .utils import is_valid_email, get_path
 
 RECOVER = ["id", "TYPE"]
 
@@ -329,19 +329,45 @@ class Path(APIView):
         if(start_node.owner != request.user):
             return Response(data={"message": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        path = []
-        while(start_node.parent != None):
-            path.append({
-                "name": start_node.name,
-                "id": start_node.id
-            })
-            start_node = start_node.parent
-        path.append({
-            "name": start_node.name,
-            "id": start_node.id
-        })
-        path.reverse()
-        return Response(data=path)
+        path = get_path(start_node)
+        return Response(data=path, status=status.HTTP_200_OK)
+
+
+class Move(APIView):
+
+    def get_child_object(self, child):
+        if(type == "folder"):
+            child_obj = Folder.objects.get(id=child["id"])
+        else:
+            child_obj = File.objects.get(id=child["id"])
+        return child_obj
+
+    def get_parent_object(self, child):
+        child_obj = self.get_child_object(child)
+        return child_obj.parent
+
+    @check_request_attr(["PARENT", "CHILDREN"])
+    @check_id_parent_folder
+    @check_is_owner_parent_folder
+    @check_parent_folder_not_trashed
+    @validate_for_move
+    def post(self, request, * args, **kwargs):
+        new_parent = request.data.get("PARENT")
+        new_parent = Folder.objects.get(id=new_parent)
+        children = request.data.get("CHILDREN")
+        prev_parent = self.get_parent_object(children[0])
+
+        for child in children:
+            child_obj = self.get_child_object(child)
+            child_obj.parent = new_parent
+            child_obj.save()
+
+        data = {
+            "new_parent": FolderSerializer(new_parent).data,
+            "prev_parent": FolderSerializer(prev_parent).data,
+        }
+
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class RecoverFolder(APIView):
