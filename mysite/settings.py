@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'folder.apps.FolderConfig',
 ]
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

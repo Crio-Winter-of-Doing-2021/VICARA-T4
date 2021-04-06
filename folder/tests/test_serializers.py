@@ -9,7 +9,7 @@ class FolderSerializerTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        print("setUpTestData: Run once to set up non-modified data for all class methods.")
+
         user = User.objects.create(
             username='username',
             email='email',
@@ -33,7 +33,7 @@ class FolderSerializerTest(TestCase):
         pass
 
     def setUp(self):
-        print("setUp: Run once for every test method to setup clean data.")
+
         pass
 
     def test_get_created_at(self):

@@ -1,25 +1,30 @@
-from file.tasks import remove_file
-import humanize
-# django imports
-from django.http import StreamingHttpResponse
-import requests
 import os
+
+# django imports
+import humanize
+import requests
 from django.contrib.auth.models import AnonymousUser
+from django.core.files import File as DjangoCoreFile
+from django.http import StreamingHttpResponse
+from folder.decorators import (allow_parent_root, check_id_parent_folder,
+                               check_is_owner_parent_folder,
+                               check_parent_folder_not_trashed,
+                               check_request_attr, check_valid_name)
+from rest_framework import status
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from django.core.files import File as DjangoCoreFile
+
 # local imports
-from .decorators import *
-from folder.decorators import allow_parent_root, check_is_owner_parent_folder, check_id_parent_folder, check_parent_folder_not_trashed, check_request_attr, check_valid_name
-from .serializers import FileSerializer
-from user.serializers import ProfileSerializer
-from .utils import get_presigned_url, get_s3_filename, rename_s3, create_file
+from user.serializers import ProfileSerializer, UserSerializer
 from user.tasks import send_mail, sync_send_mail
 from user.utils import get_client_server
-from user.serializers import UserSerializer
+from file.tasks import remove_file
+from .decorators import *
+from .serializers import FileSerializer
+from .utils import create_file, get_presigned_url, get_s3_filename, rename_s3
+
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
@@ -164,7 +169,6 @@ class UploadByDriveUrl(APIView):
 
     @check_request_attr(["PARENT", "DRIVE_URL", "NAME"])
     @check_valid_name
-    @ check_request_attr(REQUIRED_PARAMS=REQUIRED_DRIVE_POST_PARAMS)
     @ allow_parent_root
     @ check_id_parent_folder
     # @check_valid_name_request_body
@@ -197,7 +201,7 @@ class UploadByDriveUrl(APIView):
         profile.save()
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
-        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
+        return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
 
 
 class DownloadFile(APIView):
