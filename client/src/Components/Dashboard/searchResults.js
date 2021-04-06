@@ -6,19 +6,18 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import FolderIcon from '@material-ui/icons/Folder';
 import {typeTest} from '../../Utilities/fileType'
-// import history from '../../Utilities/history';
+import {withRouter} from 'react-router-dom'
 
-export default function SearchResults({result,...props}) {
-
-    const dispatch=useDispatch()
-
+function SearchResults({result,...props}) {
     let resultRenderer=result.map(res=>{
         return (
             <ListItem style={{cursor:"pointer"}} onClick={()=>{
               if(res.type==='folder'){
-                // history.push(`/drive/${res.id}`)
+                props.history.push(`/drive/${res.id}`)
+                props.viewPopper(false)
               }else{
-                
+                props.history.push(`/drive/${res.parent}`)
+                props.viewPopper(false)
               }
             }} >
                   <ListItemAvatar>
@@ -40,3 +39,5 @@ export default function SearchResults({result,...props}) {
         </>
     )
 }
+
+export default withRouter(SearchResults)
