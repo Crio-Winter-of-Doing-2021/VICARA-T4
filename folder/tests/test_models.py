@@ -38,11 +38,6 @@ class FolderTest(TestCase):
         root_folder = Folder.objects.get(id=1)
         self.assertTrue(root_folder.get_last_modified() == "now")
 
-    def test_print(self):
-        child_folder = Folder.objects.get(id=2)
-        child_print = "test folder| id = 2  | parent = root folder| id = 1  | parent = None"
-        self.assertTrue(str(child_folder) == child_print)
-
     def test_get_or_none(self):
         result_none = Folder.custom_objects.get_or_none(id=40)
         result_not_none = Folder.custom_objects.get_or_none(id=1)

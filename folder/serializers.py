@@ -17,6 +17,7 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     shared_among = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Folder
@@ -45,8 +46,7 @@ class FolderSerializer(FolderSerializerWithoutChildren):
         # folders
         folders = obj.children_folder.filter(trash=False)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
-        for folder in folders:
-            folder["type"] = "folder"
+
         # files
         files = obj.children_file.filter(trash=False)
         files = FileSerializer(files, many=True).data

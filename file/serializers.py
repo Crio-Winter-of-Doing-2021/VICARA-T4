@@ -22,6 +22,9 @@ class FileSerializer(serializers.ModelSerializer):
     def get_type(self, obj):
         return "file"
 
+    def get_type(self, obj):
+        return "file"
+
     def get_created_at(self, obj):
         return humanize.naturaltime(obj.created_at)
 

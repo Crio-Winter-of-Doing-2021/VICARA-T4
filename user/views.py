@@ -216,16 +216,14 @@ class SearchFileFolder(APIView):
     @check_request_attr(["query"])
     def get(self, request):
         query = request.GET["query"].lower()
-        qs = User.objects.all()
-        files = File.objects.filter(owner=request.user, name__contains=query)
+        files = File.objects.filter(
+            owner=request.user, trash=False, name__icontains=query)
         files = FileSerializer(files, many=True).data
-        for file in files:
-            file["type"] = "file"
+
         folders = Folder.objects.filter(
-            owner=request.user, name__contains=query)
+            owner=request.user, trash=False, name__icontains=query)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
-        for folder in folders:
-            folder["type"] = "folder"
+
         result_list = list(chain(folders, files))
 
         return Response(data=result_list, status=status.HTTP_200_OK)
@@ -239,14 +237,11 @@ class Favourites(APIView):
         folders = Folder.objects.filter(
             favourite=True, owner=request.user, trash=False)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
-        for folder in folders:
-            folder["type"] = "folder"
+
         # files
         files = File.objects.filter(
             favourite=True, owner=request.user, trash=False)
         files = FileSerializer(files, many=True).data
-        for file in files:
-            file["type"] = "file"
 
         # combined
         result_list = list(chain(folders, files))
@@ -261,13 +256,10 @@ class Recent(APIView):
         folders = Folder.objects.filter(
             owner=request.user, trash=False).exclude(id=request.user.profile.root.id)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
-        for folder in folders:
-            folder["type"] = "folder"
+
         # files
         files = File.objects.filter(owner=request.user, trash=False)
         files = FileSerializer(files, many=True).data
-        for file in files:
-            file["type"] = "file"
 
         # combined
         result_list = list(chain(folders, files))
@@ -292,15 +284,10 @@ class Trash(APIView):
         folders = filter(self.parent_trashed, folders)
         folders = FolderSerializerWithoutChildren(folders, many=True).data
 
-        for folder in folders:
-            folder["type"] = "folder"
         # files
         files = File.objects.filter(owner=request.user, trash=True)
         files = filter(self.parent_trashed, files)
         files = FileSerializer(files, many=True).data
-
-        for file in files:
-            file["type"] = "file"
 
         # combined
         result_list = list(chain(folders, files))
@@ -313,13 +300,10 @@ class SharedWithMe(APIView):
         # folders
         folders = request.user.shared_with_me_folders.all()
         folders = FolderSerializerWithoutChildren(folders, many=True).data
-        for folder in folders:
-            folder["type"] = "folder"
+
         # files
         files = request.user.shared_with_me_files.all()
         files = FileSerializer(files, many=True).data
-        for file in files:
-            file["type"] = "file"
 
         # combined
         result_list = list(chain(folders, files))
