@@ -8,7 +8,8 @@ export let frontURL = "http://localhost:3000";
 // export let frontURL = "https://vicara.netlify.app";
 
 // Function that will be called to refresh authorization
-const refreshAuthLogic = (failedRequest) =>
+const refreshAuthLogic = (failedRequest) => {
+  console.log("called failed");
   axios
     .post(`${baseURL}/auth/token/`, {
       refresh_token: localStorage.getItem("refresh_token"),
@@ -21,17 +22,20 @@ const refreshAuthLogic = (failedRequest) =>
       const { access_token, refresh_token } = res.data;
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
+      console.log("retyyyyyyyyy", res.data);
       API.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       failedRequest.response.config.headers["Authorization"] =
         "Bearer " + access_token;
       return Promise.resolve();
     });
+};
 
 // Instantiate the interceptor (you can chain it as it returns the axios instance)
-createAuthRefreshInterceptor(axios, refreshAuthLogic);
 const API = axios.create({
   baseURL,
 });
+createAuthRefreshInterceptor(API, refreshAuthLogic);
+
 export const googleLogin = (props, response) => (dispatch) => {
   dispatch(normalLoader());
   axios
@@ -48,6 +52,7 @@ export const googleLogin = (props, response) => (dispatch) => {
       console.log("new res", res.data);
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("id", root_id);
       API.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       props.history.push(`/drive/${root_id}`);
     })

@@ -76,11 +76,12 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys());
   };
 
-  let id = window.localStorage.getItem("id");
-
+  // let id = window.localStorage.getItem("id");
+  const [id, setId] = React.useState(null);
   useEffect(() => {
     asyncLocalStorage.getItem("id").then((res) => {
       dispatch(getProfileAsync(res));
+      setId(res);
     });
     // dispatch(getProfileAsync(id));
   }, [dispatch, id]);

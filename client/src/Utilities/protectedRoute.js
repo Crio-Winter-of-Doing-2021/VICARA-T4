@@ -8,7 +8,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     let token = window.localStorage.getItem("access_token");
     if (token === null) setIsAuthenticated(false);
     else {
-      API.defaults.headers.common["Authorization"] = `Token ${token}`;
+      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setIsAuthenticated(true);
     }
     // eslint-disable-next-line

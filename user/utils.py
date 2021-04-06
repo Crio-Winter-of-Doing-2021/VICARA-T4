@@ -48,9 +48,9 @@ def add_profile_picture(backend, user, response, *args, **kwargs):
     if backend.name == 'google-oauth2':
         if(kwargs['is_new']):
             user.profile.profile_picture_url = response['picture']
-        user.last_login = datetime.now()
-        user.save()
-        root_folder = Folder(name="ROOT", owner=user)
-        root_folder.save()
-        user.profile.root = root_folder
-        user.save()
+            user.last_login = datetime.now()
+            user.save()
+            root_folder = Folder(name="ROOT", owner=user)
+            root_folder.save()
+            user.profile.root = root_folder
+            user.save()
