@@ -17,21 +17,22 @@ import { frontURL } from "../../axios";
 import NormalLoader from "../Loaders/normalBackdrop";
 // import { Link as RouteLink } from "react-router-dom";
 import GoogleLogin from "react-google-login";
-import { googleLogin } from "../../store/slices/authSlice";
-import Developers from './developers'
+// import { googleLogin } from "../../store/slices/authSlice";
+import { googleLogin } from "../../axios";
+import Developers from "./developers";
 
 export function Copyright() {
   return (
     <div>
       <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href={frontURL}>
-        Vicara-T4
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-      <Developers/>
+        {"Copyright © "}
+        <Link color="inherit" href={frontURL}>
+          Vicara-T4
+        </Link>{" "}
+        {new Date().getFullYear()}
+        {"."}
+      </Typography>
+      <Developers />
     </div>
   );
 }
@@ -61,7 +62,7 @@ export default function SignIn(props) {
 
   const dispatch = useDispatch();
 
-  window.localStorage.removeItem("session");
+  window.localStorage.removeItem("access_token");
   window.localStorage.removeItem("id");
 
   // let [state, setState] = useState({
@@ -80,10 +81,10 @@ export default function SignIn(props) {
   //   e.preventDefault();
   //   dispatch(loginAsync(data, props));
   // };
-  const googleResponse = ({ profileObj }) => {
-    console.log(profileObj);
-    dispatch(googleLogin(profileObj, props));
-  };
+  // const googleResponse = ({ profileObj }) => {
+  //   console.log(profileObj);
+  //   dispatch(googleLogin(profileObj, props));
+  // };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -153,8 +154,8 @@ export default function SignIn(props) {
           <GoogleLogin
             clientId="575084088742-2eidkevqutnod9lord9vf2sri50ko7ct.apps.googleusercontent.com"
             buttonText="LOGIN WITH GOOGLE"
-            onSuccess={googleResponse}
-            onFailure={googleResponse}
+            onSuccess={(response) => googleLogin(props, response)(dispatch)}
+            // onFailure={googleResponse}
           />
         </div>
       </div>

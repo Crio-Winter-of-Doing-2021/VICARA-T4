@@ -25,10 +25,10 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import Profile from "../Profile/profile";
 import { Copyright } from "../Forms/login";
 import { getProfileAsync } from "../../store/slices/authSlice";
-import {asyncLocalStorage} from '../../Utilities/localStoreAsync'
-import {setCurrentPage} from '../../store/slices/loaderSlice'
+import { asyncLocalStorage } from "../../Utilities/localStoreAsync";
+import { setCurrentPage } from "../../store/slices/loaderSlice";
 
-import Search from './search'
+import Search from "./search";
 
 const drawerWidth = 280;
 
@@ -76,17 +76,17 @@ export default function ClippedDrawer(props) {
     dispatch(emptykeys());
   };
 
-  let id=window.localStorage.getItem('id')
+  let id = window.localStorage.getItem("id");
 
   useEffect(() => {
-    asyncLocalStorage.getItem('id').then(res=>{
+    asyncLocalStorage.getItem("id").then((res) => {
       dispatch(getProfileAsync(res));
-    })
+    });
     // dispatch(getProfileAsync(id));
-  }, [dispatch,id]);
+  }, [dispatch, id]);
 
   const handleLogout = () => {
-    window.localStorage.removeItem("session");
+    window.localStorage.removeItem("access_token");
     window.localStorage.removeItem("id");
   };
 
@@ -101,14 +101,14 @@ export default function ClippedDrawer(props) {
                 display: "flex",
                 width: "100%",
                 justifyContent: "space-between",
-                alignItems:"center",
+                alignItems: "center",
                 margin: "0 20px",
               }}
             >
               <Typography style={{ fontWeight: "bold" }} variant="h6">
                 Vicara-T4
               </Typography>
-              <Search/>
+              <Search />
               <Link
                 style={{ textDecoration: "none", color: "white" }}
                 to="/login"
@@ -141,8 +141,14 @@ export default function ClippedDrawer(props) {
                 {sideNav.map((data, index) => (
                   <Link
                     style={{ textDecoration: "none" }}
-                    onClick={()=>dispatch(setCurrentPage(data.name))}
-                    to={data.name === "Home" ? `/drive/${id}` : data.name==="Shared with Me"?`/shared-with-me`:`/${data.name}`}
+                    onClick={() => dispatch(setCurrentPage(data.name))}
+                    to={
+                      data.name === "Home"
+                        ? `/drive/${id}`
+                        : data.name === "Shared with Me"
+                        ? `/shared-with-me`
+                        : `/${data.name}`
+                    }
                   >
                     <ListItem
                       button

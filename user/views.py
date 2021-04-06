@@ -1,33 +1,66 @@
 
-from django.db.models import CharField, Value
-from django.db.models.functions import Concat
+import json
 import secrets
-from django.db.models import Q
-from cloudinary.uploader import upload
-from rest_framework.parsers import MultiPartParser, JSONParser
 from itertools import chain
+
+from cloudinary.uploader import upload
 # django imports
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, update_last_login
+from django.db.models import CharField, Q, Value
+from django.db.models.functions import Concat
 from django.shortcuts import render
-from rest_framework.authtoken.views import ObtainAuthToken
+from drf_social_oauth2.views import ConvertTokenView
+from file.decorators import *
+from file.serializers import FileSerializer
+from folder.decorators import (allow_id_root_helper, check_id_folder,
+                               check_id_not_root, check_id_parent_folder,
+                               check_is_owner_folder,
+                               check_is_owner_parent_folder,
+                               check_parent_folder_not_trashed,
+                               check_request_attr, update_last_modified_folder)
+from folder.models import Folder
+from folder.serializers import (FolderSerializer,
+                                FolderSerializerWithoutChildren)
+from folder.utils import set_recursive_trash
+from oauth2_provider.models import AccessToken
+from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-from django.contrib.auth.models import update_last_login
+
+from .decorators import *
 # local imports
 from .models import Profile
-from folder.models import Folder
 from .serializers import ProfileSerializer, UserSerializer
-from .decorators import *
-from file.decorators import *
-from folder.serializers import FolderSerializer, FolderSerializerWithoutChildren
-from file.serializers import FileSerializer
-from folder.decorators import allow_id_root_helper, check_id_folder, check_id_not_root, check_id_parent_folder, check_is_owner_folder, check_is_owner_parent_folder, check_parent_folder_not_trashed, check_request_attr, update_last_modified_folder
-from folder.utils import set_recursive_trash
-from .utils import is_valid_email, get_path
+from .utils import get_path, is_valid_email
 
 RECOVER = ["id", "TYPE"]
+
+
+class CustomConvertTokenView(ConvertTokenView):
+    def post(self, request, *args, **kwargs):
+        # Use the rest framework `.data` to fake the post body of the django request.
+        mutable_data = request.data.copy()
+        request._request.POST = request._request.POST.copy()
+        for key, value in mutable_data.items():
+            request._request.POST[key] = value
+
+        url, headers, body, status = self.create_token_response(
+            request._request)
+
+        regular_response = json.loads(body)
+        access_token = regular_response["access_token"]
+        user = AccessToken.objects.get(token=access_token).user
+        profile_data = ProfileSerializer(user.profile).data
+        print(f"{profile_data}")
+        response = Response(
+            data={**regular_response, **profile_data}, status=status)
+
+        for k, v in headers.items():
+            response[k] = v
+        return response
 
 
 class LoginView(ObtainAuthToken):

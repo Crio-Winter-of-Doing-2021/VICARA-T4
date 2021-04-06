@@ -5,13 +5,13 @@ import API from "../../axios";
 
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
-import { pushToCurrentStack } from "../../store/slices/structureSlice";
+import { updateChild } from "../../store/slices/structureSlice";
 import { updateStorageData } from "../../store/slices/authSlice";
 import FolderIcon from "@material-ui/icons/Folder";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
-import {error,success} from '../../store/slices/logSlice'
+import { error, success } from "../../store/slices/logSlice";
 
 function App({ modalClose, parent }) {
   const dispatch = useDispatch();
@@ -57,22 +57,18 @@ function App({ modalClose, parent }) {
       })
         .then(function (res) {
           //handle success
-          console.log(res);
-          let newData = {
-            resData: res.data,
-            type: "folder",
-          };
-          dispatch(pushToCurrentStack(newData));
+
+          dispatch(updateChild(res.data));
           modalClose();
           const { readable, ratio } = res.data;
           dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
         .catch(function (err) {
           //handle error
-          console.log(err.response)
-          dispatch(error(err.response.data.message))
+          console.log(err.response);
+          dispatch(error(err.response.data.message));
           dispatch(fileUploadLoader());
           modalClose();
         });
@@ -84,69 +80,69 @@ function App({ modalClose, parent }) {
 
   return (
     <>
-       <UploadLoader progress={progress} show={loading} />
+      <UploadLoader progress={progress} show={loading} />
       <div
-      style={{
-        height: "150px",
-        position: "relative",
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-      {...getRootProps()}
-    >
-      <input
-        {...getInputProps()}
-        // comment the 2 below for multi-file
-        directory=""
-        webkitdirectory=""
-        type="file"
-      />
-      {isDragActive ? (
-        <p>Drop the folder here ...</p>
-      ) : (
-        <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "gray",
-            }}
-          >
-            <FolderIcon />
-            <Typography style={{ marginLeft: "10px" }}>
-              Drop folder here
+        style={{
+          height: "150px",
+          position: "relative",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        {...getRootProps()}
+      >
+        <input
+          {...getInputProps()}
+          // comment the 2 below for multi-file
+          directory=""
+          webkitdirectory=""
+          type="file"
+        />
+        {isDragActive ? (
+          <p>Drop the folder here ...</p>
+        ) : (
+          <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "gray",
+              }}
+            >
+              <FolderIcon />
+              <Typography style={{ marginLeft: "10px" }}>
+                Drop folder here
+              </Typography>
+            </div>
+            <Typography
+              style={{
+                margin: "10px",
+                textAlign: "center",
+                color: "grey",
+                fontStyle: "italic",
+                fontSize: "12px",
+              }}
+            >
+              OR
             </Typography>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "gray",
+              }}
+            >
+              <DevicesIcon />
+              <Typography style={{ marginLeft: "10px" }}>
+                Click to select from Device
+              </Typography>
+            </div>
           </div>
-          <Typography
-            style={{
-              margin: "10px",
-              textAlign: "center",
-              color: "grey",
-              fontStyle: "italic",
-              fontSize: "12px",
-            }}
-          >
-            OR
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "gray",
-            }}
-          >
-            <DevicesIcon />
-            <Typography style={{ marginLeft: "10px" }}>
-              Click to select from Device
-            </Typography>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </>
   );
 }

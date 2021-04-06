@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from user.views import CustomConvertTokenView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('user.urls')),
     path('api/folder/', include('folder.urls')),
     path('api/file/', include('file.urls')),
+    path('auth/convert-token', CustomConvertTokenView.as_view(), name='token'),
+    path('auth/', include('drf_social_oauth2.urls', namespace='drf')),
 ]

@@ -1,6 +1,8 @@
 from django.core.mail import EmailMessage
 import re
 from mysite.settings import LOCAL_SERVER, PROD_SERVER, LOCAL_CLIENT, PROD_CLIENT
+from datetime import datetime
+from folder.models import Folder
 email_regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 
 
@@ -39,3 +41,16 @@ def get_path(start_node):
     })
     path.reverse()
     return path
+
+
+def add_profile_picture(backend, user, response, *args, **kwargs):
+
+    if backend.name == 'google-oauth2':
+        if(kwargs['is_new']):
+            user.profile.profile_picture_url = response['picture']
+        user.last_login = datetime.now()
+        user.save()
+        root_folder = Folder(name="ROOT", owner=user)
+        root_folder.save()
+        user.profile.root = root_folder
+        user.save()

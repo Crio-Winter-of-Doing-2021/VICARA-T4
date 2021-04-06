@@ -3,7 +3,7 @@ import { baseURL } from "../../axios";
 import axios from "axios";
 import API from "../../axios";
 import { normalLoader, profileLoader } from "./loaderSlice";
-import {error} from './logSlice'
+import { error } from "./logSlice";
 
 export const authSlice = createSlice({
   name: "auth",
@@ -23,13 +23,18 @@ export const authSlice = createSlice({
       state.userData.storage_data.readable = action.payload.readable;
       state.userData.storage_data.ratio = action.payload.ratio;
     },
-    setProfilePicture:(state,action)=>{
-      state.userData.profile_picture_url=action.payload
-    }
+    setProfilePicture: (state, action) => {
+      state.userData.profile_picture_url = action.payload;
+    },
   },
 });
 
-export const { login, setUser, updateStorageData,setProfilePicture } = authSlice.actions;
+export const {
+  login,
+  setUser,
+  updateStorageData,
+  setProfilePicture,
+} = authSlice.actions;
 
 export const signupAsync = (data) => (dispatch) => {};
 
@@ -43,14 +48,14 @@ export const loginAsync = (data, props) => (dispatch) => {
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
       props.history.push(`/drive/${res.data.root_id}`);
       dispatch(setUser(res.data.username));
-      window.localStorage.setItem("session", token);
+      window.localStorage.setItem("access_token", token);
       window.localStorage.setItem("id", res.data.root_id);
       dispatch(normalLoader());
     })
     .catch((err) => {
       dispatch(normalLoader());
-      console.log(err.response)
-      dispatch(error(err.response.data.message))
+      console.log(err.response);
+      dispatch(error(err.response.data.message));
     });
 };
 
@@ -63,8 +68,8 @@ export const getProfileAsync = (id) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(profileLoader());
-      console.log(err.response)
-      dispatch(error(err.response.data.message))
+      console.log(err.response);
+      dispatch(error(err.response.data.message));
     });
 };
 
@@ -77,17 +82,17 @@ export const googleLogin = (data, props) => (dispatch) => {
       let token = res.data.token;
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
       // dispatch(setUser(res.data.username));
-      window.localStorage.setItem("session", token);
+      window.localStorage.setItem("access_token", token);
       window.localStorage.setItem("id", res.data.root_id);
       props.history.push(`/drive/${res.data.root_id}`);
-      
-    }).then(res=>{
+    })
+    .then((res) => {
       dispatch(normalLoader());
     })
     .catch((err) => {
       dispatch(normalLoader());
-      console.log(err.response)
-      dispatch(error(err.response.data.message))
+      console.log(err.response);
+      dispatch(error(err.response.data.message));
     });
 };
 

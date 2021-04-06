@@ -19,3 +19,4 @@ celery==5.0.5
 django-celery-results
 redis
 coverage
+drf_social_oauth2
