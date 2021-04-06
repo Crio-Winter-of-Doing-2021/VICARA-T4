@@ -28,6 +28,8 @@ import { getProfileAsync } from "../../store/slices/authSlice";
 import {asyncLocalStorage} from '../../Utilities/localStoreAsync'
 import {setCurrentPage} from '../../store/slices/loaderSlice'
 
+import Search from './search'
+
 const drawerWidth = 280;
 
 const theme = createMuiTheme({
@@ -99,12 +101,14 @@ export default function ClippedDrawer(props) {
                 display: "flex",
                 width: "100%",
                 justifyContent: "space-between",
+                alignItems:"center",
                 margin: "0 20px",
               }}
             >
               <Typography style={{ fontWeight: "bold" }} variant="h6">
                 Vicara-T4
               </Typography>
+              <Search/>
               <Link
                 style={{ textDecoration: "none", color: "white" }}
                 to="/login"
