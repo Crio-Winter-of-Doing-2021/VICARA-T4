@@ -80,8 +80,8 @@ export default function Users() {
           <Fade {...TransitionProps} timeout={350}>
             <Paper
               style={{
-                maxHeight: "300px",
-                overflow: "scroll",
+                maxHeight: "250px",
+                overflow: "auto",
                 borderRadius: "20px",
               }}
             >

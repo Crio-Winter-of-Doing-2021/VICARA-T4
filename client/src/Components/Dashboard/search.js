@@ -116,7 +116,9 @@ export default function Search(props) {
                 <Fade {...TransitionProps} timeout={350}>
                     <Paper
                     style={{
-                        marginTop:"30px"
+                        marginTop:"40px",
+                        maxHeight:"100vh",
+                        overflow:"auto"
                     }}
                     >
                     <div className={classes.demo}>
