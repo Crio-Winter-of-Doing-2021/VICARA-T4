@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import { normalLoader, skeletonLoader } from "./loaderSlice";
+import { normalLoader, skeletonLoader,navSearchLoader } from "./loaderSlice";
 
 // import {updateSharePrivacy} from './shareSlice'
 import { success, error } from "./logSlice";
@@ -17,6 +17,7 @@ export const structureSlice = createSlice({
     ],
     children: {},
     selectCount: 0,
+    navSearchResults:[]
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -65,6 +66,9 @@ export const structureSlice = createSlice({
       let users = action.payload.users;
 
       state.currentDisplayStructure[index].shared_among = users;
+    },
+    updateNavSearchResults:(state,action)=>{
+      state.navSearchResults=action.payload
     },
     updateChild: (state, action) => {
       const child = action.payload;
@@ -126,6 +130,7 @@ export const {
   updateSelection,
   resetSelection,
   selectAll,
+  updateNavSearchResults
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -289,6 +294,22 @@ export const getFileAsync = (data) => (dispatch) => {
     });
 };
 
+export const searchFileFolderAsync=(value)=>(dispatch)=>{
+  dispatch(navSearchLoader())
+    API.get('/api/search-file-folder/',{
+      params:{
+        query:value
+      }
+    }).then(res=>{
+      dispatch(updateNavSearchResults(res.data))
+      dispatch(navSearchLoader())
+    }).catch(err=>{
+      console.log(err);
+      dispatch(error(err.response.data.message));
+      dispatch(navSearchLoader())
+    })
+}
+
 export const selectStructure = (state) =>
   state.structure.currentDisplayStructure;
 
@@ -318,5 +339,6 @@ export const selectChecked = (state) => {
 
 export const selectCheckedCount = (state) => state.structure.selectCount;
 export const navStructure = (state) => state.structure.currentPath;
+export const selectNavSearchResults =(state)=> state.structure.navSearchResults;
 
 export default structureSlice.reducer;
