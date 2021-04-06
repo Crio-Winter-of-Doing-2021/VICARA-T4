@@ -112,7 +112,7 @@ export default function TableComponent({
 
     return (
       <TableRow key={state_id} selected={selected}>
-        <StyledTableCell>
+        <StyledTableCell padding="checkbox">
           <Checkbox
             onChange={(e) =>
               dispatch(updateSelection({ selected: !selected, id, type }))
@@ -146,7 +146,7 @@ export default function TableComponent({
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>
+              <StyledTableCell padding="checkbox">
                 <Checkbox
                   onChange={(e) => {
                     if (checkedCount === 0) {
