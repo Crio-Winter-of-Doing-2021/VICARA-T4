@@ -102,16 +102,18 @@ export const structureSlice = createSlice({
       });
     },
     selectAll: (state, action) => {
-      console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5");
       const childrenMap = state.children;
       state.selectCount = Object.keys(state.children).length;
       Object.keys(childrenMap).forEach(function (key, index) {
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2");
         state.children[key] = {
           ...state.children[key],
           selected: true,
         };
       });
+    },
+    removeFromChildren: (state, action) => {
+      let id = action.payload;
+      delete state.children[id];
     },
   },
 });
@@ -131,6 +133,7 @@ export const {
   resetSelection,
   selectAll,
   updateNavSearchResults,
+  removeFromChildren,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -234,21 +237,25 @@ export const updateChildAsync = (data) => (dispatch) => {
       .then((res) => {
         dispatch(updateChild(res.data));
         dispatch(normalLoader());
+        dispatch(resetSelection());
       })
       .catch((err) => {
         console.log(err);
         dispatch(normalLoader());
+        dispatch(resetSelection());
       });
   } else {
     API.patch("/api/folder/", rest)
       .then((res) => {
         dispatch(updateChild(res.data));
         dispatch(normalLoader());
+        dispatch(resetSelection());
       })
       .catch((err) => {
         console.log(err.response);
         dispatch(error(err.response.data.message));
         dispatch(normalLoader());
+        dispatch(resetSelection());
       });
   }
 };

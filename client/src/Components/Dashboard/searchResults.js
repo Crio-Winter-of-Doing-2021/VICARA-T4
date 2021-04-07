@@ -7,6 +7,7 @@ import Avatar from '@material-ui/core/Avatar';
 import FolderIcon from '@material-ui/icons/Folder';
 import {typeTest} from '../../Utilities/fileType'
 import {withRouter} from 'react-router-dom'
+import {Divider} from '@material-ui/core'
 
 function SearchResults({result,...props}) {
     let resultRenderer=result.map(res=>{
@@ -21,14 +22,15 @@ function SearchResults({result,...props}) {
               }
             }} >
                   <ListItemAvatar>
-                    <Avatar>
-                      {res.type==='folder'?<FolderIcon />:typeTest(res.name)}
+                    <Avatar style={{backgroundColor:"#3D3333"}}>
+                      {res.type==='folder'?<FolderIcon style={{color:"#67C5F0"}} />:typeTest(res.name)}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={res.name}
                     secondary={res.owner.username}
                   />
+                  <Divider/>
             </ListItem>
         )
     })

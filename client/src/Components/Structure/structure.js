@@ -50,12 +50,22 @@ export default function Structure(props) {
     showOwner: false,
     ...props,
   };
+
+  const contextMenuProps={
+    download:true,
+    share:true,
+    trash:true,
+    delete:true,
+    update:true,
+    restore:false
+  }
+
   return (
     <div>
       <div style={{ display: "flex" }}>
         <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
-        <Update />
+        {/* <Update /> */}
         <Trash />
         <Delete />
       </div>
