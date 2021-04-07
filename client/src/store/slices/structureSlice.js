@@ -112,8 +112,9 @@ export const structureSlice = createSlice({
       });
     },
     removeFromChildren: (state, action) => {
-      let id = action.payload;
-      delete state.children[id];
+      const {id,type}=action.payload
+      const stateId = `${type}_${id}`;
+      delete state.children[stateId];
     },
   },
 });

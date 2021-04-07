@@ -80,7 +80,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
           }
           dispatch(getProfileAsync(id));
           dispatch(resetSelection())
@@ -111,7 +111,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
           }
           dispatch(getProfileAsync(id));
           dispatch(resetSelection())
@@ -210,7 +210,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
           }
           dispatch(resetSelection())
           dispatch(normalLoader());
@@ -243,7 +243,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
           }
           dispatch(resetSelection())
           dispatch(normalLoader());
@@ -276,7 +276,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
           }
           dispatch(resetSelection())
           dispatch(normalLoader());
@@ -306,7 +306,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
           }
           dispatch(resetSelection())
           dispatch(normalLoader());

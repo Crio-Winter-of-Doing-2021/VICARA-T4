@@ -14,9 +14,9 @@ const refreshAuthLogic = (failedRequest) => {
     .post(`${baseURL}/auth/token/`, {
       refresh_token: localStorage.getItem("refresh_token"),
       grant_type: "refresh_token",
-      client_id: "0DFH8wA3aOi1jzBmFLPD9Jg8wBKyu6c38LzTvuGY",
+      client_id: "VbrqY1sJQckA72RYyS4pFDV3G03AlSZCvEFHhvXZ",
       client_secret:
-        "WodBpPyPrHXI9m8uDjRsFBNGNo3S8l2KPsFJ0OJyVqD3dHb6098DBaUbLFdcGxxMXGnG0ZUbAN3HyuWKubcvNZjaMEfEK3LOvyCgAv3oIoZynkzPSlExoO4wTp1O460J",
+        "obzlmNFZgRDa3upMpZV4AkSmeaonHqMVaTK4sI3txQ9rPyakFMtoyq1ouVqD3Fjsc7mTV8EV9Zs9NlYTTk91on8jpJgr5Xk7dcL1y0USzrl7x0mEHzDI8cie8xjaj3q0",
     })
     .then((res) => {
       const { access_token, refresh_token } = res.data;
@@ -43,9 +43,9 @@ export const googleLogin = (props, response) => (dispatch) => {
       token: response.accessToken,
       backend: "google-oauth2",
       grant_type: "convert_token",
-      client_id: "0DFH8wA3aOi1jzBmFLPD9Jg8wBKyu6c38LzTvuGY",
+      client_id: "VbrqY1sJQckA72RYyS4pFDV3G03AlSZCvEFHhvXZ",
       client_secret:
-        "WodBpPyPrHXI9m8uDjRsFBNGNo3S8l2KPsFJ0OJyVqD3dHb6098DBaUbLFdcGxxMXGnG0ZUbAN3HyuWKubcvNZjaMEfEK3LOvyCgAv3oIoZynkzPSlExoO4wTp1O460J",
+        "obzlmNFZgRDa3upMpZV4AkSmeaonHqMVaTK4sI3txQ9rPyakFMtoyq1ouVqD3Fjsc7mTV8EV9Zs9NlYTTk91on8jpJgr5Xk7dcL1y0USzrl7x0mEHzDI8cie8xjaj3q0",
     })
     .then((res) => {
       const { access_token, refresh_token, root_id } = res.data;

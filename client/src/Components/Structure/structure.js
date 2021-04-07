@@ -66,8 +66,8 @@ export default function Structure(props) {
         <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
         {/* <Update /> */}
-        <Trash />
-        <Delete />
+        {/* <Trash />
+        <Delete /> */}
       </div>
       <Path {...props} />
       <TableComponent {...tableProps} />
