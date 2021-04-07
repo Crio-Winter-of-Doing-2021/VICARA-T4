@@ -94,6 +94,23 @@ export const downloadAsync=(data)=>(dispatch)=>{
   }
 }
 
+export const multipleDownloadAsync=(data)=>(dispatch)=>{
+ 
+    dispatch(normalLoader());
+    API.get(`/api/folder/partial-download/`, data)
+      .then((res) => {
+        // console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+        // saveAs(res.data["url"], "image.jpg");
+        dispatch(normalLoader());
+      })
+      .catch((err) => {
+        // console.log("ommaago its an errro", err);
+        dispatch(normalLoader());
+        console.log(err.response)
+        dispatch(error(err.response.data.message))
+      });
+}
+
 export const fileLoading = (state) => state.loader.fileUploadLoading;
 export const normalLoading = (state) => state.loader.normalLoading;
 export const skeletonLoading=(state)=>state.loader.skeletonLoading

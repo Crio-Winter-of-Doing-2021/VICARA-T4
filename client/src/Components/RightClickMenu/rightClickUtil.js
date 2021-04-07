@@ -7,7 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 // import EditIcon from "@material-ui/icons/Edit";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { ListItemText } from "@material-ui/core";
-import { downloadAsync } from "../../store/slices/loaderSlice";
+import { downloadAsync,multipleDownloadAsync } from "../../store/slices/loaderSlice";
 import Share from "../Share/index";
 import UpdateNameModal from "../Buttons/update";
 import Delete from "../Buttons/delete";
@@ -50,6 +50,18 @@ function ContextMenu(props) {
   const currentPage = useSelector(selectPage);
   const checkedFileFolder = useSelector(selectChecked);
 
+  const fetchIdAndType = checkedFileFolder.map(ele=>{
+    let res={
+      type:ele.type,
+      id:ele.id
+    }
+    return res
+  })
+
+  const dataForMultipleDownload={
+    CHILDREN:fetchIdAndType
+  }
+
   const handleClick = (event) => {
     event.preventDefault();
     setState({
@@ -69,7 +81,7 @@ function ContextMenu(props) {
     <div onContextMenu={handleClick}>
       {props.children}
       {/* {console.log(checkedFileFolder)} */}
-
+      {console.log("downloafd",dataForMultipleDownload)}
       <Menu
         keepMounted
         open={state.mouseY !== null}
@@ -81,17 +93,16 @@ function ContextMenu(props) {
             : undefined
         }
       >
-        {checkedCount === 1 ? (
-          <>
-            {showShare ? (
-              <Share data={props.data} menuClose={handleClose} />
-            ) : null}
 
             {showDownload ? (
               <MenuItem
                 onClick={() => {
                   handleClose();
-                  dispatch(downloadAsync(props.data));
+                  if(checkedCount>1){
+                    dispatch(multipleDownloadAsync(dataForMultipleDownload))
+                  }else{
+                    dispatch(downloadAsync(props.data));
+                  }
                 }}
               >
                 <ListItemIcon>
@@ -102,6 +113,13 @@ function ContextMenu(props) {
                 </ListItemText>
               </MenuItem>
             ) : null}
+
+        {checkedCount === 1 ? (
+          <>
+            {showShare ? (
+              <Share data={props.data} menuClose={handleClose} />
+            ) : null}
+
             {showUpdate ? (
               <UpdateNameModal
                 handleCloseOfRightClickMenu={handleClose}
