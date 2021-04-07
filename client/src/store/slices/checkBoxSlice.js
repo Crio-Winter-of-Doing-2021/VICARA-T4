@@ -1,13 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import axios from "axios";
-import { updateFileName, popFromCurrentStack ,removeFromChildren,resetSelection} from "./structureSlice";
+import {
+  updateFileName,
+  popFromCurrentStack,
+  removeFromChildren,
+  resetSelection,
+} from "./structureSlice";
 import { normalLoader } from "./loaderSlice";
 import { updateFavFileName, popFromCurrentFavStack } from "./favSlice";
 import { updateRecentFileName, popFromCurrentRecentStack } from "./recentSlice";
 import { popFromCurrentTrashStack } from "./trashSlice";
 import { getProfileAsync } from "./authSlice";
-import {success,error} from './logSlice'
+import { success, error } from "./logSlice";
 export const checkBoxSlice = createSlice({
   name: "checkbox",
   initialState: {
@@ -80,18 +85,18 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren(res[k].data.id));
           }
           dispatch(getProfileAsync(id));
-          dispatch(resetSelection())
+          dispatch(resetSelection());
           dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        console.log(err.response);
+        dispatch(error(err.response.data.message));
       });
   }
 
@@ -111,84 +116,21 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren(res[k].data.id));
           }
           dispatch(getProfileAsync(id));
-          dispatch(resetSelection())
+          dispatch(resetSelection());
           dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        console.log(err.response);
+        dispatch(error(err.response.data.message));
       });
   }
 };
-
-// export const updateAsync = (fileData, folderData) => (dispatch) => {
-//   if (Object.keys(folderData).length !== 0) {
-//     dispatch(normalLoader());
-//     API.patch("/api/folder/", folderData.payload)
-//       .then((res) => {
-//         console.log(res);
-//         // dispatch(emptykeys())
-//         let newData = {
-//           data: res.data,
-//           index: folderData.index,
-//         };
-//         dispatch(updateFileName(newData));
-//         dispatch(updateFavFileName(newData));
-//         dispatch(updateRecentFileName(newData));
-//         // dispatch(
-//         //   updateSelectedKeys({
-//         //     type: "folder",
-//         //     ...folderData.payload,
-//         //   })
-//         // );
-
-//         dispatch(normalLoader());
-//         dispatch(success("Your Action was Successful"))
-//       })
-//       .catch((err) => {
-//         dispatch(normalLoader());
-//         console.log(err.response)
-//         dispatch(error(err.response.data.message))
-//         dispatch(emptykeys());
-//       });
-//   }
-
-//   if (Object.keys(fileData).length !== 0) {
-//     dispatch(normalLoader());
-//     API.patch("/api/file/", fileData.payload)
-//       .then((res) => {
-//         console.log(res);
-//         // dispatch(emptykeys())
-//         let newData = {
-//           data: res.data,
-//           index: fileData.index,
-//         };
-//         dispatch(updateFileName(newData));
-//         dispatch(updateFavFileName(newData));
-//         dispatch(updateRecentFileName(newData));
-//         // dispatch(
-//         //   updateSelectedKeys({
-//         //     type: "file",
-//         //     ...folderData.payload,
-//         //   })
-//         // );
-//         dispatch(normalLoader());
-//         dispatch(success("Your Action was Successful"))
-//       })
-//       .catch((err) => {
-//         dispatch(normalLoader());
-//         console.log(err.response)
-//         dispatch(error(err.response.data.message))
-//         dispatch(emptykeys());
-//       });
-//   }
-// };
 
 export const trashAsync = (fileArr, folderArr) => (dispatch) => {
   if (folderArr.length !== 0) {
@@ -210,17 +152,17 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren(res[k].data.id));
           }
-          dispatch(resetSelection())
+          dispatch(resetSelection());
           dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        console.log(err.response);
+        dispatch(error(err.response.data.message));
       });
   }
 
@@ -243,18 +185,17 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren(res[k].data.id));
           }
-          dispatch(resetSelection())
+          dispatch(resetSelection());
           dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
-      
+        console.log(err.response);
+        dispatch(error(err.response.data.message));
       });
   }
 };
@@ -276,17 +217,17 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren(res[k].data.id));
           }
-          dispatch(resetSelection())
+          dispatch(resetSelection());
           dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        console.log(err.response);
+        dispatch(error(err.response.data.message));
       });
   }
 
@@ -306,22 +247,19 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren(res[k].data.id))
+            dispatch(removeFromChildren(res[k].data.id));
           }
-          dispatch(resetSelection())
+          dispatch(resetSelection());
           dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"))
+          dispatch(success("Your Action was Successful"));
         })
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
-       
+        console.log(err.response);
+        dispatch(error(err.response.data.message));
       });
   }
-
-  
 };
 
 export const selectCheckedFolderKeys = (state) =>
