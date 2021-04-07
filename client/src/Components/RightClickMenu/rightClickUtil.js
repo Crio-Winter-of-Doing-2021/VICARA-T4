@@ -25,7 +25,6 @@ const initialState = {
 
 export default function ContextMenu(props) {
   const [state, setState] = React.useState(initialState);
-
   const dispatch = useDispatch();
   const { data } = props;
   const { id, type } = data;

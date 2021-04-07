@@ -117,7 +117,7 @@ export default function Search(props) {
                     <Paper
                     style={{
                         marginTop:"40px",
-                        maxHeight:"100vh",
+                        maxHeight:"97vh",
                         overflow:"auto"
                     }}
                     >

@@ -7,11 +7,12 @@ import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter } from "react-router-dom";
 import "./app.css";
 
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter >
-        <App />
+          <App />
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,

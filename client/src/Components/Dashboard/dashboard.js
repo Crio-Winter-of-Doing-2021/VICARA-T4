@@ -7,6 +7,7 @@ import Recent from "../Recent/recent"
 import SharedWithMe from "../SharedWithMe/shared"
 import Trash from "../Trash/trash"
 import PrivateRoute from "../../Utilities/protectedRoute"
+import FileViewModal from '../FileViewer/index'
 
 export default function Dashboard() {
   let id=window.localStorage.getItem("id")
@@ -14,6 +15,7 @@ export default function Dashboard() {
   return (
     <div>
       <DashUtil>
+              <FileViewModal/>
               <Switch>
                 <Route
                   path="/"

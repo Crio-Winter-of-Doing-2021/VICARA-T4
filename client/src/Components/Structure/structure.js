@@ -55,7 +55,7 @@ export default function Structure(props) {
       <div style={{ display: "flex" }}>
         <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
-        <Update />
+        {/* <Update /> */}
         <Trash />
         <Delete />
       </div>
