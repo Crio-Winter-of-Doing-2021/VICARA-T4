@@ -10,35 +10,46 @@ import { ListItemText } from "@material-ui/core";
 import { downloadAsync } from "../../store/slices/loaderSlice";
 import Share from "../Share/index";
 import UpdateNameModal from "../Buttons/update";
-import Delete from "../Buttons/delete"
-import Trash from "../Buttons/moveToTrash"
-import Restore from "../Buttons/restore"
-
+import Delete from "../Buttons/delete";
+import Trash from "../Buttons/moveToTrash";
+import Restore from "../Buttons/restore";
+import { withRouter } from "react-router-dom";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import DeleteIcon from "@material-ui/icons/Delete";
-
-import {selectPage} from '../../store/slices/loaderSlice'
-
+import { selectPage } from "../../store/slices/loaderSlice";
+import { rightClickOptions } from "./rightClickOptions";
 import {
   selectChecked,
   selectCheckedCount,
   updateSelection,
-  resetSelection,
 } from "../../store/slices/structureSlice";
 const initialState = {
   mouseX: null,
   mouseY: null,
 };
 
-export default function ContextMenu(props) {
+function ContextMenu(props) {
   const [state, setState] = React.useState(initialState);
   const dispatch = useDispatch();
   const { data } = props;
   const { id, type } = data;
 
-  const currentPage=useSelector(selectPage)
-  const checkedFileFolder=useSelector(selectChecked)
-  
+  console.log("PAGE params", props.match);
+  const { path } = props.match;
+  console.log({ path });
+  console.log({ rightClickOptions });
+  const {
+    showShare,
+    showTrash,
+    showDownload,
+    showDelete,
+    showRestore,
+    showUpdate,
+  } = rightClickOptions[path];
+
+  const currentPage = useSelector(selectPage);
+  const checkedFileFolder = useSelector(selectChecked);
+
   const handleClick = (event) => {
     event.preventDefault();
     setState({
@@ -70,9 +81,13 @@ export default function ContextMenu(props) {
             : undefined
         }
       >
-          {checkedCount === 1 ? (
-            <>
+        {checkedCount === 1 ? (
+          <>
+            {showShare ? (
               <Share data={props.data} menuClose={handleClose} />
+            ) : null}
+
+            {showDownload ? (
               <MenuItem
                 onClick={() => {
                   handleClose();
@@ -86,18 +101,27 @@ export default function ContextMenu(props) {
                   Download
                 </ListItemText>
               </MenuItem>
+            ) : null}
+            {showUpdate ? (
               <UpdateNameModal
                 handleCloseOfRightClickMenu={handleClose}
                 {...data}
               />
-            </>
-          ) : null}
-          
-        
-        <Trash handleCloseOfRightClickMenu={handleClose} {...data} />
-        <Restore handleCloseOfRightClickMenu={handleClose} {...data}/>
-        <Delete handleCloseOfRightClickMenu={handleClose} {...data} />
+            ) : null}
+          </>
+        ) : null}
+
+        {showTrash ? (
+          <Trash handleCloseOfRightClickMenu={handleClose} {...data} />
+        ) : null}
+        {showRestore ? (
+          <Restore handleCloseOfRightClickMenu={handleClose} {...data} />
+        ) : null}
+        {showDelete ? (
+          <Delete handleCloseOfRightClickMenu={handleClose} {...data} />
+        ) : null}
       </Menu>
     </div>
   );
 }
+export default withRouter(ContextMenu);

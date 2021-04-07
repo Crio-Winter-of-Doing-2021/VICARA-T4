@@ -8,15 +8,17 @@ export let frontURL = "http://localhost:3000";
 // export let frontURL = "https://vicara.netlify.app";
 
 // Function that will be called to refresh authorization
+const client_id = process.env.REACT_APP_CLIENT_ID;
+const client_secret = process.env.REACT_APP_CLIENT_SECRET;
 const refreshAuthLogic = (failedRequest) => {
   console.log("called failed");
+  console.log({ client_id, client_secret });
   axios
     .post(`${baseURL}/auth/token/`, {
       refresh_token: localStorage.getItem("refresh_token"),
       grant_type: "refresh_token",
-      client_id: "VbrqY1sJQckA72RYyS4pFDV3G03AlSZCvEFHhvXZ",
-      client_secret:
-        "obzlmNFZgRDa3upMpZV4AkSmeaonHqMVaTK4sI3txQ9rPyakFMtoyq1ouVqD3Fjsc7mTV8EV9Zs9NlYTTk91on8jpJgr5Xk7dcL1y0USzrl7x0mEHzDI8cie8xjaj3q0",
+      client_id,
+      client_secret,
     })
     .then((res) => {
       const { access_token, refresh_token } = res.data;
@@ -38,14 +40,14 @@ createAuthRefreshInterceptor(API, refreshAuthLogic);
 
 export const googleLogin = (props, response) => (dispatch) => {
   dispatch(normalLoader());
+  console.log({ client_id, client_secret });
   axios
     .post(`${baseURL}/auth/convert-token`, {
       token: response.accessToken,
       backend: "google-oauth2",
       grant_type: "convert_token",
-      client_id: "VbrqY1sJQckA72RYyS4pFDV3G03AlSZCvEFHhvXZ",
-      client_secret:
-        "obzlmNFZgRDa3upMpZV4AkSmeaonHqMVaTK4sI3txQ9rPyakFMtoyq1ouVqD3Fjsc7mTV8EV9Zs9NlYTTk91on8jpJgr5Xk7dcL1y0USzrl7x0mEHzDI8cie8xjaj3q0",
+      client_id,
+      client_secret,
     })
     .then((res) => {
       const { access_token, refresh_token, root_id } = res.data;

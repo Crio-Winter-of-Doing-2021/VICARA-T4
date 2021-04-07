@@ -29,6 +29,7 @@ import { asyncLocalStorage } from "../../Utilities/localStoreAsync";
 import { setCurrentPage } from "../../store/slices/loaderSlice";
 
 import Search from "./search";
+import { resetSelection } from "../../store/slices/structureSlice";
 
 const drawerWidth = 280;
 
@@ -142,7 +143,10 @@ export default function ClippedDrawer(props) {
                 {sideNav.map((data, index) => (
                   <Link
                     style={{ textDecoration: "none" }}
-                    onClick={() => dispatch(setCurrentPage(data.name))}
+                    onClick={() => {
+                      dispatch(setCurrentPage(data.name));
+                      dispatch(resetSelection());
+                    }}
                     to={
                       data.name === "Home"
                         ? `/drive/${id}`
