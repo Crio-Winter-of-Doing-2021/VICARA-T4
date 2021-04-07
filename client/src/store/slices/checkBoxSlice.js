@@ -85,11 +85,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-<<<<<<< HEAD
             dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
-=======
-            dispatch(removeFromChildren(res[k].data.id));
->>>>>>> e07fcd711bf66f2473f24be894c2aa1dc31e9df7
           }
           dispatch(getProfileAsync(id));
           dispatch(resetSelection());
@@ -120,11 +116,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-<<<<<<< HEAD
             dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
-=======
-            dispatch(removeFromChildren(res[k].data.id));
->>>>>>> e07fcd711bf66f2473f24be894c2aa1dc31e9df7
           }
           dispatch(getProfileAsync(id));
           dispatch(resetSelection());
@@ -160,11 +152,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-<<<<<<< HEAD
             dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
-=======
-            dispatch(removeFromChildren(res[k].data.id));
->>>>>>> e07fcd711bf66f2473f24be894c2aa1dc31e9df7
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -197,11 +185,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-<<<<<<< HEAD
             dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
-=======
-            dispatch(removeFromChildren(res[k].data.id));
->>>>>>> e07fcd711bf66f2473f24be894c2aa1dc31e9df7
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -233,11 +217,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-<<<<<<< HEAD
             dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
-=======
-            dispatch(removeFromChildren(res[k].data.id));
->>>>>>> e07fcd711bf66f2473f24be894c2aa1dc31e9df7
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -267,11 +247,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-<<<<<<< HEAD
             dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
-=======
-            dispatch(removeFromChildren(res[k].data.id));
->>>>>>> e07fcd711bf66f2473f24be894c2aa1dc31e9df7
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
