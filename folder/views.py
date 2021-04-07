@@ -303,25 +303,7 @@ class FolderPicker(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class ParitalDownload(DownloadFolder):
-
-    def get_parent(self, child):
-        type, id = child["type"], child["id"]
-        if(type == "folder"):
-            child_obj = Folder.objects.get(id=id)
-        else:
-            child_obj = File.objects.get(id=id)
-        return child_obj.parent
-
-    def get_file_folder_ids(self, children):
-        file_ids, folder_ids = set([]), set([])
-        for child in children:
-            type, id = child["type"], child["id"]
-            if(type == "file"):
-                file_ids.add(id)
-            else:
-                folder_ids.add(id)
-        return file_ids, folder_ids
+class PartialDownload(DownloadFolder):
 
     @check_request_attr(["CHILDREN"])
     @check_children
