@@ -77,6 +77,7 @@ export default function MenuListComposition(props) {
           role={undefined}
           transition
           disablePortal
+          style={{zIndex:"30"}}
         >
           {({ TransitionProps, placement }) => (
             <Grow
