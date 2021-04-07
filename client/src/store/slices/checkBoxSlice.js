@@ -23,10 +23,10 @@ export const checkBoxSlice = createSlice({
     updateSelectedKeys: (state, action) => {
       let type = action.payload.type;
       let name = action.payload.name;
-      console.log(type);
+      //console.log(type);
       if (type === "folder") {
         let data = action.payload.id;
-        console.log(data);
+        //console.log(data);
         function check(key) {
           return data === key.id;
         }
@@ -42,7 +42,7 @@ export const checkBoxSlice = createSlice({
         }
       } else {
         let data = action.payload.id;
-        console.log(data);
+        //console.log(data);
         function check(key) {
           return data === key.id;
         }
@@ -85,7 +85,9 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
+            dispatch(
+              removeFromChildren({ id: res[k].data.id, type: "folder" })
+            );
           }
           dispatch(getProfileAsync(id));
           dispatch(resetSelection());
@@ -95,7 +97,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
       });
   }
@@ -116,7 +118,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
+            dispatch(removeFromChildren({ id: res[k].data.id, type: "file" }));
           }
           dispatch(getProfileAsync(id));
           dispatch(resetSelection());
@@ -126,7 +128,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
       });
   }
@@ -152,7 +154,9 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
+            dispatch(
+              removeFromChildren({ id: res[k].data.id, type: "folder" })
+            );
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -161,7 +165,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
       });
   }
@@ -185,7 +189,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
+            dispatch(removeFromChildren({ id: res[k].data.id, type: "file" }));
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -194,7 +198,7 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
       });
   }
@@ -217,7 +221,9 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
+            dispatch(
+              removeFromChildren({ id: res[k].data.id, type: "folder" })
+            );
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -226,7 +232,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
       });
   }
@@ -247,7 +253,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
+            dispatch(removeFromChildren({ id: res[k].data.id, type: "file" }));
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -256,7 +262,7 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
       });
   }

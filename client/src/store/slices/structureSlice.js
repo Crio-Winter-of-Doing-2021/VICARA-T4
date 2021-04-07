@@ -37,7 +37,7 @@ export const structureSlice = createSlice({
     },
     updatePrivacy: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       state.currentDisplayStructure[res.key].privacy = res.payload.privacy;
     },
     updateFav: (state, action) => {
@@ -46,13 +46,13 @@ export const structureSlice = createSlice({
     },
     popFromCurrentStack: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       function check(data) {
         return parseInt(res.data.id) === data.id && res.type === data.type;
       }
       let index = state.currentDisplayStructure.findIndex(check);
 
-      console.log(index);
+      //console.log(index);
 
       if (index !== -1) {
         state.currentDisplayStructure.splice(index, 1);
@@ -112,7 +112,7 @@ export const structureSlice = createSlice({
       });
     },
     removeFromChildren: (state, action) => {
-      const {id,type}=action.payload
+      const { id, type } = action.payload;
       const stateId = `${type}_${id}`;
       delete state.children[stateId];
     },
@@ -138,7 +138,7 @@ export const {
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
-  console.log("Sending request for /api/folder/");
+  //console.log("Sending request for /api/folder/");
   dispatch(skeletonLoader());
   API.get(`/api/folder/`, {
     params: {
@@ -150,7 +150,7 @@ export const structureAsync = (uni_id) => (dispatch) => {
       dispatch(skeletonLoader());
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
       dispatch(skeletonLoader());
       // dispatch(error(err.response.data.message));
     });
@@ -164,7 +164,7 @@ export const recentStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -178,7 +178,7 @@ export const favStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -192,7 +192,7 @@ export const sharedStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -207,7 +207,7 @@ export const trashStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -216,21 +216,22 @@ export const addFolderAsync = (data) => (dispatch) => {
   dispatch(normalLoader());
   API.post("/api/folder/", data)
     .then((res) => {
-      console.log(res);
+      console.log("succ in add folder");
+      console.log({ res });
       dispatch(updateChild(res.data));
       dispatch(normalLoader());
       dispatch(success("Your Action was Successful"));
     })
     .catch((err) => {
-      console.log("entered");
+      console.log("errr in add folder");
       dispatch(normalLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
 
 export const updateChildAsync = (data) => (dispatch) => {
-  console.log({ data });
+  //console.log({ data });
   const { type, ...rest } = data;
   dispatch(normalLoader());
   if (type === "file") {
@@ -241,7 +242,7 @@ export const updateChildAsync = (data) => (dispatch) => {
         dispatch(resetSelection());
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
         dispatch(normalLoader());
         dispatch(resetSelection());
       });
@@ -253,7 +254,7 @@ export const updateChildAsync = (data) => (dispatch) => {
         dispatch(resetSelection());
       })
       .catch((err) => {
-        console.log(err.response);
+        //console.log(err.response);
         dispatch(error(err.response.data.message));
         dispatch(normalLoader());
         dispatch(resetSelection());
@@ -262,8 +263,8 @@ export const updateChildAsync = (data) => (dispatch) => {
 };
 export const privacyAsync = 5;
 export const pathAsync = (data) => (dispatch) => {
-  console.log("asking for path ");
-  console.log("token now = ", window.localStorage.getItem("access_token"));
+  //console.log("asking for path ");
+  //console.log("token now = ", window.localStorage.getItem("access_token"));
   API.get(`/api/path/`, {
     params: {
       id: data.id,
@@ -271,11 +272,11 @@ export const pathAsync = (data) => (dispatch) => {
     },
   })
     .then((res) => {
-      console.log("updating path for id = ", data, " with ", res);
+      //console.log("updating path for id = ", data, " with ", res);
       dispatch(updatePath(res.data));
     })
     .catch((err) => {
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -289,15 +290,15 @@ export const getFileAsync = (data) => (dispatch) => {
     },
   })
     .then((res) => {
-      // console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
+      // //console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
       window.open(res.data.url);
       // saveAs(res.data["url"], "image.jpg");
       dispatch(normalLoader());
     })
     .catch((err) => {
-      // console.log("ommaago its an errro", err);
+      // //console.log("ommaago its an errro", err);
       dispatch(normalLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -314,7 +315,7 @@ export const searchFileFolderAsync = (value) => (dispatch) => {
       dispatch(navSearchLoader());
     })
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
       dispatch(error(err.response.data.message));
       dispatch(navSearchLoader());
     });

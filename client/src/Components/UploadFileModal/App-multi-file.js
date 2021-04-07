@@ -23,7 +23,7 @@ function App({ parent, modalClose }) {
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      // console.log(acceptedFiles);
+      // //console.log(acceptedFiles);
 
       setProgress(0);
       dispatch(fileUploadLoader());
@@ -31,7 +31,7 @@ function App({ parent, modalClose }) {
       // let pathJSON = [];
       const formData = new FormData();
       for (let [index, val] of acceptedFiles.entries()) {
-        console.log(index);
+        //console.log(index);
         // pathJSON[index] = val.path; // comment this for multi-file
         formData.append("file", val);
       }
@@ -41,7 +41,7 @@ function App({ parent, modalClose }) {
         onUploadProgress: (ev) => {
           const prog = (ev.loaded / ev.total) * 100;
           setProgress(Math.round(prog));
-          console.log({ progress });
+          //console.log({ progress });
         },
         headers: {
           "Content-Type": "multipart/form-data",
@@ -50,13 +50,13 @@ function App({ parent, modalClose }) {
       })
         .then(function (res) {
           //handle success
-          console.log(res);
+          //console.log(res);
           let k;
           for (k = 0; k < res.data.file_data.length; k++) {
             dispatch(updateChild(res.data.file_data[k]));
           }
           modalClose();
-          console.log("data = ", res.data);
+          //console.log("data = ", res.data);
           const { readable, ratio } = res.data;
           dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
@@ -64,7 +64,7 @@ function App({ parent, modalClose }) {
         })
         .catch(function (err) {
           //handle error
-          console.log(err.response);
+          //console.log(err.response);
           dispatch(error(err.response.data.message));
           dispatch(fileUploadLoader());
           modalClose();

@@ -13,7 +13,7 @@ import {
   selectAll,
 } from "../../store/slices/structureSlice";
 
-import {downloadOrViewFile} from "../../store/slices/fileViewSlice"
+import { downloadOrViewFile } from "../../store/slices/fileViewSlice";
 
 import Skeleton from "@material-ui/lab/Skeleton";
 
@@ -74,7 +74,7 @@ export let privOpp = (privacy) => {
 let loaderStructure = [1, 2, 3, 4, 5, 6, 7, 8].map((key) => {
   return (
     <StyledTableRow>
-      {[1, 2, 3, 4, 5,6].map((el) => (
+      {[1, 2, 3, 4, 5, 6].map((el) => (
         <StyledTableCell component="th" scope="row">
           <Skeleton variant="text" />
         </StyledTableCell>
@@ -113,11 +113,15 @@ export default function TableComponent({
     const state_id = `${type}_${id}`;
 
     return (
-      <TableRow onDoubleClick={(e)=>{
-        if(type==='folder'){
-          props.history.push(`/drive/${id}`);
-        }
-      }}  key={state_id} selected={selected}>
+      <TableRow
+        onDoubleClick={(e) => {
+          if (type === "folder") {
+            props.history.push(`/drive/${id}`);
+          }
+        }}
+        key={state_id}
+        selected={selected}
+      >
         <StyledTableCell padding="checkbox">
           <Checkbox
             onChange={(e) =>
@@ -148,7 +152,6 @@ export default function TableComponent({
 
   return (
     <div>
-      {console.log("count",checkedCount)}
       <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
@@ -157,15 +160,19 @@ export default function TableComponent({
                 <Checkbox
                   onChange={(e) => {
                     if (checkedCount === 0) {
-                      console.log("select all");
+                      //console.log("select all");
                       dispatch(selectAll());
                     }
-                     if(checkedCount!==0){
+                    if (checkedCount !== 0) {
                       dispatch(resetSelection());
                     }
                   }}
                   checked={checkedCount !== 0}
-                  style={{backgroundColor:checkedCount===0?"grey":"#333538",padding:"5px",margin:"0 5px"}}
+                  style={{
+                    backgroundColor: checkedCount === 0 ? "grey" : "#333538",
+                    padding: "5px",
+                    margin: "0 5px",
+                  }}
                   inputProps={{ "aria-label": "primary checkbox" }}
                 />
               </StyledTableCell>
@@ -269,7 +276,7 @@ const lastModifiedCell = ({ last_modified }) => {
 };
 
 const renderFavourite = ({ favourite, id, type, disabled }) => (dispatch) => {
-  // console.log("244", { id, type });
+  // //console.log("244", { id, type });
   return (
     <>
       {favourite === true ? (
@@ -319,14 +326,14 @@ const nameAndFavouriteCell = ({
   selected,
 }) => (dispatch) => {
   const updateFolder = (key) => {
-    console.log("key clicked", key);
+    //console.log("key clicked", key);
     props.history.push(`/drive/${key}`);
     dispatch(emptykeys());
   };
 
   const { show, disabled } = favouriteOptions;
 
-  // console.log("301", { id, type });
+  // //console.log("301", { id, type });
   return (
     <StyledTableCell component="th" scope="row">
       <RightClickUtil data={data}>
@@ -353,7 +360,7 @@ const nameAndFavouriteCell = ({
               component="button"
               variant="body2"
               style={{ marginLeft: "5px" }}
-              onClick={() => dispatch(downloadOrViewFile({name,id}))}
+              onClick={() => dispatch(downloadOrViewFile({ name, id }))}
             >
               {name}
             </UILink>

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { skeletonLoader } from "./loaderSlice";
-import {error} from './logSlice'
+import { error } from "./logSlice";
 
 export const SharedStructureSlice = createSlice({
   name: "sharedWithme",
@@ -26,8 +26,8 @@ export const sharedStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+      //console.log(err.response)
+      dispatch(error(err.response.data.message));
     });
 };
 

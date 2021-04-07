@@ -35,7 +35,7 @@ export default function UploadButtons(props) {
     event.preventDefault();
     let currentFile = event.target.files[0];
 
-    console.log(currentFile);
+    //console.log(currentFile);
 
     setProgress(0);
     dispatch(fileUploadLoader());
@@ -55,7 +55,7 @@ export default function UploadButtons(props) {
       onUploadProgress: (ev) => {
         const prog = (ev.loaded / ev.total) * 100;
         setProgress(Math.round(prog));
-        console.log({ progress });
+        //console.log({ progress });
       },
     })
       .then((res) => {
@@ -69,7 +69,7 @@ export default function UploadButtons(props) {
       })
       .catch((err) => {
         dispatch(fileUploadLoader());
-        console.log(err);
+        //console.log(err);
         props.modalClose();
       });
   };

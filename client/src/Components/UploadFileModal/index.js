@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -19,13 +19,13 @@ import {
 import AddFile from "./App-multi-file";
 // import { token, baseURL } from "../../axios";
 // import axios from "axios";
-import {normalLoader} from "../../store/slices/loaderSlice";
+import { normalLoader } from "../../store/slices/loaderSlice";
 import { pushToCurrentStack } from "../../store/slices/structureSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 import DescriptionIcon from "@material-ui/icons/Description";
 
-import API from '../../axios'
-import {error,success} from '../../store/slices/logSlice'
+import API from "../../axios";
+import { error, success } from "../../store/slices/logSlice";
 
 export default function FormDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -61,12 +61,12 @@ export default function FormDialog(props) {
     setProgress(0);
     dispatch(normalLoader());
 
-    API.post("/api/file/upload-by-url/",state,{
+    API.post("/api/file/upload-by-url/", state, {
       onUploadProgress: (ev) => {
         const prog = (ev.loaded / ev.total) * 100;
         setProgress(Math.round(prog));
-        console.log({ progress });
-      }
+        //console.log({ progress });
+      },
     })
       .then((res) => {
         let newData = {
@@ -75,21 +75,21 @@ export default function FormDialog(props) {
         };
         dispatch(pushToCurrentStack(newData));
         dispatch(normalLoader());
-        dispatch(success("Your Action was Successful"))
+        dispatch(success("Your Action was Successful"));
         handleClose();
       })
       .catch((err) => {
         dispatch(normalLoader());
         handleClose();
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        //console.log(err.response)
+        dispatch(error(err.response.data.message));
       });
   };
 
   return (
     <div>
       {/* <FileBackdropLoader progress={progress} show={loading} /> */}
-      {/* {console.log(state)} */}
+      {/* {//console.log(state)} */}
       <ListItem
         style={{ cursor: "pointer" }}
         onClick={() => {

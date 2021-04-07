@@ -82,7 +82,7 @@ export default function SignIn(props) {
   //   dispatch(loginAsync(data, props));
   // };
   // const googleResponse = ({ profileObj }) => {
-  //   console.log(profileObj);
+  //   //console.log(profileObj);
   //   dispatch(googleLogin(profileObj, props));
   // };
 
@@ -90,7 +90,7 @@ export default function SignIn(props) {
     <Container component="main" maxWidth="xs">
       <NormalLoader />
       <CssBaseline />
-      {/* {console.log(state)} */}
+      {/* {//console.log(state)} */}
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />

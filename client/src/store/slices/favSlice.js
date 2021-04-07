@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { skeletonLoader } from "./loaderSlice";
 import axios from "axios";
-import {error} from './logSlice'
+import { error } from "./logSlice";
 
 export const favStructureSlice = createSlice({
   name: "fav",
@@ -28,7 +28,7 @@ export const favStructureSlice = createSlice({
     },
     updatePrivacy: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       state.currentDisplayStructure[res.key].privacy = res.payload.privacy;
     },
     updateFav: (state, action) => {
@@ -37,13 +37,13 @@ export const favStructureSlice = createSlice({
     },
     popFromCurrentFavStack: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       function check(data) {
         return parseInt(res.data.id) === data.id && res.type === data.type;
       }
       let index = state.currentDisplayStructure.findIndex(check);
 
-      console.log(index);
+      //console.log(index);
 
       if (index !== -1) {
         state.currentDisplayStructure.splice(index, 1);
@@ -80,7 +80,7 @@ export const {
   updateFav,
   updatePath,
   updatePrivacy,
-  favUpdateAfterShare
+  favUpdateAfterShare,
 } = favStructureSlice.actions;
 
 export const pathParse = (data) => (dispatch) => {
@@ -101,7 +101,7 @@ export const pathParse = (data) => (dispatch) => {
       })
     )
     .catch((err) => {
-      console.log(err);
+      //console.log(err);
     });
 };
 
@@ -115,8 +115,8 @@ export const favStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-      console.log(err.response)
-      dispatch(error(err.response.data.message))
+      //console.log(err.response)
+      dispatch(error(err.response.data.message));
     });
 };
 
@@ -133,8 +133,8 @@ export const addFavouriteAsync = (data) => (dispatch) => {
         dispatch(popFromCurrentFavStack(newdata));
       })
       .catch((err) => {
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        //console.log(err.response)
+        dispatch(error(err.response.data.message));
       });
   } else {
     API.patch("/api/folder/", data.payload)
@@ -148,8 +148,8 @@ export const addFavouriteAsync = (data) => (dispatch) => {
         dispatch(popFromCurrentFavStack(newdata));
       })
       .catch((err) => {
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        //console.log(err.response)
+        dispatch(error(err.response.data.message));
       });
   }
 };
@@ -162,9 +162,8 @@ export const privacyAsync = (data) => (dispatch) => {
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
-        
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        //console.log(err.response)
+        dispatch(error(err.response.data.message));
       });
   } else {
     API.patch("/api/folder/", data.payload)
@@ -173,8 +172,8 @@ export const privacyAsync = (data) => (dispatch) => {
         // dispatch(updateSharePrivacy())
       })
       .catch((err) => {
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+        //console.log(err.response)
+        dispatch(error(err.response.data.message));
       });
   }
 };
