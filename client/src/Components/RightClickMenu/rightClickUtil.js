@@ -10,8 +10,15 @@ import { ListItemText } from "@material-ui/core";
 import { downloadAsync } from "../../store/slices/loaderSlice";
 import Share from "../Share/index";
 import UpdateNameModal from "../Buttons/update";
+import Delete from "../Buttons/delete"
+import Trash from "../Buttons/moveToTrash"
+import Restore from "../Buttons/restore"
+
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import DeleteIcon from "@material-ui/icons/Delete";
+
+import {selectPage} from '../../store/slices/loaderSlice'
+
 import {
   selectChecked,
   selectCheckedCount,
@@ -28,6 +35,10 @@ export default function ContextMenu(props) {
   const dispatch = useDispatch();
   const { data } = props;
   const { id, type } = data;
+
+  const currentPage=useSelector(selectPage)
+  const checkedFileFolder=useSelector(selectChecked)
+  
   const handleClick = (event) => {
     event.preventDefault();
     setState({
@@ -39,13 +50,14 @@ export default function ContextMenu(props) {
 
   const handleClose = () => {
     setState(initialState);
-    dispatch(resetSelection());
+    // dispatch(resetSelection());
   };
   const checkedCount = useSelector(selectCheckedCount);
 
   return (
     <div onContextMenu={handleClick}>
       {props.children}
+      {/* {console.log(checkedFileFolder)} */}
 
       <Menu
         keepMounted
@@ -58,53 +70,33 @@ export default function ContextMenu(props) {
             : undefined
         }
       >
-        {checkedCount === 1 ? (
-          <>
-            <Share data={props.data} menuClose={handleClose} />
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                dispatch(downloadAsync(props.data));
-              }}
-            >
-              <ListItemIcon>
-                <CloudDownloadIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText style={{ paddingRight: "15px" }}>
-                Download
-              </ListItemText>
-            </MenuItem>
-            <UpdateNameModal
-              handleCloseOfRightClickMenu={handleClose}
-              {...data}
-            />
-          </>
-        ) : null}
-
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            // dispatch(downloadAsync(props.data));
-          }}
-        >
-          <ListItemIcon>
-            <DeleteSweepIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText style={{ paddingRight: "15px" }}>
-            Move to Trash
-          </ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            // dispatch(downloadAsync(props.data));
-          }}
-        >
-          <ListItemIcon>
-            <DeleteIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText style={{ paddingRight: "15px" }}>Delete</ListItemText>
-        </MenuItem>
+          {checkedCount === 1 ? (
+            <>
+              <Share data={props.data} menuClose={handleClose} />
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  dispatch(downloadAsync(props.data));
+                }}
+              >
+                <ListItemIcon>
+                  <CloudDownloadIcon color="secondary" />
+                </ListItemIcon>
+                <ListItemText style={{ paddingRight: "15px" }}>
+                  Download
+                </ListItemText>
+              </MenuItem>
+              <UpdateNameModal
+                handleCloseOfRightClickMenu={handleClose}
+                {...data}
+              />
+            </>
+          ) : null}
+          
+        
+        <Trash handleCloseOfRightClickMenu={handleClose} {...data} />
+        <Restore handleCloseOfRightClickMenu={handleClose} {...data}/>
+        <Delete handleCloseOfRightClickMenu={handleClose} {...data} />
       </Menu>
     </div>
   );

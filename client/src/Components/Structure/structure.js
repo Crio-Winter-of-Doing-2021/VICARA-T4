@@ -50,6 +50,16 @@ export default function Structure(props) {
     showOwner: false,
     ...props,
   };
+
+  const contextMenuProps={
+    download:true,
+    share:true,
+    trash:true,
+    delete:true,
+    update:true,
+    restore:false
+  }
+
   return (
     <div>
       <div style={{ display: "flex" }}>

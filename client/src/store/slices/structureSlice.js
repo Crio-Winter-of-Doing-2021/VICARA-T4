@@ -113,6 +113,10 @@ export const structureSlice = createSlice({
         };
       });
     },
+    removeFromChildren:(state,action)=>{
+      let id=action.payload
+      delete state.children[id]
+    }
   },
 });
 
@@ -130,7 +134,8 @@ export const {
   updateSelection,
   resetSelection,
   selectAll,
-  updateNavSearchResults
+  updateNavSearchResults,
+  removeFromChildren
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -234,21 +239,25 @@ export const updateChildAsync = (data) => (dispatch) => {
       .then((res) => {
         dispatch(updateChild(res.data));
         dispatch(normalLoader());
+        dispatch(resetSelection())
       })
       .catch((err) => {
         console.log(err);
         dispatch(normalLoader());
+        dispatch(resetSelection())
       });
   } else {
     API.patch("/api/folder/", rest)
       .then((res) => {
         dispatch(updateChild(res.data));
         dispatch(normalLoader());
+        dispatch(resetSelection())
       })
       .catch((err) => {
         console.log(err.response);
         dispatch(error(err.response.data.message));
         dispatch(normalLoader());
+        dispatch(resetSelection())
       });
   }
 };

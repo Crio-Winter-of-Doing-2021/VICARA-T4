@@ -148,6 +148,7 @@ export default function TableComponent({
 
   return (
     <div>
+      {console.log("count",checkedCount)}
       <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
@@ -158,11 +159,13 @@ export default function TableComponent({
                     if (checkedCount === 0) {
                       console.log("select all");
                       dispatch(selectAll());
-                    } else {
+                    }
+                     if(checkedCount!==0){
                       dispatch(resetSelection());
                     }
                   }}
-                  // checked={checkedCount !== 0}
+                  checked={checkedCount !== 0}
+                  style={{backgroundColor:checkedCount===0?"grey":"#333538",padding:"5px",margin:"0 5px"}}
                   inputProps={{ "aria-label": "primary checkbox" }}
                 />
               </StyledTableCell>

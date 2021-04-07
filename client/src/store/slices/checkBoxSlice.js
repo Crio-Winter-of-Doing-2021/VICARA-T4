@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import axios from "axios";
-import { updateFileName, popFromCurrentStack } from "./structureSlice";
+import { updateFileName, popFromCurrentStack ,removeFromChildren,resetSelection} from "./structureSlice";
 import { normalLoader } from "./loaderSlice";
 import { updateFavFileName, popFromCurrentFavStack } from "./favSlice";
 import { updateRecentFileName, popFromCurrentRecentStack } from "./recentSlice";
@@ -80,17 +80,10 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            let newdata = {
-              data: res[k].data,
-              type: "folder",
-            };
-            dispatch(popFromCurrentStack(newdata));
-            dispatch(popFromCurrentFavStack(newdata));
-            dispatch(popFromCurrentRecentStack(newdata));
-            dispatch(popFromCurrentTrashStack(newdata));
-            
+            dispatch(removeFromChildren(res[k].data.id))
           }
           dispatch(getProfileAsync(id));
+          dispatch(resetSelection())
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"))
         })
@@ -99,7 +92,6 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         dispatch(normalLoader());
         console.log(err.response)
         dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
       });
   }
 
@@ -119,16 +111,10 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            let newdata = {
-              data: res[k].data,
-              type: "file",
-            };
-            dispatch(popFromCurrentStack(newdata));
-            dispatch(popFromCurrentFavStack(newdata));
-            dispatch(popFromCurrentRecentStack(newdata));
-            dispatch(popFromCurrentTrashStack(newdata));
+            dispatch(removeFromChildren(res[k].data.id))
           }
           dispatch(getProfileAsync(id));
+          dispatch(resetSelection())
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"))
         })
@@ -137,75 +123,72 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
         dispatch(normalLoader());
         console.log(err.response)
         dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
-      });
-  }
-
-  dispatch(emptykeys());
-};
-
-export const updateAsync = (fileData, folderData) => (dispatch) => {
-  if (Object.keys(folderData).length !== 0) {
-    dispatch(normalLoader());
-    API.patch("/api/folder/", folderData.payload)
-      .then((res) => {
-        console.log(res);
-        // dispatch(emptykeys())
-        let newData = {
-          data: res.data,
-          index: folderData.index,
-        };
-        dispatch(updateFileName(newData));
-        dispatch(updateFavFileName(newData));
-        dispatch(updateRecentFileName(newData));
-        // dispatch(
-        //   updateSelectedKeys({
-        //     type: "folder",
-        //     ...folderData.payload,
-        //   })
-        // );
-
-        dispatch(normalLoader());
-        dispatch(success("Your Action was Successful"))
-      })
-      .catch((err) => {
-        dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
-      });
-  }
-
-  if (Object.keys(fileData).length !== 0) {
-    dispatch(normalLoader());
-    API.patch("/api/file/", fileData.payload)
-      .then((res) => {
-        console.log(res);
-        // dispatch(emptykeys())
-        let newData = {
-          data: res.data,
-          index: fileData.index,
-        };
-        dispatch(updateFileName(newData));
-        dispatch(updateFavFileName(newData));
-        dispatch(updateRecentFileName(newData));
-        // dispatch(
-        //   updateSelectedKeys({
-        //     type: "file",
-        //     ...folderData.payload,
-        //   })
-        // );
-        dispatch(normalLoader());
-        dispatch(success("Your Action was Successful"))
-      })
-      .catch((err) => {
-        dispatch(normalLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
       });
   }
 };
+
+// export const updateAsync = (fileData, folderData) => (dispatch) => {
+//   if (Object.keys(folderData).length !== 0) {
+//     dispatch(normalLoader());
+//     API.patch("/api/folder/", folderData.payload)
+//       .then((res) => {
+//         console.log(res);
+//         // dispatch(emptykeys())
+//         let newData = {
+//           data: res.data,
+//           index: folderData.index,
+//         };
+//         dispatch(updateFileName(newData));
+//         dispatch(updateFavFileName(newData));
+//         dispatch(updateRecentFileName(newData));
+//         // dispatch(
+//         //   updateSelectedKeys({
+//         //     type: "folder",
+//         //     ...folderData.payload,
+//         //   })
+//         // );
+
+//         dispatch(normalLoader());
+//         dispatch(success("Your Action was Successful"))
+//       })
+//       .catch((err) => {
+//         dispatch(normalLoader());
+//         console.log(err.response)
+//         dispatch(error(err.response.data.message))
+//         dispatch(emptykeys());
+//       });
+//   }
+
+//   if (Object.keys(fileData).length !== 0) {
+//     dispatch(normalLoader());
+//     API.patch("/api/file/", fileData.payload)
+//       .then((res) => {
+//         console.log(res);
+//         // dispatch(emptykeys())
+//         let newData = {
+//           data: res.data,
+//           index: fileData.index,
+//         };
+//         dispatch(updateFileName(newData));
+//         dispatch(updateFavFileName(newData));
+//         dispatch(updateRecentFileName(newData));
+//         // dispatch(
+//         //   updateSelectedKeys({
+//         //     type: "file",
+//         //     ...folderData.payload,
+//         //   })
+//         // );
+//         dispatch(normalLoader());
+//         dispatch(success("Your Action was Successful"))
+//       })
+//       .catch((err) => {
+//         dispatch(normalLoader());
+//         console.log(err.response)
+//         dispatch(error(err.response.data.message))
+//         dispatch(emptykeys());
+//       });
+//   }
+// };
 
 export const trashAsync = (fileArr, folderArr) => (dispatch) => {
   if (folderArr.length !== 0) {
@@ -227,14 +210,9 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            let newdata = {
-              data: res[k].data,
-              type: "folder",
-            };
-            dispatch(popFromCurrentStack(newdata));
-            dispatch(popFromCurrentFavStack(newdata));
-            dispatch(popFromCurrentRecentStack(newdata));
+            dispatch(removeFromChildren(res[k].data.id))
           }
+          dispatch(resetSelection())
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"))
         })
@@ -243,7 +221,6 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         dispatch(normalLoader());
         console.log(err.response)
         dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
       });
   }
 
@@ -266,15 +243,9 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            let newdata = {
-              data: res[k].data,
-              type: "file",
-            };
-            dispatch(popFromCurrentStack(newdata));
-            dispatch(popFromCurrentFavStack(newdata));
-            dispatch(popFromCurrentRecentStack(newdata));
-            
+            dispatch(removeFromChildren(res[k].data.id))
           }
+          dispatch(resetSelection())
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"))
         })
@@ -283,11 +254,9 @@ export const trashAsync = (fileArr, folderArr) => (dispatch) => {
         dispatch(normalLoader());
         console.log(err.response)
         dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
+      
       });
   }
-
-  dispatch(emptykeys());
 };
 
 export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
@@ -307,15 +276,9 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            let newdata = {
-              data: res[k].data,
-              type: "folder",
-            };
-            dispatch(popFromCurrentStack(newdata));
-            dispatch(popFromCurrentFavStack(newdata));
-            dispatch(popFromCurrentRecentStack(newdata));
-            dispatch(popFromCurrentTrashStack(newdata));
+            dispatch(removeFromChildren(res[k].data.id))
           }
+          dispatch(resetSelection())
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"))
         })
@@ -324,7 +287,6 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         dispatch(normalLoader());
         console.log(err.response)
         dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
       });
   }
 
@@ -344,15 +306,9 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         axios.spread((...res) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            let newdata = {
-              data: res[k].data,
-              type: "file",
-            };
-            dispatch(popFromCurrentStack(newdata));
-            dispatch(popFromCurrentFavStack(newdata));
-            dispatch(popFromCurrentRecentStack(newdata));
-            dispatch(popFromCurrentTrashStack(newdata));
+            dispatch(removeFromChildren(res[k].data.id))
           }
+          dispatch(resetSelection())
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"))
         })
@@ -361,11 +317,11 @@ export const restoreAsync = (fileArr, folderArr) => (dispatch) => {
         dispatch(normalLoader());
         console.log(err.response)
         dispatch(error(err.response.data.message))
-        dispatch(emptykeys());
+       
       });
   }
 
-  dispatch(emptykeys());
+  
 };
 
 export const selectCheckedFolderKeys = (state) =>

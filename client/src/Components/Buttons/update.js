@@ -39,14 +39,14 @@ export default function UpdateNameModal({
   };
 
   const { id, name, type } = data;
-  console.log({ data });
-  console.log({ id, name, type });
+  // console.log({ data });
+  // console.log({ id, name, type });
   const handleClick = () => {
     handleCloseOfRightClickMenu();
     handleClickOpen();
   };
   return (
-    <div style={{ margin: "10px" }}>
+    <div>
       <MenuItem onClick={handleClick}>
         <ListItemIcon>
           <EditIcon color="primary" />
