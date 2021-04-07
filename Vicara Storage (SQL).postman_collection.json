@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"ashutosh\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"random2\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,9 +20,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{PROD}}/api/auth/register/",
+					"raw": "{{LOCAL}}/api/auth/register/",
 					"host": [
-						"{{PROD}}"
+						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
@@ -118,7 +118,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"ashutoshPanda_1\",\n    \"password\":\"password\"\n}",
+					"raw": "{\n    \"username\":\"random2\",\n    \"password\":\"password\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -236,7 +236,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/users/search/?query=admin",
+					"raw": "{{LOCAL}}/api/users/search/?query=gmai",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -249,7 +249,7 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "admin"
+							"value": "gmai"
 						}
 					]
 				}
@@ -312,7 +312,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\":\"iamashutoshpanda@gmail.com\"\n}",
+					"raw": "{\n    \n    \"first_name\":\"Random\",\n    \"last_name\":\"random\"\n\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -320,9 +320,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/profile/",
+					"raw": "{{PROD}}/api/profile/",
 					"host": [
-						"{{LOCAL}}"
+						"{{PROD}}"
 					],
 					"path": [
 						"api",
@@ -444,7 +444,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/folder/?id=1",
+					"raw": "{{LOCAL}}/api/folder/?id=62",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -456,7 +456,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "62"
 						}
 					]
 				}
@@ -476,7 +476,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\":\"Level 3.1\",\n    \"PARENT\":\"ROOT\"\n}",
+					"raw": "{\n    \"name\":\"Move to this 4\",\n    \"PARENT\":\"ROOT\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -510,7 +510,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"shared_among\":[4],\n    \"id\":8\n}",
+					"raw": "{\n    \"shared_among\":[4],\n    \"id\":24\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -572,6 +572,50 @@
 			"response": []
 		},
 		{
+			"name": "/folder/picker",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/api/folder/picker/?id=ROOT",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"api",
+						"folder",
+						"picker",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "ROOT"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/folder/download",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -595,9 +639,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/folder/download/?id=1",
+					"raw": "{{PROD}}/api/folder/download/?id=2",
 					"host": [
-						"{{LOCAL}}"
+						"{{PROD}}"
 					],
 					"path": [
 						"api",
@@ -608,7 +652,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "2"
 						}
 					]
 				}
@@ -616,12 +660,9 @@
 			"response": []
 		},
 		{
-			"name": "/share-file",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"name": "/folder/partial-download",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
@@ -631,7 +672,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\n    \"CHILDREN\":[\n        {\n            \"id\":62,\n            \"type\":\"folder\"\n        },{\n            \"id\":61,\n            \"type\":\"folder\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -639,73 +680,66 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/file/share/?id=6&CREATOR=6",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"file",
-						"share",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "6"
-						},
-						{
-							"key": "CREATOR",
-							"value": "6"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/share-folder",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/share/?id=2&CREATOR=1",
+					"raw": "{{LOCAL}}/api/folder/partial-download/",
 					"host": [
 						"{{LOCAL}}"
 					],
 					"path": [
 						"api",
 						"folder",
-						"share",
+						"partial-download",
 						""
 					],
 					"query": [
 						{
-							"key": "id",
-							"value": "2"
-						},
-						{
-							"key": "CREATOR",
-							"value": "1"
+							"key": "CHILDREN",
+							"value": "",
+							"disabled": true
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/folder/upload-folder",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "text"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/api/folder/upload-folder/",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"api",
+						"folder",
+						"upload-folder",
+						""
 					]
 				}
 			},
@@ -772,9 +806,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/file/download/?id=1",
+					"raw": "{{PROD}}/api/file/download/?id=57",
 					"host": [
-						"{{LOCAL}}"
+						"{{PROD}}"
 					],
 					"path": [
 						"api",
@@ -785,7 +819,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "57"
 						}
 					]
 				}
@@ -814,7 +848,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/home/panda/Documents/result_nitrr/sem_4.pdf"
+							"src": "/home/panda/Downloads/cloudinary8/shiva_vertical_long.jpeg"
 						}
 					]
 				},
@@ -909,7 +943,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{LOCAL}}/api/file/?id=8",
+					"raw": "{{LOCAL}}/api/file/?id=48",
 					"host": [
 						"{{LOCAL}}"
 					],
@@ -921,7 +955,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "8"
+							"value": "48"
 						}
 					]
 				}
@@ -929,7 +963,50 @@
 			"response": []
 		},
 		{
-			"name": "upload-by-url",
+			"name": "search-file-folder",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PROD}}/api/search-file-folder/?query=phone",
+					"host": [
+						"{{PROD}}"
+					],
+					"path": [
+						"api",
+						"search-file-folder",
+						""
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "phone"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/move",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -941,7 +1018,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"PARENT\":\"ROOT\",\n    \"DRIVE_URL\":\"https://www.google.com/webhp?hl=en&sa=X&ved=0ahUKEwj506e7ht3vAhWHV30KHcWhB0sQPAgI\",\n    \"NAME\":\"google.png\"\n}",
+					"raw": "{\n    \"PARENT\":62,\n    \"CHILDREN\":[\n       {\n            \"id\":61,\n            \"type\":\"folder\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -949,9 +1026,43 @@
 					}
 				},
 				"url": {
-					"raw": "{{LOCAL}}/api/file/upload-by-url/",
+					"raw": "{{LOCAL}}/api/move/",
 					"host": [
 						"{{LOCAL}}"
+					],
+					"path": [
+						"api",
+						"move",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload-by-url Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{auth_token_string}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"PARENT\": \"ROOT\",\n    \"DRIVE_URL\": \"https://openthread.google.cn/images/ot-contrib-google.png\",\n    \"NAME\": \"file 3.png\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PROD}}/api/file/upload-by-url/",
+					"host": [
+						"{{PROD}}"
 					],
 					"path": [
 						"api",
@@ -1115,6 +1226,34 @@
 							"value": null,
 							"disabled": true
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{LOCAL}}/auth/token/",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n      \"refresh_token\": \"39hpwyLOM2UhYitcQbrI57WCqHNF53\",\n      \"grant_type\": \"refresh_token\",\n      \"client_id\": \"0DFH8wA3aOi1jzBmFLPD9Jg8wBKyu6c38LzTvuGY\",\n      \"client_secret\":\n        \"WodBpPyPrHXI9m8uDjRsFBNGNo3S8l2KPsFJ0OJyVqD3dHb6098DBaUbLFdcGxxMXGnG0ZUbAN3HyuWKubcvNZjaMEfEK3LOvyCgAv3oIoZynkzPSlExoO4wTp1O460J\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOCAL}}/auth/token/",
+					"host": [
+						"{{LOCAL}}"
+					],
+					"path": [
+						"auth",
+						"token",
+						""
 					]
 				}
 			},

@@ -369,10 +369,11 @@ class Path(APIView):
 class Move(APIView):
 
     def get_child_object(self, child):
+        type, id = child["type"], child["id"]
         if(type == "folder"):
-            child_obj = Folder.objects.get(id=child["id"])
+            child_obj = Folder.objects.get(id=id)
         else:
-            child_obj = File.objects.get(id=child["id"])
+            child_obj = File.objects.get(id=id)
         return child_obj
 
     def get_parent_object(self, child):
@@ -383,7 +384,8 @@ class Move(APIView):
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
-    @validate_for_move
+    @check_children
+    @check_prev_parent_old_parent_different
     def post(self, request, * args, **kwargs):
         new_parent = request.data.get("PARENT")
         new_parent = Folder.objects.get(id=new_parent)

@@ -1,13 +1,27 @@
 from itertools import chain
 
 # django
-from rest_framework import serializers
+from rest_framework import fields, serializers
 from .models import Folder
 from django.contrib.humanize.templatetags import humanize
 from django.contrib.auth.models import User
 from file.serializers import FileSerializer
 
 from user.serializers import UserSerializer
+
+
+class FolderSerializerMinimal(serializers.ModelSerializer):
+
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Folder
+        fields = ('name', 'id', 'children')
+
+    def get_children(self, obj):
+        # folders
+        folders = obj.children_folder.filter(trash=False)
+        return FolderSerializerMinimal(folders, many=True).data
 
 
 class FolderSerializerWithoutChildren(serializers.ModelSerializer):
@@ -50,8 +64,6 @@ class FolderSerializer(FolderSerializerWithoutChildren):
         # files
         files = obj.children_file.filter(trash=False)
         files = FileSerializer(files, many=True).data
-        for file in files:
-            file["type"] = "file"
 
         result_list = list(chain(folders, files))
         return result_list

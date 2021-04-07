@@ -1,36 +1,42 @@
-from file.tasks import remove_file
-from folder.tasks import remove_folder
-from file.decorators import check_storage_available
-import humanize
-from collections import defaultdict
 import json
-# python imports
-from file.utils import get_presigned_url
 import os
-from django.core.files import File as DjangoCoreFile, storage
-import shutil
 import secrets
-from mysite.settings import BASE_DIR
+import shutil
+from collections import defaultdict
 
+import humanize
+from django.contrib.auth.models import AnonymousUser, User
+from django.core.files import File as DjangoCoreFile
+from django.core.files import storage
+from file.decorators import check_storage_available
+from file.tasks import remove_file
+# python imports
+from file.utils import create_file, get_presigned_url
+from mysite.settings import BASE_DIR
+from rest_framework import status
 # django imports
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from django.contrib.auth.models import AnonymousUser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from user.decorators import check_children
+from user.serializers import ProfileSerializer, UserSerializer
+from user.tasks import send_mail, sync_send_mail
+from user.utils import get_client_server
+
+from folder.tasks import remove_folder
+
+from .decorators import *
+from .models import Folder
+from .serializers import (FolderSerializer, FolderSerializerMinimal,
+                          FolderSerializerWithoutChildren)
+from .utils import (create_folder, create_folder_rec,
+                    create_folder_rec_partial, recursive_delete,
+                    set_recursive_privacy, set_recursive_shared_among,
+                    set_recursive_trash)
 
 # local imports
 
-from .decorators import *
-from .serializers import FolderSerializer, FolderSerializerWithoutChildren
-from .models import Folder
-from .utils import set_recursive_shared_among, set_recursive_privacy, set_recursive_trash, recursive_delete, create_folder, create_folder_rec
-from file.utils import create_file
-from user.utils import get_client_server
-from user.tasks import send_mail, sync_send_mail
-from user.serializers import ProfileSerializer, UserSerializer
 POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
@@ -234,6 +240,21 @@ class UploadFolder(APIView):
 
 class DownloadFolder(APIView):
 
+    def make_temp_folder(self):
+        transaction = secrets.token_hex(4)
+        zip_dir = (BASE_DIR).joinpath(transaction)
+        return zip_dir, transaction
+
+    def convert_local_to_file_object(self, local_file_name, name_for_file_obj, owner):
+        local_file = open(local_file_name, 'rb')
+        djangofile = DjangoCoreFile(local_file)
+        file = File(file=djangofile,
+                    name=f"{name_for_file_obj}.zip",
+                    owner=owner,
+                    parent=None)
+        file.save()
+        return file
+
     @check_id_folder
     @check_has_access_folder
     @check_folder_not_trashed
@@ -242,22 +263,93 @@ class DownloadFolder(APIView):
         id = request.GET["id"]
         folder = Folder.objects.get(id=id)
         folder_name = folder.name
-        transaction = secrets.token_hex(4)
-        zip_dir = (BASE_DIR).joinpath(transaction)
-        # base_folder_name = folder.name
-        new_folder = create_folder_rec(zip_dir, folder)
-        new_folder_zipped_name = f"{folder_name}__{transaction}"
-        new_folder_zip = shutil.make_archive(
-            new_folder_zipped_name, 'zip', str(new_folder))
 
-        local_file = open(f"{new_folder_zipped_name}.zip", 'rb')
-        djangofile = DjangoCoreFile(local_file)
-        file = File(file=djangofile,
-                    name=f"{folder_name}.zip",
-                    owner=request.user,
-                    parent=None)
-        file.save()
+        # make temp folder for download
+        zip_dir, transaction = self.make_temp_folder()
+
+        # create replica of folder locally
+        new_folder = create_folder_rec(zip_dir, folder)
+
+        # make zip of folder in temp folder
+        new_folder_zipped_name = f"{folder_name}__{transaction}"
+
+        shutil.make_archive(new_folder_zipped_name, 'zip', str(new_folder))
+
+        # upload zip to S3
+        local_file_name = f"{new_folder_zipped_name}.zip"
+        file = self.convert_local_to_file_object(
+            local_file_name, folder_name, request.user)
         url = get_presigned_url(file.get_s3_key())
+
+        # remove_file.delay(new_folder_zip)
+        # remove_folder.delay(str(zip_dir))
+
+        shutil.rmtree(zip_dir)
+        os.remove(f"{new_folder_zipped_name}.zip")
+        return Response(data={"url": url}, status=status.HTTP_200_OK)
+
+
+class FolderPicker(APIView):
+
+    @allow_id_root
+    @check_id_folder
+    @check_has_access_folder
+    @check_folder_not_trashed
+    @update_last_modified_folder
+    def get(self, request, * args, **kwargs):
+        id = request.GET["id"]
+        folder = Folder.objects.get(id=id)
+        data = FolderSerializerMinimal(folder).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class ParitalDownload(DownloadFolder):
+
+    def get_parent(self, child):
+        type, id = child["type"], child["id"]
+        if(type == "folder"):
+            child_obj = Folder.objects.get(id=id)
+        else:
+            child_obj = File.objects.get(id=id)
+        return child_obj.parent
+
+    def get_file_folder_ids(self, children):
+        file_ids, folder_ids = set([]), set([])
+        for child in children:
+            type, id = child["type"], child["id"]
+            if(type == "file"):
+                file_ids.add(id)
+            else:
+                folder_ids.add(id)
+        return file_ids, folder_ids
+
+    @check_request_attr(["CHILDREN"])
+    @check_children
+    def post(self, request, * args, **kwargs):
+        children = request.data.get("CHILDREN")
+        file_ids, folder_ids = self.get_file_folder_ids(children)
+
+        parent = self.get_parent(children[0])
+        folder = parent
+        folder_name = folder.name
+
+        # make temp folder for download
+        zip_dir, transaction = self.make_temp_folder()
+
+        # create replica of folder locally
+        new_folder = create_folder_rec_partial(
+            zip_dir, folder,  file_ids, folder_ids)
+
+        # make zip of folder in temp folder
+        new_folder_zipped_name = f"{folder_name}__{transaction}"
+        shutil.make_archive(new_folder_zipped_name, 'zip', str(new_folder))
+
+        # upload zip to S3
+        local_file_name = f"{new_folder_zipped_name}.zip"
+        file = self.convert_local_to_file_object(
+            local_file_name, folder_name, request.user)
+        url = get_presigned_url(file.get_s3_key())
+
         # remove_file.delay(new_folder_zip)
         # remove_folder.delay(str(zip_dir))
 

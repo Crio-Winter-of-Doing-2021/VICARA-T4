@@ -66,3 +66,15 @@ def create_folder_rec(parent_path, folder):
     for child_file in folder.children_file.all():
         child_file.download_to(new_folder_path)
     return new_folder_path
+
+
+def create_folder_rec_partial(parent_path, folder, file_ids, folder_ids):
+    folder_name = folder.name
+    new_folder_path = create_local_folder(parent_path, folder_name)
+    for child_folder in folder.children_folder.all():
+        if(child_folder.id in folder_ids):
+            create_folder_rec(new_folder_path, child_folder)
+    for child_file in folder.children_file.all():
+        if(child_file.id in file_ids):
+            child_file.download_to(new_folder_path)
+    return new_folder_path

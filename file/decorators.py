@@ -45,7 +45,7 @@ def check_is_owner_file(func):
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
 
-        file = File.custom_objects.get(id=id)
+        file = File.custom_objects.get_or_none(id=id)
         if(file.owner != request.user):
             return Response(data={"message": "user is not owner of the file"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -60,7 +60,7 @@ def check_has_access_file(func):
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
 
-        file = File.custom_objects.get(id=id)
+        file = File.custom_objects.get_or_none(id=id)
         allowed = False
 
         if(file.owner == request.user or file.privacy == False):
@@ -109,12 +109,13 @@ def check_already_present(to_check):
                 # for post when new is created by parent id
                 if("PARENT" in request.data):
                     parent_id = request.data["PARENT"]
-                    parent_folder = Folder.custom_objects.get(id=parent_id)
+                    parent_folder = Folder.custom_objects.get_or_none(
+                        id=parent_id)
 
                 # for patch when rename is done by folder id
                 else:
                     id = get_id(request)
-                    folder = File.custom_objects.get(id=id)
+                    folder = File.custom_objects.get_or_none(id=id)
                     parent_folder = folder.parent
 
                 if(to_check == "req_data_name"):
@@ -140,7 +141,7 @@ def check_file_not_trashed(func):
     @ functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
-        file = File.custom_objects.get(id=id)
+        file = File.custom_objects.get_or_none(id=id)
 
         if file.trash:
             return Response(data={"message": "File is in Trash. Please restore to view it."}, status=status.HTTP_400_BAD_REQUEST)
@@ -153,7 +154,7 @@ def update_last_modified_file(func):
     @ functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
-        file = File.custom_objects.get(id=id)
+        file = File.custom_objects.get_or_none(id=id)
         file.last_modified = datetime.now()
         file.save()
         result = func(self, request, *args, **kwargs)
