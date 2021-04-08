@@ -11,6 +11,7 @@ import {
   resetSelection,
   selectCheckedCount,
   selectAll,
+  selectOrderBy,
 } from "../../store/slices/structureSlice";
 
 import { downloadOrViewFile } from "../../store/slices/fileViewSlice";
@@ -93,10 +94,26 @@ export default function TableComponent({
   const classes = useStyles();
 
   let loading = useSelector(skeletonLoading);
+  let orderBy = useSelector(selectOrderBy);
 
   // let tableData = [];
   const dispatch = useDispatch();
   const checkedCount = useSelector(selectCheckedCount);
+
+  const compareByName = (a, b) => {
+    return a.name > b.name;
+  };
+
+  const compareByLastModified = (a, b) => {
+    return a.last_modified_ms < b.last_modified_ms;
+  };
+
+  if (orderBy === "last_modified") {
+    tableData.sort(compareByLastModified);
+  } else {
+    tableData.sort(compareByName);
+  }
+
   const tableRenderer = tableData.map((data, index) => {
     const {
       privacy,

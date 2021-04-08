@@ -18,6 +18,7 @@ export const structureSlice = createSlice({
     children: {},
     selectCount: 0,
     navSearchResults: [],
+    orderBy: "last_modified",
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -115,6 +116,9 @@ export const structureSlice = createSlice({
       const { id, type } = action.payload;
       const stateId = `${type}_${id}`;
       delete state.children[stateId];
+    },
+    setOrderBy: (state, action) => {
+      state.orderBy = action.payload;
     },
   },
 });
@@ -350,6 +354,7 @@ export const selectChecked = (state) => {
 
 export const selectCheckedCount = (state) => state.structure.selectCount;
 export const navStructure = (state) => state.structure.currentPath;
+export const selectOrderBy = (state) => state.structure.orderBy;
 export const selectNavSearchResults = (state) =>
   state.structure.navSearchResults;
 

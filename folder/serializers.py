@@ -28,6 +28,7 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
 
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
+    last_modified_ms = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
@@ -50,6 +51,9 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     def get_shared_among(self, obj):
         data = UserSerializer(obj.shared_among.all(), many=True).data
         return data
+
+    def get_last_modified_ms(self, obj):
+        return int(obj.last_modified.timestamp()*1e3)
 
 
 class FolderSerializer(FolderSerializerWithoutChildren):

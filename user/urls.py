@@ -1,13 +1,9 @@
-from .views import LoginView, Logout, Recent, Register, ListOfUsers,\
+from .views import Recent, ListOfUsers,\
     ProfileView, Path, Favourites, Trash, SharedWithMe, RecoverFolder,\
-    RecoverFile, ProfilePicture, SearchUsers, GoogleLogin, SearchFileFolder, Move
+    RecoverFile, ProfilePicture, SearchUsers, SearchFileFolder, Move
 from django.urls import path
 
 urlpatterns = [
-    # path('auth/login/', LoginView.as_view(), name="login"),
-    # path('auth/google-login/', GoogleLogin.as_view(), name="google-login"),
-    # path('auth/register/', Register.as_view(), name="signup"),
-    # path('auth/logout/', Logout.as_view(), name="signup"),
     path('users/', ListOfUsers.as_view(), name="users"),
     path('users/search/',  SearchUsers.as_view(), name="search-users"),
     path('profile/', ProfileView.as_view(), name="profile"),

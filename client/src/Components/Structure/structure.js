@@ -9,19 +9,11 @@ import {
 } from "../../store/slices/structureSlice";
 
 import CreateFolder from "../Buttons/createFolder";
-import Delete from "../Buttons/delete";
-import Update from "../Buttons/update";
-import Trash from "../Buttons/moveToTrash";
 
 import UploadMenu from "../UploadMenu/index";
 import TableComponent from "../../Utilities/Table";
 
 export const privOpp = 1;
-//  privacyOptions,
-//   favouriteOptions,
-//   tableData,
-//   showOwner,
-//   ...props
 export default function Structure(props) {
   let unique_id = props.match.params.id;
   const children = useSelector(selectChildren);
@@ -51,23 +43,11 @@ export default function Structure(props) {
     ...props,
   };
 
-  const contextMenuProps={
-    download:true,
-    share:true,
-    trash:true,
-    delete:true,
-    update:true,
-    restore:false
-  }
-
   return (
     <div>
       <div style={{ display: "flex" }}>
         <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
-        {/* <Update /> */}
-        {/* <Trash />
-        <Delete /> */}
       </div>
       <Path {...props} />
       <TableComponent {...tableProps} />
