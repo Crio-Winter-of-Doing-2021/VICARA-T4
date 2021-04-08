@@ -305,6 +305,7 @@ class Move(APIView):
     @check_parent_folder_not_trashed
     @check_children
     @check_prev_parent_old_parent_different
+    @check_new_parent_not_in_sub_directory
     def post(self, request, * args, **kwargs):
         new_parent = request.data.get("PARENT")
         new_parent = Folder.objects.get(id=new_parent)
