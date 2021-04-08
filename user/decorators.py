@@ -59,7 +59,7 @@ def check_new_parent_not_in_sub_directory(func):
             child_obj = get_child_object(child)
             child_obj_path = get_path(child_obj)
             if(present_in_subdirectory(new_parent_path, child_obj_path)):
-                return Response(data={"message": "Can not move folder to its own sub-direcotry"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={"message": "Can not move folder to its own sub-directory"}, status=status.HTTP_400_BAD_REQUEST)
 
         result = func(self, request, args, **kwargs)
         return result
