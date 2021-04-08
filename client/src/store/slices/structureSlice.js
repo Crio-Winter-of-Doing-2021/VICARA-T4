@@ -16,7 +16,6 @@ export const structureSlice = createSlice({
       },
     ],
     children: {},
-    selectCount: 0,
     navSearchResults: [],
     orderBy: "last_modified",
   },
@@ -89,12 +88,10 @@ export const structureSlice = createSlice({
         ...state.children[stateId],
         selected,
       };
-      if (selected) state.selectCount += 1;
-      else state.selectCount -= 1;
     },
     resetSelection: (state, action) => {
       const childrenMap = state.children;
-      state.selectCount = 0;
+
       Object.keys(childrenMap).forEach(function (key, index) {
         state.children[key] = {
           ...state.children[key],
@@ -104,7 +101,6 @@ export const structureSlice = createSlice({
     },
     selectAll: (state, action) => {
       const childrenMap = state.children;
-      state.selectCount = Object.keys(state.children).length;
       Object.keys(childrenMap).forEach(function (key, index) {
         state.children[key] = {
           ...state.children[key],
@@ -114,11 +110,11 @@ export const structureSlice = createSlice({
     },
     removeFromChildren: (state, action) => {
       const { id, type } = action.payload;
-     
-      console.log("payload",action.payload)
+
+      console.log("payload", action.payload);
 
       const stateId = `${type}_${id}`;
-      console.log("removing",stateId)
+      console.log("removing", stateId);
       delete state.children[stateId];
     },
     setOrderBy: (state, action) => {
@@ -143,7 +139,7 @@ export const {
   selectAll,
   updateNavSearchResults,
   removeFromChildren,
-  setOrderBy
+  setOrderBy,
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -357,7 +353,16 @@ export const selectChecked = (state) => {
   return checkedArray;
 };
 
-export const selectCheckedCount = (state) => state.structure.selectCount;
+export const selectCheckedCount = (state) => {
+  let checkedCount = 0;
+  const childrenMap = state.structure.children;
+  Object.keys(childrenMap).forEach(function (key, index) {
+    if (childrenMap[key].selected) {
+      checkedCount++;
+    }
+  });
+  return checkedCount;
+};
 export const navStructure = (state) => state.structure.currentPath;
 export const selectOrderBy = (state) => state.structure.orderBy;
 export const selectNavSearchResults = (state) =>

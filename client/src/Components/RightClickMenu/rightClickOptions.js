@@ -6,6 +6,7 @@ export const rightClickOptions = {
     showTrash: true,
     showDelete: true,
     showRestore: false,
+    showMove: false,
   },
   "/favourites": {
     showUpdate: true,
@@ -14,6 +15,7 @@ export const rightClickOptions = {
     showTrash: true,
     showDelete: true,
     showRestore: false,
+    showMove: false,
   },
   "/drive/:id": {
     showUpdate: true,
@@ -22,6 +24,7 @@ export const rightClickOptions = {
     showTrash: true,
     showDelete: true,
     showRestore: false,
+    showMove: true,
   },
   "/trash": {
     showUpdate: false,
@@ -30,6 +33,7 @@ export const rightClickOptions = {
     showTrash: false,
     showDelete: true,
     showRestore: true,
+    showMove: false,
   },
   "/shared-with-me": {
     showUpdate: false,
@@ -38,5 +42,6 @@ export const rightClickOptions = {
     showTrash: false,
     showDelete: false,
     showRestore: false,
+    showMove: false,
   },
 };

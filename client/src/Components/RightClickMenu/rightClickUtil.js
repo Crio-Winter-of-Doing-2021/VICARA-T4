@@ -16,7 +16,7 @@ import UpdateNameModal from "../Buttons/update";
 import Delete from "../Buttons/delete";
 import Trash from "../Buttons/moveToTrash";
 import Restore from "../Buttons/restore";
-import Move from "../Buttons/Move/index"
+import Move from "../Buttons/Move/index";
 import { withRouter } from "react-router-dom";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -48,6 +48,7 @@ function ContextMenu(props) {
     showDelete,
     showRestore,
     showUpdate,
+    showMove,
   } = rightClickOptions[path];
 
   const currentPage = useSelector(selectPage);
@@ -130,7 +131,9 @@ function ContextMenu(props) {
           </>
         ) : null}
 
-        <Move handleCloseOfRightClickMenu={handleClose} {...data} />
+        {showMove ? (
+          <Move handleCloseOfRightClickMenu={handleClose} props={props} />
+        ) : null}
 
         {showTrash ? (
           <Trash handleCloseOfRightClickMenu={handleClose} {...data} />

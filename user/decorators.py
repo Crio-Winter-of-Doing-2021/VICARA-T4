@@ -88,10 +88,11 @@ def check_children(func):
 def check_prev_parent_old_parent_different(func):
 
     def get_parent(child):
+        type, id = child["type"], child["id"]
         if(type == "folder"):
-            child_obj = Folder.objects.get(id=child["id"])
+            child_obj = Folder.objects.get(id=id)
         else:
-            child_obj = File.objects.get(id=child["id"])
+            child_obj = File.objects.get(id=id)
         return child_obj.parent
 
     @functools.wraps(func)
