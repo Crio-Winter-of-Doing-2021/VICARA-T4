@@ -152,7 +152,7 @@ class Filesystem(APIView):
         recursive_delete(folder, profile)
         profile.save()
         storage_data = ProfileSerializer(profile).data["storage_data"]
-        return Response(data={"id": id, **storage_data}, status=status.HTTP_200_OK)
+        return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
 
 
 class UploadFolder(APIView):
