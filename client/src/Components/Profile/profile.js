@@ -59,7 +59,7 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            <Typography>{`${userData.first_name} ${userData.last_name}`}</Typography>
+            <Typography>{userData.username===undefined?"Fetching profile...":`${userData.first_name} ${userData.last_name}`}</Typography>
           </div>
           <Divider />
           <div

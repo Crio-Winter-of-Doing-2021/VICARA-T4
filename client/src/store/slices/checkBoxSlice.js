@@ -11,7 +11,7 @@ import { normalLoader } from "./loaderSlice";
 import { updateFavFileName, popFromCurrentFavStack } from "./favSlice";
 import { updateRecentFileName, popFromCurrentRecentStack } from "./recentSlice";
 import { popFromCurrentTrashStack } from "./trashSlice";
-import { getProfileAsync } from "./authSlice";
+import { getProfileAsync,updateStorageData } from "./authSlice";
 import { success, error } from "./logSlice";
 export const checkBoxSlice = createSlice({
   name: "checkbox",
@@ -86,8 +86,8 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
           let k;
           for (k = 0; k < folderArr.length; k++) {
             dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
+            dispatch(updateStorageData(res[k].data.storage_data))
           }
-          dispatch(getProfileAsync(id));
           dispatch(resetSelection());
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"));
@@ -117,8 +117,8 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
           let k;
           for (k = 0; k < fileArr.length; k++) {
             dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
+            dispatch(updateStorageData(res[k].data.storage_data))
           }
-          dispatch(getProfileAsync(id));
           dispatch(resetSelection());
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"));

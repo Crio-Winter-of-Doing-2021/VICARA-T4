@@ -97,10 +97,11 @@ export const downloadAsync=(data)=>(dispatch)=>{
 export const multipleDownloadAsync=(data)=>(dispatch)=>{
  
     dispatch(normalLoader());
-    API.get(`/api/folder/partial-download/`, data)
+    API.post(`/api/folder/partial-download/`, data)
       .then((res) => {
         // console.log("in blobbbbbbbbbbbbbb", res.data["url"]);
         // saveAs(res.data["url"], "image.jpg");
+        window.open(res.data.url,"_blank")
         dispatch(normalLoader());
       })
       .catch((err) => {

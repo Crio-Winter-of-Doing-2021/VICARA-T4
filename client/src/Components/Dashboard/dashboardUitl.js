@@ -26,7 +26,7 @@ import Profile from "../Profile/profile";
 import { Copyright } from "../Forms/login";
 import { getProfileAsync } from "../../store/slices/authSlice";
 import { asyncLocalStorage } from "../../Utilities/localStoreAsync";
-import { setCurrentPage } from "../../store/slices/loaderSlice";
+import { setCurrentPage ,profileLoader} from "../../store/slices/loaderSlice";
 
 import Search from "./search";
 import { resetSelection } from "../../store/slices/structureSlice";
@@ -79,6 +79,7 @@ export default function ClippedDrawer(props) {
 
   // let id = window.localStorage.getItem("id");
   const [id, setId] = React.useState(null);
+  
   useEffect(() => {
     asyncLocalStorage.getItem("id").then((res) => {
       dispatch(getProfileAsync(res));

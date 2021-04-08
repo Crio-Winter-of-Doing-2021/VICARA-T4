@@ -303,7 +303,22 @@ class FolderPicker(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class ParitalDownload(DownloadFolder):
+class ParitalDownload(APIView):
+
+    def make_temp_folder(self):
+        transaction = secrets.token_hex(4)
+        zip_dir = (BASE_DIR).joinpath(transaction)
+        return zip_dir, transaction
+
+    def convert_local_to_file_object(self, local_file_name, name_for_file_obj, owner):
+        local_file = open(local_file_name, 'rb')
+        djangofile = DjangoCoreFile(local_file)
+        file = File(file=djangofile,
+                    name=f"{name_for_file_obj}.zip",
+                    owner=owner,
+                    parent=None)
+        file.save()
+        return file
 
     def get_parent(self, child):
         type, id = child["type"], child["id"]
