@@ -43,6 +43,20 @@ def get_path(start_node):
     return path
 
 
+def present_in_subdirectory(path_a, path_b):
+    """ checks whether a is in b"""
+    if(len(path_a) < len(path_b)):
+        return False
+
+    for i in range(len(path_b)):
+        child_a = path_a[i]
+        child_b = path_b[i]
+        if(child_a != child_b):
+            return False
+
+    return True
+
+
 def add_profile_picture(backend, user, response, *args, **kwargs):
 
     if backend.name == 'google-oauth2':
