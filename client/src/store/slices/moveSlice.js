@@ -60,8 +60,9 @@ export const moveAsync =(data)=>(dispatch)=>{
     dispatch(normalLoader())
     console.log(res.data);
   }).catch(err=>{
+    console.log(err.response);
+    dispatch(error(err.response.data.message));
     dispatch(normalLoader())
-    console.log(err)
   })
 }
 
