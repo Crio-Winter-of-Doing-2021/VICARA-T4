@@ -22,7 +22,7 @@ function FocusInput({
   const handleDoubleClick = (event) => event.target.select();
   return (
     <div>
-      <DialogTitle id="form-dialog-title">Update Name</DialogTitle>
+      <DialogTitle  id="form-dialog-title">Update Name</DialogTitle>
       <DialogContent>
         <input
           id="updateTextInput"

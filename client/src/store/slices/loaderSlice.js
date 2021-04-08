@@ -12,6 +12,7 @@ export const loaderSlice= createSlice({
     searchLoading:false,
     pictureLoading:false,
     navSearchLoading:false,
+    folderPickerLoading:false,
     currentPage:"Home"
   },
   reducers: {
@@ -36,6 +37,10 @@ export const loaderSlice= createSlice({
    navSearchLoader:(state)=>{
     state.navSearchLoading=!state.navSearchLoading
    },
+   folderPickerLoader:(state)=>{
+     state.folderPickerLoading=!state.folderPickerLoading
+   }
+   ,
    setCurrentPage:(state,action)=>{
      state.currentPage=action.payload
    }
@@ -50,7 +55,8 @@ export const {
   searchLoader,
   setCurrentPage,
   pictureLoader,
-  navSearchLoader
+  navSearchLoader,
+  folderPickerLoader
 } = loaderSlice.actions;
 
 export const downloadAsync=(data)=>(dispatch)=>{
@@ -120,5 +126,6 @@ export const searchLoading=(state)=>state.loader.searchLoading
 export const selectPage  = (state)=>state.loader.currentPage
 export const pictureLoading =(state)=>state.loader.pictureLoading
 export const navSearchLoading =(state)=>state.loader.navSearchLoading
+export const folderPickerLoading =(state)=>state.loader.folderPickerLoading
 
 export default loaderSlice.reducer;

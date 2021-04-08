@@ -10,6 +10,7 @@ import sharedWithMeReducer from './slices/sharedWithMeSlice'
 import trashReducer from './slices/trashSlice'
 import logReducer from './slices/logSlice'
 import fileViewReducer from './slices/fileViewSlice'
+import moveReducer from './slices/moveSlice'
 
 export default configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export default configureStore({
     sharedWithme:sharedWithMeReducer,
     trash:trashReducer,
     log:logReducer,
-    fileView:fileViewReducer
+    fileView:fileViewReducer,
+    move:moveReducer
   },
 });

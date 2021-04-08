@@ -13,6 +13,7 @@ import UpdateNameModal from "../Buttons/update";
 import Delete from "../Buttons/delete";
 import Trash from "../Buttons/moveToTrash";
 import Restore from "../Buttons/restore";
+import Move from "../Buttons/Move/index"
 import { withRouter } from "react-router-dom";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -128,6 +129,8 @@ function ContextMenu(props) {
             ) : null}
           </>
         ) : null}
+
+        <Move handleCloseOfRightClickMenu={handleClose} {...data} />
 
         {showTrash ? (
           <Trash handleCloseOfRightClickMenu={handleClose} {...data} />

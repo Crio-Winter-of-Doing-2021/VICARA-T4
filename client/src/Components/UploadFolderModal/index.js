@@ -61,7 +61,7 @@ export default function FormDialog(props) {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Upload Folders</DialogTitle>
+        <DialogTitle style={{backgroundColor:"black",color:"white"}} id="form-dialog-title">Upload Folders</DialogTitle>
         <Divider />
         <DialogContent>
           <div
@@ -69,6 +69,7 @@ export default function FormDialog(props) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              marginTop:"15px",
               height: "150px",
               border: "2px dashed grey",
               borderRadius: "5px",

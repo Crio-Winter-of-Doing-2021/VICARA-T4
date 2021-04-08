@@ -75,7 +75,7 @@ export default function CustomizedDialogs() {
         Contact Developers
       </Typography>
       <Dialog fullWidth onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <DialogTitle style={{backgroundColor:"black",color:"white"}} id="customized-dialog-title" onClose={handleClose}>
           Contact Developers
         </DialogTitle>
         <DialogContent>

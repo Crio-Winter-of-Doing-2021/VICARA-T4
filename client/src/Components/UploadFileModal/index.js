@@ -108,7 +108,7 @@ export default function FormDialog(props) {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Upload Files</DialogTitle>
+        <DialogTitle style={{backgroundColor:"black",color:"white"}} id="form-dialog-title">Upload Files</DialogTitle>
         <Divider />
         <DialogContent style={{ margin: "15px 0" }}>
           <DialogContentText>

@@ -38,7 +38,8 @@ export default function Profile() {
   if (userData.storage_data !== undefined) {
     progress = userData.storage_data.ratio * 100;
   }
-
+  
+  
   return (
     <div style={{ margin: "15px 0" }}>
       {loading === false ? (
