@@ -22,7 +22,7 @@ function App({ modalClose, parent }) {
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      console.log(acceptedFiles);
+      //console.log(acceptedFiles);
 
       setProgress(0);
       dispatch(fileUploadLoader());
@@ -48,7 +48,7 @@ function App({ modalClose, parent }) {
         onUploadProgress: (ev) => {
           const prog = (ev.loaded / ev.total) * 100;
           setProgress(Math.round(prog));
-          console.log({ progress });
+          //console.log({ progress });
         },
         headers: {
           "Content-Type": "multipart/form-data",
@@ -67,7 +67,7 @@ function App({ modalClose, parent }) {
         })
         .catch(function (err) {
           //handle error
-          console.log(err.response);
+          //console.log(err.response);
           dispatch(error(err.response.data.message));
           dispatch(fileUploadLoader());
           modalClose();

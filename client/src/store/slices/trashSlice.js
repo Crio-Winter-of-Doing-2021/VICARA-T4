@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { skeletonLoader } from "./loaderSlice";
-import {error} from './logSlice'
+import { error } from "./logSlice";
 // import axios from "axios";
 
 export const trashStructureSlice = createSlice({
@@ -15,13 +15,13 @@ export const trashStructureSlice = createSlice({
     },
     popFromCurrentTrashStack: (state, action) => {
       let res = action.payload;
-      console.log(res);
+      //console.log(res);
       function check(data) {
         return parseInt(res.data.id) === data.id && res.type === data.type;
       }
       let index = state.currentDisplayStructure.findIndex(check);
 
-      console.log(index);
+      //console.log(index);
 
       if (index !== -1) {
         state.currentDisplayStructure.splice(index, 1);
@@ -45,8 +45,8 @@ export const trashStructureAsync = () => (dispatch) => {
     })
     .catch((err) => {
       dispatch(skeletonLoader());
-        console.log(err.response)
-        dispatch(error(err.response.data.message))
+      //console.log(err.response)
+      dispatch(error(err.response.data.message));
     });
 };
 

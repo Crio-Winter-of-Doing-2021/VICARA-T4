@@ -15,7 +15,7 @@ function FocusInput({
   useEffect(() => {
     const fullName = inputRef.current.value;
     const filename = fullName.split(".")[0];
-    console.log({ filename });
+    //console.log({ filename });
     inputRef.current.focus();
     inputRef.current.setSelectionRange(0, filename.length);
   }, []);

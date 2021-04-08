@@ -74,7 +74,7 @@ export default function ClippedDrawer(props) {
   const dispatch = useDispatch();
 
   const handlePageChange = (e, data) => {
-    console.log(data);
+    //console.log(data);
     dispatch(emptykeys());
   };
 

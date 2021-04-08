@@ -9,6 +9,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     created_at = serializers.SerializerMethodField()
     last_modified = serializers.SerializerMethodField()
+    last_modified_ms = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
@@ -16,7 +17,7 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
 
-        fields = ('created_at', 'last_modified', 'shared_among', 'name',
+        fields = ('created_at', 'last_modified', 'last_modified_ms', 'shared_among', 'name',
                   'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size', 'type')
 
     def get_type(self, obj):
@@ -30,6 +31,9 @@ class FileSerializer(serializers.ModelSerializer):
 
     def get_last_modified(self, obj):
         return humanize.naturaltime(obj.last_modified)
+
+    def get_last_modified_ms(self, obj):
+        return int(obj.last_modified.timestamp()*1e3)
 
     def get_shared_among(self, obj):
         data = UserSerializer(obj.shared_among.all(), many=True).data

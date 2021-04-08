@@ -32,7 +32,7 @@ export default function CustomizedBreadcrumbs(props) {
 
   let updateFolder = (e, key) => {
     e.preventDefault();
-    console.log("key called", key);
+    //console.log("key called", key);
     props.history.push(`/drive/${key}`);
   };
 

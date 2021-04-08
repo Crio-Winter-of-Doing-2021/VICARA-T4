@@ -19,7 +19,7 @@ export const authSlice = createSlice({
       state.username = action.payload;
     },
     updateStorageData: (state, action) => {
-      console.log("update data", action.payload);
+      //console.log("update data", action.payload);
       state.userData.storage_data.readable = action.payload.readable;
       state.userData.storage_data.ratio = action.payload.ratio;
     },
@@ -43,7 +43,7 @@ export const loginAsync = (data, props) => (dispatch) => {
   axios
     .post(`${baseURL}/api/auth/login/`, data)
     .then((res) => {
-      console.log(res.data);
+      //console.log(res.data);
       let token = res.data.token;
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
       props.history.push(`/drive/${res.data.root_id}`);
@@ -54,7 +54,7 @@ export const loginAsync = (data, props) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(normalLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -68,7 +68,7 @@ export const getProfileAsync = (id) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(profileLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
@@ -78,7 +78,7 @@ export const googleLogin = (data, props) => (dispatch) => {
   axios
     .post(`${baseURL}/api/auth/google-login/`, data)
     .then((res) => {
-      console.log(res.data);
+      //console.log(res.data);
       let token = res.data.token;
       API.defaults.headers.common["Authorization"] = `Token ${token}`;
       // dispatch(setUser(res.data.username));
@@ -91,7 +91,7 @@ export const googleLogin = (data, props) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(normalLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };

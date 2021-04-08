@@ -31,7 +31,7 @@ export default function UpdateNameModal({
     setOpen(false);
   };
   const handleKeyDown = (event, newName) => {
-    console.log("down to earth");
+    //console.log("down to earth");
     if (event.key === "Enter") {
       dispatch(updateChildAsync({ id, type, name: newName }));
       setOpen(false);
@@ -39,8 +39,8 @@ export default function UpdateNameModal({
   };
 
   const { id, name, type } = data;
-  // console.log({ data });
-  // console.log({ id, name, type });
+  // //console.log({ data });
+  // //console.log({ id, name, type });
   const handleClick = () => {
     handleCloseOfRightClickMenu();
     handleClickOpen();

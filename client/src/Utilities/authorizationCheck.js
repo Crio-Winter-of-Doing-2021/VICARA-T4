@@ -8,7 +8,7 @@ export default function AuthorizationCheck(props) {
   let [success, setSuccess] = useState(null);
 
   useEffect(() => {
-    if(type==='file'){
+    if (type === "file") {
       API.get("/api/file/download/", {
         params: {
           id: key,
@@ -20,10 +20,10 @@ export default function AuthorizationCheck(props) {
           window.open(link);
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           setSuccess(false);
         });
-    }else{
+    } else {
       API.get("/api/folder/download/", {
         params: {
           id: key,
@@ -35,7 +35,7 @@ export default function AuthorizationCheck(props) {
           window.open(link);
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           setSuccess(false);
         });
     }

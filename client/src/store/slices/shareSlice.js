@@ -36,13 +36,13 @@ export const searchUserAsync = (value) => (dispatch) => {
     },
   })
     .then((res) => {
-      console.log(res);
+      //console.log(res);
       dispatch(setSearchResults(res.data));
       dispatch(searchLoader());
     })
     .catch((err) => {
       dispatch(searchLoader());
-      console.log(err.response);
+      //console.log(err.response);
       dispatch(error(err.response.data.message));
     });
 };
