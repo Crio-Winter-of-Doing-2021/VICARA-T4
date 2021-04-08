@@ -31,7 +31,7 @@ function FolderList() {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={res.name}
+                    primary={`${res.name}`}
                   />
                   <Divider/>
             </ListItem>

@@ -53,6 +53,7 @@ export default function CustomizedBreadcrumbs(props) {
             <FolderIcon fontSize="small" />
           )
         }
+        style={{marginTop:"5px"}}
         onClick={(e) => updateFolderView(e, data.id)}
       />
     );

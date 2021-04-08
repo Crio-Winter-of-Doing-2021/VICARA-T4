@@ -1,13 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
-import {folderPickerLoader} from './loaderSlice'
+import {folderPickerLoader,normalLoader} from './loaderSlice'
 import {error} from './logSlice'
+import {removeFromChildren,resetSelection} from './structureSlice'
 
 export const moveSlice = createSlice({
   name: "move",
   initialState: {
     currentFolderPickerView:[],
-    currentParentName:null,
+    currentParent:{
+      name:"",
+      id:""
+    },
     currentNavigation:[
         {
           name: "ROOT",
@@ -18,7 +22,7 @@ export const moveSlice = createSlice({
   reducers: {
     setFolderPicker:(state,action)=>{
         state.currentFolderPickerView=action.payload.children
-        state.currentParentName=action.payload.name
+        state.currentParent={name:action.payload.name,id:action.payload.id}
     },
     updatePath: (state, action) => {
         state.currentNavigation = action.payload;
@@ -44,6 +48,23 @@ export const getFolderPickerView=(current_parent)=>(dispatch)=>{
     })
 }
 
+export const moveAsync =(data)=>(dispatch)=>{
+  dispatch(normalLoader())
+  API.post('/api/move/',data).then(res=>{
+    let k=0
+
+    for(k=0;data.CHILDREN.length;k++){
+      dispatch(removeFromChildren(data.CHILDREN[k]))
+    }
+    dispatch(resetSelection())
+    dispatch(normalLoader())
+    console.log(res.data);
+  }).catch(err=>{
+    dispatch(normalLoader())
+    console.log(err)
+  })
+}
+
 export const pathAsync = (data) => (dispatch) => {
     // console.log("asking for path ");
     // console.log("token now = ", window.localStorage.getItem("access_token"));
@@ -67,7 +88,8 @@ export const pathAsync = (data) => (dispatch) => {
   };
 
 export const selectFolderView=(state)=> state.move.currentFolderPickerView
-export const selectParent=(state)=> state.move.currentParentName
+export const selectParent=(state)=> state.move.currentParent.name
+export const selectParentId=(state)=> state.move.currentParent.id
 export const selectPath = (state)=>state.move.currentNavigation
 
 export default moveSlice.reducer;

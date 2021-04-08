@@ -16,7 +16,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { ListItemText,List, Divider } from "@material-ui/core";
 
 import FlipToFrontIcon from '@material-ui/icons/FlipToFront';
-import {selectParent} from '../../../store/slices/moveSlice'
+import {selectParent,selectParentId,moveAsync} from '../../../store/slices/moveSlice'
 
 import FolderView from './folderView'
 import Path from './folderNavigation'
@@ -24,7 +24,7 @@ import Path from './folderNavigation'
 import {folderPickerLoading} from '../../../store/slices/loaderSlice'
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import {getFolderPickerView,pathAsync} from '../../../store/slices/moveSlice'
+import {selectChecked} from '../../../store/slices/structureSlice'
 
 const styles = (theme) => ({
   root: {
@@ -72,9 +72,25 @@ export default function CustomizedDialogs({ handleCloseOfRightClickMenu,
 }) {
   const [open, setOpen] = React.useState(false);
 
-  let parent=useSelector(selectParent)
+  let parent_name=useSelector(selectParent)
+  let parent_id=useSelector(selectParentId)
 
   let loading=useSelector(folderPickerLoading)
+
+  let checkedEle=useSelector(selectChecked)
+
+  let dataFetchForMove=checkedEle.map(ele=>{
+    let data={
+      id:ele.id,
+      type:ele.type
+    }
+    return data
+  })
+
+  let finalDataforMove={
+    PARENT:parent_id,
+    CHILDREN:dataFetchForMove
+  }
 
   const dispatch=useDispatch()
 
@@ -90,6 +106,8 @@ export default function CustomizedDialogs({ handleCloseOfRightClickMenu,
     handleClickOpen();
   };
 
+
+
   return (
     <div>
       <MenuItem onClick={handleClick}>
@@ -100,7 +118,7 @@ export default function CustomizedDialogs({ handleCloseOfRightClickMenu,
       </MenuItem>
       <Dialog fullWidth onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle style={{backgroundColor:"black",color:"white"}} id="customized-dialog-title" onClose={handleClose}>
-          Move to {parent}
+          Move to {parent_name}
         </DialogTitle>
         <DialogContent dividers>
           <div>
@@ -116,8 +134,8 @@ export default function CustomizedDialogs({ handleCloseOfRightClickMenu,
           
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
-            Save changes
+          <Button autoFocus onClick={()=>{handleClose();dispatch(moveAsync(finalDataforMove))}} color="primary">
+            Move Here
           </Button>
         </DialogActions>
       </Dialog>
