@@ -270,6 +270,7 @@ export const privacyAsync = 5;
 export const pathAsync = (data) => (dispatch) => {
   //console.log("asking for path ");
   //console.log("token now = ", window.localStorage.getItem("access_token"));
+  if(data.id==="ROOT") return
   API.get(`/api/path/`, {
     params: {
       id: data.id,

@@ -64,7 +64,7 @@ export const moveAsync = (props, data) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err);
-      // dispatch(error(err.response.data.message));
+      dispatch(error(err.response.data.message));
       dispatch(normalLoader());
     });
 };

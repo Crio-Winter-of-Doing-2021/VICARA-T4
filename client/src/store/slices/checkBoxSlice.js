@@ -69,6 +69,7 @@ export const { updateSelectedKeys, emptykeys } = checkBoxSlice.actions;
 
 export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
   const id = localStorage.getItem("id");
+  
   if (folderArr.length !== 0) {
     dispatch(normalLoader());
     let i;
@@ -83,6 +84,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       .all(axi_data)
       .then(
         axios.spread((...res) => {
+          console.log(res)
           let k;
           for (k = 0; k < folderArr.length; k++) {
             dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
@@ -95,7 +97,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        //console.log(err.response);
+        console.log(err);
         dispatch(error(err.response.data.message));
       });
   }
@@ -114,6 +116,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       .all(axi_data)
       .then(
         axios.spread((...res) => {
+          console.log(res)
           let k;
           for (k = 0; k < fileArr.length; k++) {
             dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
@@ -126,7 +129,7 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       )
       .catch((err) => {
         dispatch(normalLoader());
-        //console.log(err.response);
+        console.log(err);
         dispatch(error(err.response.data.message));
       });
   }
