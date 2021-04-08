@@ -114,7 +114,11 @@ export const structureSlice = createSlice({
     },
     removeFromChildren: (state, action) => {
       const { id, type } = action.payload;
+     
+      console.log("payload",action.payload)
+
       const stateId = `${type}_${id}`;
+      console.log("removing",stateId)
       delete state.children[stateId];
     },
     setOrderBy: (state, action) => {

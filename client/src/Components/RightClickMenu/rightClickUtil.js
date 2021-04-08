@@ -83,7 +83,6 @@ function ContextMenu(props) {
   return (
     <div onContextMenu={handleClick}>
       {props.children}
-      {console.log(checkedCount)}
 
       <Menu
         keepMounted

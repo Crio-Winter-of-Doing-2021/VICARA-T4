@@ -52,16 +52,21 @@ export const moveAsync =(data)=>(dispatch)=>{
   dispatch(normalLoader())
   API.post('/api/move/',data).then(res=>{
     let k=0
-
-    for(k=0;data.CHILDREN.length;k++){
-      dispatch(removeFromChildren(data.CHILDREN[k]))
+    let arr=data.CHILDREN
+    console.log(arr)
+    for(k=0;arr.length;k++){
+      let data={
+        id:arr[k].id,
+        type:arr[k].type
+      }
+      dispatch(removeFromChildren(data))
     }
     dispatch(resetSelection())
     dispatch(normalLoader())
     console.log(res.data);
   }).catch(err=>{
-    console.log(err.response);
-    dispatch(error(err.response.data.message));
+    console.log(err);
+    // dispatch(error(err.response.data.message));
     dispatch(normalLoader())
   })
 }
