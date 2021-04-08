@@ -94,7 +94,6 @@ export default function TableComponent({
   const classes = useStyles();
 
   let loading = useSelector(skeletonLoading);
-  let orderBy = useSelector(selectOrderBy);
 
   // let tableData = [];
   const dispatch = useDispatch();
@@ -107,7 +106,7 @@ export default function TableComponent({
   const compareByLastModified = (a, b) => {
     return a.last_modified_ms < b.last_modified_ms;
   };
-
+  const orderBy = useSelector(selectOrderBy);
   if (orderBy === "last_modified") {
     tableData.sort(compareByLastModified);
   } else {
