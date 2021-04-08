@@ -51,10 +51,12 @@ export const getFolderPickerView=(current_parent)=>(dispatch)=>{
 export const moveAsync =(data)=>(dispatch)=>{
   dispatch(normalLoader())
   API.post('/api/move/',data).then(res=>{
+    console.log(res.data)
     let k=0
     let arr=data.CHILDREN
     console.log(arr)
     for(k=0;arr.length;k++){
+      console.log("reading",arr[k].id)
       let data={
         id:arr[k].id,
         type:arr[k].type

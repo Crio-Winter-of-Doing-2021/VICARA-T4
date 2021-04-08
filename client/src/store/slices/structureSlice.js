@@ -143,6 +143,7 @@ export const {
   selectAll,
   updateNavSearchResults,
   removeFromChildren,
+  setOrderBy
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
