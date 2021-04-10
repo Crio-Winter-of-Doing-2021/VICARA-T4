@@ -5,6 +5,8 @@ from mysite.settings import AWS_STORAGE_BUCKET_NAME
 
 from .models import File
 
+from folder.utils import propagate_size_change
+
 
 def create_file(owner, req_file, parent, req_file_name, size):
     new_file = File(owner=owner, file=req_file,
@@ -14,6 +16,7 @@ def create_file(owner, req_file, parent, req_file_name, size):
     new_file.shared_among.set(parent.shared_among.all())
     new_file.present_in_shared_me_of.set(parent.present_in_shared_me_of.all())
     new_file.save()
+    propagate_size_change(new_file.parent, new_file.size)
     return new_file
 
 

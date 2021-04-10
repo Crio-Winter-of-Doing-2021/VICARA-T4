@@ -78,3 +78,11 @@ def create_folder_rec_partial(parent_path, folder, file_ids, folder_ids):
         if(child_file.id in file_ids):
             child_file.download_to(new_folder_path)
     return new_folder_path
+
+
+def propagate_size_change(folder, amount):
+    current = folder
+    while(current != None):
+        current.size += amount
+        current.save()
+        current = current.parent

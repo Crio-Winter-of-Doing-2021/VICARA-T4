@@ -3,7 +3,7 @@ from itertools import chain
 # django
 from rest_framework import fields, serializers
 from .models import Folder
-from django.contrib.humanize.templatetags import humanize
+import humanize
 from django.contrib.auth.models import User
 from file.serializers import FileSerializer
 
@@ -33,6 +33,7 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
     type = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
 
     class Meta:
         model = Folder
@@ -41,6 +42,9 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
 
     def get_type(self, obj):
         return "folder"
+
+    def get_size(self, obj):
+        return humanize.naturalsize(obj.size)
 
     def get_created_at(self, obj):
         return humanize.naturaltime(obj.created_at)

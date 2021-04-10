@@ -24,7 +24,7 @@ from file.tasks import remove_file
 from .decorators import *
 from .serializers import FileSerializer
 from .utils import create_file, get_presigned_url, get_s3_filename, rename_s3
-
+from folder.utils import propagate_size_change
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
@@ -57,13 +57,27 @@ class FileView(APIView):
         data = []
         for req_file in request.FILES.getlist('file'):
             req_file_name = req_file.name
-            req_file_size = humanize.naturalsize(req_file.size)
             new_file = create_file(
-                request.user, req_file, parent, req_file_name, req_file_size)
+                request.user, req_file, parent, req_file_name, req_file.size)
             request.user.profile.storage_used = request.user.profile.storage_used + req_file.size
             request.user.profile.save()
             new_file = FileSerializer(new_file).data
             data.append(new_file)
+        storage_data = ProfileSerializer(
+            request.user.profile).data["storage_data"]
+        return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
+
+    @check_request_attr(["id", "file"])
+    @check_id_file
+    @check_is_owner_file
+    # change it for PUT
+    @check_storage_available
+    def put(self, request, * args, **kwargs):
+        id = request.GET["id"]
+        file = File.objects.get(id=id)
+        # delete the file of this fileObj
+        # attach new file to it
+        data = FileSerializer(file).data
         storage_data = ProfileSerializer(
             request.user.profile).data["storage_data"]
         return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
@@ -159,6 +173,7 @@ class FileView(APIView):
         size = file.get_size()
         file.owner.profile.storage_used -= size
         file.owner.profile.save()
+        propagate_size_change(file.parent, -file.size)
         file.delete()
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
@@ -188,9 +203,8 @@ class UploadByDriveUrl(APIView):
         open(s3_name, 'wb').write(r.content)
         local_file = open(s3_name, 'rb')
         djangofile = DjangoCoreFile(local_file)
-        req_file_size = humanize.naturalsize(djangofile.size)
         file = create_file(
-            request.user, djangofile, parent_folder, name, req_file_size)
+            request.user, djangofile, parent_folder, name, djangofile.size)
 
         file.save()
         os.remove(s3_name)
@@ -202,6 +216,14 @@ class UploadByDriveUrl(APIView):
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
         return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
+
+    def put(self, request, *args, **kwargs):
+        # get the file by its id
+        # download the file locally
+        # delete earlier make new again
+
+        # make common functions
+        pass
 
 
 class DownloadFile(APIView):

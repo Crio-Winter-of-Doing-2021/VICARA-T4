@@ -12,6 +12,7 @@ class FileSerializer(serializers.ModelSerializer):
     last_modified_ms = serializers.SerializerMethodField()
     shared_among = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
 
     class Meta:
@@ -20,8 +21,8 @@ class FileSerializer(serializers.ModelSerializer):
         fields = ('created_at', 'last_modified', 'last_modified_ms', 'shared_among', 'name',
                   'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size', 'type')
 
-    def get_type(self, obj):
-        return "file"
+    def get_size(self, obj):
+        return humanize.naturalsize(obj.size)
 
     def get_type(self, obj):
         return "file"

@@ -4,7 +4,7 @@ import boto3
 from django.db import models
 from django.contrib.auth.models import User
 from folder.models import Folder
-from django.contrib.humanize.templatetags import humanize
+import humanize
 
 # local
 from mysite.settings import AWS_STORAGE_BUCKET_NAME
@@ -34,7 +34,7 @@ class File(models.Model):
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
-    size = models.CharField(max_length=20)
+    size = models.IntegerField(default=0)
     objects = models.Manager()
     custom_objects = FileManager()
 
