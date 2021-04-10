@@ -8,6 +8,7 @@ import SharedWithMe from "../SharedWithMe/shared";
 import Trash from "../Trash/trash";
 import PrivateRoute from "../../Utilities/protectedRoute";
 import FileViewModal from "../FileViewer/index";
+import ReplaceModal from "../Buttons/replaceFileModal"
 
 export default function Dashboard() {
   let id = window.localStorage.getItem("id");
@@ -16,6 +17,7 @@ export default function Dashboard() {
     <div>
       <DashUtil>
         <FileViewModal />
+        <ReplaceModal/>
         <Switch>
           <Route
             path="/"

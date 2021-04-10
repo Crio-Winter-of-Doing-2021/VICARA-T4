@@ -13,7 +13,6 @@ function App() {
     <div style={{ padding: "0 !important" }} className="App">
       <NormalLoader />
       <Message />
-      
       <Switch>
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={SignUp} />

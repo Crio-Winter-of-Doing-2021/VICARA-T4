@@ -6,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 import API from "../../axios";
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
-import { updateChild } from "../../store/slices/structureSlice";
+import { updateChild ,toggleReplaceModalStatus} from "../../store/slices/structureSlice";
 import { updateStorageData } from "../../store/slices/authSlice";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
@@ -58,14 +58,19 @@ function App({ parent, modalClose }) {
           modalClose();
           //console.log("data = ", res.data);
           const { readable, ratio } = res.data;
-          dispatch(updateStorageData({ readable, ratio }));
+          dispatch(updateStorageData({ readable, ratio}));
           dispatch(fileUploadLoader());
           dispatch(success("Your Action was Successful"));
         })
         .catch(function (err) {
           //handle error
-          //console.log(err.response);
-          dispatch(error(err.response.data.message));
+          console.log(err.response);
+          let message=err.response.data.message
+          if(message.includes("already exists")){
+            dispatch(toggleReplaceModalStatus({type:"file"}))
+          }else{
+            dispatch(error(err.response.data.message));
+          }
           dispatch(fileUploadLoader());
           modalClose();
         });
