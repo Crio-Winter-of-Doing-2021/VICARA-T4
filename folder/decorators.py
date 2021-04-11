@@ -165,10 +165,10 @@ def check_request_attr(REQUIRED_PARAMS):
     def decorator_fun(func):
         @functools.wraps(func)
         def wrapper(self, request, *args, **kwargs):
-            if(request.method == "POST" or request.method == "PATCH"):
-                request_data = request.data
-            else:
+            if(request.method == "GET" or request.method == "DELETE"):
                 request_data = request.GET
+            else:
+                request_data = request.data
 
             for attr in REQUIRED_PARAMS:
                 if(attr not in request_data):

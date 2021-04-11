@@ -138,7 +138,7 @@ def check_already_present(to_check):
 
 
 def check_file_not_trashed(func):
-    @ functools.wraps(func)
+    @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
         file = File.custom_objects.get_or_none(id=id)
@@ -151,7 +151,7 @@ def check_file_not_trashed(func):
 
 
 def update_last_modified_file(func):
-    @ functools.wraps(func)
+    @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         id = get_id(request)
         file = File.custom_objects.get_or_none(id=id)
@@ -165,18 +165,25 @@ def update_last_modified_file(func):
 def check_storage_available(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
+        profile = request.user.profile
         if(request.method == "POST"):
             space_required = 0
             for req_file in request.FILES.getlist('file'):
                 space_required += req_file.size
-            profile = request.user.profile
-            if(space_required + profile.storage_used > profile.storage_avail):
-                return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
         elif(request.method == "PUT"):
-            print("path = ", request.path)
-            # get the file
-            # check storage options
-            pass
+            id = get_id(request)
+            no_of_req_files = len(request.FILES.getlist('file'))
+            if(no_of_req_files == 1):
+                old_file = File.custom_objects.get_or_none(id=id)
+                old_file_size = old_file.size
+                req_file = request.FILES['file']
+                new_file_size = req_file.size
+                space_required = new_file_size - old_file_size
+            else:
+                pass
+        if(space_required + profile.storage_used > profile.storage_avail):
+            return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
+
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper
