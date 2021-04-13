@@ -21,7 +21,7 @@ from folder.decorators import (allow_id_root_helper, check_id_folder,
 from folder.models import Folder
 from folder.serializers import (FolderSerializer,
                                 FolderSerializerWithoutChildren)
-from folder.utils import set_recursive_trash
+from folder.utils import propagate_size_change, set_recursive_trash
 from oauth2_provider.models import AccessToken
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -311,12 +311,14 @@ class Move(APIView):
         new_parent = Folder.objects.get(id=new_parent)
         children = request.data.get("CHILDREN")
         prev_parent = self.get_parent_object(children[0])
-
+        size_children = 0
         for child in children:
             child_obj = self.get_child_object(child)
+            size_children += child_obj.size
             child_obj.parent = new_parent
             child_obj.save()
-
+        propagate_size_change(prev_parent, -size_children)
+        propagate_size_change(new_parent, size_children)
         data = {
             "new_parent": FolderSerializer(new_parent).data,
             "prev_parent": FolderSerializer(prev_parent).data,
