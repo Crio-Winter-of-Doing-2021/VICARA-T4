@@ -11,7 +11,7 @@ import {
   setOrderBy,
 } from "../../store/slices/structureSlice";
 
-import EmptyFolderPic from '../../assets/rest.png'
+import EmptyFolderPic from "../../assets/rest.png";
 
 import { downloadOrViewFile } from "../../store/slices/fileViewSlice";
 
@@ -76,7 +76,7 @@ export let privOpp = (privacy) => {
 let loaderStructure = [1, 2, 3, 4, 5, 6, 7, 8].map((key) => {
   return (
     <StyledTableRow>
-      {[1, 2, 3, 4, 5, 6].map((el) => (
+      {[1, 2, 3, 4, 5].map((el) => (
         <StyledTableCell component="th" scope="row">
           <Skeleton variant="text" />
         </StyledTableCell>
@@ -98,7 +98,6 @@ export default function TableComponent({
 
   // let tableData = [];
   const dispatch = useDispatch();
-
 
   const compareByName = (a, b) => {
     return a.name > b.name;
@@ -149,11 +148,11 @@ export default function TableComponent({
           favouriteOptions,
           props,
         })(dispatch)}
-        {ownerCell({ owner, showOwner })}
-        {lastModifiedCell({ last_modified })}
-        {privacyCell({ privacy, id, type, privacyOptions })(dispatch)}
-        {createdAtCell({ created_at })}
-        {sizeCell({ size })}
+        {ownerCell({ owner, showOwner, data })}
+        {lastModifiedCell({ last_modified, data })}
+        {privacyCell({ privacy, id, type, privacyOptions, data })(dispatch)}
+        {createdAtCell({ created_at, data })}
+        {sizeCell({ size, data })}
       </TableRow>
     );
   });
@@ -195,28 +194,36 @@ export default function TableComponent({
           </ClickAwayListener>
         </Table>
       </TableContainer>
-      {!loading && tableRenderer.length===0?
-      <div style={{display:"flex",justifyContent:"center",height:"60vh",alignItems:"center"}}>
-        <img style={{width:"30%"}} alt="empty" src={EmptyFolderPic} />
-      </div>:null}
+      {!loading && tableRenderer.length === 0 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            height: "60vh",
+            alignItems: "center",
+          }}
+        >
+          <img style={{ width: "30%" }} alt="empty" src={EmptyFolderPic} />
+        </div>
+      ) : null}
     </div>
   );
 }
 
 //                                              Cell Functions
 
-const sizeCell = ({ size }) => {
+const sizeCell = ({ size, data }) => {
   return (
     <StyledTableCell
       style={{ fontStyle: "italic", color: "grey" }}
       component="th"
       scope="row"
     >
-      {size}
+      <RightClickUtil data={data}>{size}</RightClickUtil>
     </StyledTableCell>
   );
 };
-const ownerCell = ({ owner, showOwner }) => {
+const ownerCell = ({ owner, showOwner, data }) => {
   if (!showOwner) return null;
   return (
     <StyledTableCell
@@ -224,63 +231,69 @@ const ownerCell = ({ owner, showOwner }) => {
       component="th"
       scope="row"
     >
-      {owner.username}
+      <RightClickUtil data={data}>{owner.username}</RightClickUtil>
     </StyledTableCell>
   );
 };
-const createdAtCell = ({ created_at }) => {
+const createdAtCell = ({ created_at, data }) => {
   return (
     <StyledTableCell
       style={{ fontStyle: "italic", color: "grey" }}
       component="th"
       scope="row"
     >
-      {created_at}
+      <RightClickUtil data={data}>{created_at}</RightClickUtil>
     </StyledTableCell>
   );
 };
 
-const privacyCell = ({ privacy, id, type, privacyOptions }) => (dispatch) => {
+const privacyCell = ({ privacy, id, type, privacyOptions, data }) => (
+  dispatch
+) => {
   const { disabled } = privacyOptions;
 
   return (
     <StyledTableCell component="th" scope="row">
-      {privacy === true ? (
-        <Tooltip title="Private Resource">
-          <IconButton
-            disabled={disabled}
-            onClick={(e) =>
-              dispatch(updateChildAsync({ privacy: !privacy, id, type }))
-            }
-          >
-            <VisibilityOffIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Publicly Accessible">
-          <IconButton
-            disabled={disabled}
-            onClick={(e) =>
-              dispatch(updateChildAsync({ type, id, privacy: !privacy }))
-            }
-            color="primary"
-          >
-            <VisibilityIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      <RightClickUtil data={data}>
+        {privacy === true ? (
+          <Tooltip title="Private Resource">
+            <IconButton
+              disabled={disabled}
+              onClick={(e) =>
+                dispatch(updateChildAsync({ privacy: !privacy, id, type }))
+              }
+            >
+              <VisibilityOffIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Publicly Accessible">
+            <IconButton
+              disabled={disabled}
+              onClick={(e) =>
+                dispatch(updateChildAsync({ type, id, privacy: !privacy }))
+              }
+              color="primary"
+            >
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </RightClickUtil>
     </StyledTableCell>
   );
 };
 
-const lastModifiedCell = ({ last_modified }) => {
+const lastModifiedCell = ({ last_modified, data }) => {
   return (
     <StyledTableCell
       style={{ fontStyle: "italic", color: "grey" }}
       component="th"
       scope="row"
     >
-      {last_modified}
+      <RightClickUtil data={data}>
+        <RightClickUtil data={data}>{last_modified}</RightClickUtil>
+      </RightClickUtil>
     </StyledTableCell>
   );
 };

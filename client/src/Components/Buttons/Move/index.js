@@ -121,9 +121,7 @@ export default function CustomizedDialogs({
         <ListItemIcon>
           <FlipToFrontIcon color="secondary" />
         </ListItemIcon>
-        <ListItemText style={{ paddingRight: "15px" }}>
-          Move Selected
-        </ListItemText>
+        <ListItemText style={{ paddingRight: "15px" }}>Move</ListItemText>
       </MenuItem>
       <Dialog
         fullWidth
