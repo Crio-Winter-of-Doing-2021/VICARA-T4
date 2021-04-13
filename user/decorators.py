@@ -39,14 +39,16 @@ def check_id_with_type(func):
     return wrapper
 
 
+def get_child_object(child):
+    type, id = child["type"], child["id"]
+    if(type == "folder"):
+        child_obj = Folder.custom_objects.get_or_none(id=id)
+    else:
+        child_obj = File.custom_objects.get_or_none(id=id)
+    return child_obj
+
+
 def check_new_parent_not_in_sub_directory(func):
-    def get_child_object(child):
-        type, id = child["type"], child["id"]
-        if(type == "folder"):
-            child_obj = Folder.objects.get(id=id)
-        else:
-            child_obj = File.objects.get(id=id)
-        return child_obj
 
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
@@ -70,12 +72,17 @@ def check_children(func):
     """"
     children array not of 0 len
     check proper format of request body children
+    check already present in new_parent or not
     children id is correct | owner check | not trash | common parent
     """
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         prev_parent = None
         children = request.data.get("CHILDREN")
+        new_parent = request.data.get("PARENT")
+        new_parent = Folder.objects.get(id=new_parent)
+        new_parent_children_folder = new_parent.children_folder.all()
+        new_parent_children_file = new_parent.children_file.all()
 
         # validate children array
 
@@ -90,14 +97,7 @@ def check_children(func):
                 return Response(data={"message": f'invalid type {child["type"]}'}, status=status.HTTP_400_BAD_REQUEST)
 
             # for checking valid id of children
-            type, id = child["type"], child["id"]
-            if(type == "folder"):
-                child_obj = Folder.custom_objects.get_or_none(
-                    id=id, owner=request.user, trash=False)
-
-            else:
-                child_obj = File.custom_objects.get_or_none(
-                    id=id, owner=request.user, trash=False)
+            child_obj = get_child_object(child)
             if(child_obj == None):
                 return Response(data={"message": f'invalid child id = {id} or user not owner or in trash'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -106,6 +106,17 @@ def check_children(func):
                 prev_parent = child_obj.parent.id
             elif(prev_parent != child_obj.parent.id):
                 return Response(data={"message": "children must be in same directory {child_obj}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for child in children:
+            child_obj = get_child_object(child)
+            if(child["type"] == "folder"):
+                matches = new_parent_children_folder.filter(
+                    name=child_obj.name)
+            else:
+                matches = new_parent_children_file.filter(
+                    name=child_obj.name)
+            if(matches):
+                return Response(data={"message": f"A {child['type']} with name '{child_obj.name}' Already exists in destination folder"}, status=status.HTTP_400_BAD_REQUEST)
 
         result = func(self, request, args, **kwargs)
         return result
