@@ -7,8 +7,6 @@ import {
   updateChildAsync,
   updateSelection,
   resetSelection,
-  selectCheckedCount,
-  selectAll,
   selectOrderBy,
   setOrderBy,
 } from "../../store/slices/structureSlice";
@@ -100,7 +98,7 @@ export default function TableComponent({
 
   // let tableData = [];
   const dispatch = useDispatch();
-  const checkedCount = useSelector(selectCheckedCount);
+
 
   const compareByName = (a, b) => {
     return a.name > b.name;
@@ -141,15 +139,6 @@ export default function TableComponent({
         key={state_id}
         selected={selected}
       >
-        <StyledTableCell padding="checkbox">
-          <Checkbox
-            onChange={(e) =>
-              dispatch(updateSelection({ selected: !selected, id, type }))
-            }
-            inputProps={{ "aria-label": "primary checkbox" }}
-            checked={selected}
-          />
-        </StyledTableCell>
         {nameAndFavouriteCell({
           data,
           name,
@@ -175,26 +164,6 @@ export default function TableComponent({
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell padding="checkbox">
-                <Checkbox
-                  onChange={(e) => {
-                    if (checkedCount === 0) {
-                      //console.log("select all");
-                      dispatch(selectAll());
-                    }
-                    if (checkedCount !== 0) {
-                      dispatch(resetSelection());
-                    }
-                  }}
-                  checked={checkedCount !== 0}
-                  style={{
-                    backgroundColor: checkedCount === 0 ? "grey" : "#333538",
-                    padding: "5px",
-                    margin: "0 5px",
-                  }}
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
-              </StyledTableCell>
               <StyledTableCell>
                 Name
                 <IconButton
@@ -379,6 +348,13 @@ const nameAndFavouriteCell = ({
     <StyledTableCell component="th" scope="row">
       <RightClickUtil data={data}>
         <div style={{ display: "flex", alignItems: "center" }}>
+          <Checkbox
+            onChange={(e) =>
+              dispatch(updateSelection({ selected: !selected, id, type }))
+            }
+            inputProps={{ "aria-label": "primary checkbox" }}
+            checked={selected}
+          />
           {type === "folder" ? (
             <FolderRoundedIcon style={{ color: "#67C5F0" }} />
           ) : (
