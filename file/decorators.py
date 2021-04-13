@@ -121,15 +121,25 @@ def check_already_present(to_check):
                 if(to_check == "req_data_name"):
                     name = request.data["name"]
                     children = parent_folder.children_file.all().filter(name=name)
+                    res = {
+                        "message": "Duplicate file exists",
+                        "error_code": "DUPLICATE_FILE",
+                        "id": children[0].id
+                    }
                     if(children):
-                        return Response(data={"message": f"File with given name = {name} already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response(data=res, status=status.HTTP_400_BAD_REQUEST)
 
                 elif to_check == "req_file_name":
                     for req_file in request.FILES.getlist('file'):
                         name = req_file.name
                         children = parent_folder.children_file.all().filter(name=name)
+                        res = {
+                            "message": "Duplicate file exists",
+                            "error_code": "DUPLICATE_FILE",
+                            "id": children[0].id
+                        }
                         if(children):
-                            return Response(data={"message": f"File with given name = {name} already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response(data=res, status=status.HTTP_400_BAD_REQUEST)
 
             result = func(self, request, *args, **kwargs)
             return result
@@ -162,7 +172,7 @@ def update_last_modified_file(func):
     return wrapper
 
 
-def check_storage_available(func):
+def check_storage_available_file_upload(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         profile = request.user.profile

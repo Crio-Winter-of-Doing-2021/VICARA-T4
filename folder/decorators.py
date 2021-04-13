@@ -228,7 +228,12 @@ def check_duplicate_folder_exists(func):
 
             children = parent_folder.children_folder.all().filter(name=name)
             if(children):
-                return Response(data={"message": f"Folder with given name = {name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                res = {
+                    "message": "Duplicate folder exists",
+                    "error_code": "DUPLICATE_FOLDER",
+                    "id": children[0].id
+                }
+                return Response(data=res, status=status.HTTP_400_BAD_REQUEST)
 
         result = func(self, request, *args, **kwargs)
         return result
@@ -281,6 +286,30 @@ def update_last_modified_folder(func):
         folder = Folder.custom_objects.get_or_none(id=id)
         folder.last_modified = datetime.now()
         folder.save()
+        result = func(self, request, *args, **kwargs)
+        return result
+    return wrapper
+
+
+def check_storage_available_folder_upload(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kwargs):
+        profile = request.user.profile
+        if(request.method == "POST"):
+            space_required = 0
+            for req_file in request.FILES.getlist('file'):
+                space_required += req_file.size
+        elif(request.method == "PUT"):
+            id = get_id(request)
+            old_folder = Folder.custom_objects.get_or_none(id=id)
+            space_required = 0
+            for req_file in request.FILES.getlist('file'):
+                space_required += req_file.size
+            space_required -= old_folder.size
+
+        if(space_required + profile.storage_used > profile.storage_avail):
+            return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
+
         result = func(self, request, *args, **kwargs)
         return result
     return wrapper

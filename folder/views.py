@@ -8,7 +8,7 @@ import humanize
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.files import File as DjangoCoreFile
 from django.core.files import storage
-from file.decorators import check_storage_available
+
 from file.tasks import remove_file
 # python imports
 from file.utils import create_file, get_presigned_url
@@ -74,7 +74,14 @@ class Filesystem(APIView):
     def put(self, request, * args, **kwargs):
         id = request.GET["id"]
         folder = Folder.objects.get(id=id)
-        # delete all its children
+        prev_size = folder.size
+        folder.size = 0
+        for child in folder.children_files:
+            child.delete()
+        for child in folder.children_folders:
+            child.delete()
+        folder.save()
+        propagate_size_change(folder.parent, -prev_size)
         data = FolderSerializer(folder).data
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -174,7 +181,7 @@ class UploadFolder(APIView):
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
-    @check_storage_available
+    @check_storage_available_folder_upload
     def post(self, request, *args, **kwargs):
 
         # getting data from requests
@@ -248,16 +255,80 @@ class UploadFolder(APIView):
             request.user.profile).data["storage_data"]
         return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
 
-    # check valid id
-    # check owner or not
-    # check not trashed
-    # storage check for put
-    @check_storage_available
+    @check_request_attr(["id", "PATH", "file"])
+    @check_id_folder
+    @check_id_not_root
+    @check_is_owner_folder
+    @check_folder_not_trashed
+    @check_storage_available_folder_upload
     def put(self, request, *args, **kwargs):
-        # call delete on all the children of this folder
-        # add new children by providing the base as this folder
-        return Response(data="nothing", status=status.HTTP_200_OK)
-        pass
+
+        # getting data from requests
+        paths = request.data["PATH"].read()
+        paths = json.loads(paths.decode('utf-8'))
+        files = request.FILES.getlist('file')
+
+        # check duplicate exists
+        # take path of first file then convert to list then 2nd element is base name
+
+        # making data required to make folders
+        # max_level is for getting the len of deepest file in the folder
+        max_level = -1
+        structure = []
+        for path_string in paths:
+            path = os.path.normpath(path_string)
+            # example path = ['cloudinary', 'sdflksjdf', 'sdfjsdfijsdfi','file.co']
+            # for /cloudinary/sdflksjdf/sdfjsdfijsdfi/file.co
+            path_list = path.split(os.sep)
+            if(path_list[0] == ""):
+                path_list.remove("")
+            max_level = max(max_level, len(path_list))
+            structure.append(path_list)
+
+        # create base folder
+
+        id = request.GET["id"]
+        base_folder = Folder.objects.get(id=id)
+        base_folder_name = base_folder.name
+        propagate_size_change(base_folder.parent, -base_folder.size)
+        base_folder.size = 0
+        base_folder.save()
+
+        # maintain parent record to make folders
+        parent_record = defaultdict(dict)
+        parent_record[0][base_folder_name] = base_folder.id
+
+        # make all the folders required
+
+        for path_list in structure:
+            # because last one is the filename
+            for level in range(1, len(path_list)-1):
+                folder_name = path_list[level]
+                parent_name = path_list[level-1]
+                if(folder_name not in parent_record[level]):
+                    parent_id = parent_record[level-1][parent_name]
+                    new_folder = create_folder(
+                        parent_id, request.user, folder_name)
+                    parent_record[level][folder_name] = new_folder.id
+
+        # make all the files
+        for index, path_list in enumerate(structure):
+            file_name = path_list[-1]
+            file_level = len(path_list)-1
+            parent_name = path_list[-2]
+            parent_id = parent_record[file_level-1][parent_name]
+            parent = Folder.objects.get(id=parent_id)
+            req_file_size = files[index].size
+            create_file(request.user, files[index],
+                        parent, file_name, req_file_size)
+            request.user.profile.storage_used = request.user.profile.storage_used + \
+                files[index].size
+            request.user.profile.save()
+
+        data = FolderSerializerWithoutChildren(base_folder).data
+        storage_data = ProfileSerializer(
+            request.user.profile).data["storage_data"]
+        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
 
 
 class DownloadFolder(APIView):

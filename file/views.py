@@ -50,7 +50,7 @@ class FileView(APIView):
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
     @check_already_present(to_check="req_file_name")
-    @check_storage_available
+    @check_storage_available_file_upload
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         parent = Folder.objects.get(id=parent_id)
@@ -70,7 +70,7 @@ class FileView(APIView):
     @check_request_attr(["id", "file"])
     @check_id_file
     @check_is_owner_file
-    @check_storage_available
+    @check_storage_available_file_upload
     def put(self, request, * args, **kwargs):
         # getting old details
         id = request.data["id"]
