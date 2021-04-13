@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.humanize.templatetags import humanize
+import humanize
 from django.utils import tree
 
 
@@ -23,6 +23,7 @@ class Folder(models.Model):
         User, on_delete=models.CASCADE, related_name="folders")
     shared_among = models.ManyToManyField(
         User, related_name="shared_folders")
+    size = models.IntegerField(default=0)
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)

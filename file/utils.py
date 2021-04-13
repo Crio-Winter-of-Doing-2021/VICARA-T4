@@ -1,9 +1,11 @@
 import boto3
 import secrets
 import os
-from mysite.settings import AWS_STORAGE_BUCKET_NAME
-
+from mysite.settings import AWS_STORAGE_BUCKET_NAME, PUBLIC_MEDIA_LOCATION
+from decouple import config
 from .models import File
+
+from folder.utils import propagate_size_change
 
 
 def create_file(owner, req_file, parent, req_file_name, size):
@@ -14,6 +16,7 @@ def create_file(owner, req_file, parent, req_file_name, size):
     new_file.shared_among.set(parent.shared_among.all())
     new_file.present_in_shared_me_of.set(parent.present_in_shared_me_of.all())
     new_file.save()
+    propagate_size_change(new_file.parent, new_file.size)
     return new_file
 
 
@@ -29,6 +32,9 @@ def get_presigned_url(key):
         ExpiresIn=20
     )
     return url
+
+# serves as a unique temp file name
+# also used while renaming of files in PATCH for making a valid unique s3 key
 
 
 def get_s3_filename(full_filename):
@@ -61,6 +67,16 @@ def delete_s3(file_key):
             ],
         }
     )
+
+
+def upload_file_to_s3(file, s3_key):
+
+    session = boto3.session.Session(aws_access_key_id=config("AWS_ACCESS_KEY_ID"),
+                                    aws_secret_access_key=config("AWS_SECRET_ACCESS_KEY"))
+    s3 = session.resource('s3')
+    res = s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(
+        Key=s3_key, Body=file)
+    print(res)
 
 
 def rename_s3(old_file_key, new_file_key):

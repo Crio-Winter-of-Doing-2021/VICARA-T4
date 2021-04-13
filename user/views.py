@@ -264,8 +264,8 @@ class SharedWithMe(APIView):
 
 
 class Path(APIView):
-    @ check_request_attr(["id", "TYPE"])
-    @ check_id_with_type
+    @check_request_attr(["id", "TYPE"])
+    @check_id_with_type
     # allow id in folder enabled
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
@@ -327,10 +327,10 @@ class Move(APIView):
 
 class RecoverFolder(APIView):
 
-    @ check_request_attr(["id"])
-    @ check_id_folder
-    @ check_id_not_root
-    @ check_is_owner_folder
+    @check_request_attr(["id"])
+    @check_id_folder
+    @check_id_not_root
+    @check_is_owner_folder
     def get(self, request, * args, **kwargs):
         # check if folder's parent is in Trash
         # if in trash move this folder to root
@@ -349,9 +349,9 @@ class RecoverFolder(APIView):
 
 
 class RecoverFile(APIView):
-    @ check_request_attr(["id"])
-    @ check_id_file
-    @ check_is_owner_file
+    @check_request_attr(["id"])
+    @check_id_file
+    @check_is_owner_file
     def get(self, request, * args, **kwargs):
         # check if file's parent is in Trash
         # if in trash move this file to root

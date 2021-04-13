@@ -23,8 +23,8 @@ from user.utils import get_client_server
 from file.tasks import remove_file
 from .decorators import *
 from .serializers import FileSerializer
-from .utils import create_file, get_presigned_url, get_s3_filename, rename_s3
-
+from .utils import create_file, get_presigned_url, get_s3_filename, rename_s3, upload_file_to_s3, delete_s3
+from folder.utils import propagate_size_change
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
 REQUIRED_DRIVE_POST_PARAMS = ["PARENT", "DRIVE_URL", "NAME"]
@@ -57,16 +57,50 @@ class FileView(APIView):
         data = []
         for req_file in request.FILES.getlist('file'):
             req_file_name = req_file.name
-            req_file_size = humanize.naturalsize(req_file.size)
             new_file = create_file(
-                request.user, req_file, parent, req_file_name, req_file_size)
-            request.user.profile.storage_used = request.user.profile.storage_used + req_file.size
+                request.user, req_file, parent, req_file_name, req_file.size)
+            request.user.profile.storage_used += req_file.size
             request.user.profile.save()
             new_file = FileSerializer(new_file).data
             data.append(new_file)
         storage_data = ProfileSerializer(
             request.user.profile).data["storage_data"]
         return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
+
+    @check_request_attr(["id", "file"])
+    @check_id_file
+    @check_is_owner_file
+    @check_storage_available
+    def put(self, request, * args, **kwargs):
+        # getting old details
+        id = request.data["id"]
+        file = File.objects.get(id=id)
+        req_file = request.FILES['file']
+        old_file_s3_key = file.get_s3_key()
+        old_file_size = file.size
+
+        # attaching new s3 file
+        delete_s3(old_file_s3_key)
+        upload_file_to_s3(req_file, old_file_s3_key)
+
+        # making changes to file details
+        file.file.name = old_file_s3_key
+        file.size = req_file.size
+        file.shared_among.set([])
+        file.present_in_shared_me_of.set([])
+
+        # making changes to storage
+        profile = request.user.profile
+        profile.storage_used += req_file.size - old_file_size
+        profile.save()
+
+        # making changes to parent folders
+        propagate_size_change(file.parent, req_file.size - old_file_size)
+
+        data = FileSerializer(file).data
+        storage_data = ProfileSerializer(
+            profile).data["storage_data"]
+        return Response(data={"file_data": data, **storage_data}, status=status.HTTP_200_OK)
 
     @check_valid_name
     @check_id_file
@@ -151,14 +185,15 @@ class FileView(APIView):
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 
-    @ check_id_file
-    @ check_is_owner_file
+    @check_id_file
+    @check_is_owner_file
     def delete(self, request, * args, **kwargs):
         id = get_id(request)
         file = File.objects.get(id=id)
         size = file.get_size()
         file.owner.profile.storage_used -= size
         file.owner.profile.save()
+        propagate_size_change(file.parent, -file.size)
         file.delete()
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
@@ -167,19 +202,8 @@ class FileView(APIView):
 
 class UploadByDriveUrl(APIView):
 
-    @check_request_attr(["PARENT", "DRIVE_URL", "NAME"])
-    @check_valid_name
-    @ allow_parent_root
-    @ check_id_parent_folder
-    # @check_valid_name_request_body
-    @ check_already_present(to_check="req_data_name")
-    def post(self, request, *args, **kwargs):
-
-        parent = request.data["PARENT"]
-        drive_url = request.data["DRIVE_URL"]
-        name = request.data["NAME"]
-
-        parent_folder = Folder.objects.get(id=parent)
+    def get_django_file_object(self, drive_url, name):
+        # getting the django file object
         s3_name = get_s3_filename(name)
         try:
             r = requests.get(drive_url, allow_redirects=True)
@@ -188,28 +212,105 @@ class UploadByDriveUrl(APIView):
         open(s3_name, 'wb').write(r.content)
         local_file = open(s3_name, 'rb')
         djangofile = DjangoCoreFile(local_file)
-        req_file_size = humanize.naturalsize(djangofile.size)
-        file = create_file(
-            request.user, djangofile, parent_folder, name, req_file_size)
+        return djangofile, s3_name
 
+    @check_request_attr(["PARENT", "DRIVE_URL", "NAME"])
+    @check_valid_name
+    @allow_parent_root
+    @check_id_parent_folder
+    # checking storage available inside the function
+    @check_already_present(to_check="req_data_name")
+    def post(self, request, *args, **kwargs):
+
+        # getting request attrs
+        parent = request.data["PARENT"]
+        drive_url = request.data["DRIVE_URL"]
+        name = request.data["NAME"]
+
+        parent_folder = Folder.objects.get(id=parent)
+
+        # getting the django file object
+        djangofile, s3_name = self.get_django_file_object(drive_url, name)
+
+        # checking storage available or not
+        profile = request.user.profile
+        if(djangofile.size + profile.storage_used > profile.storage_avail):
+            os.remove(s3_name)
+            return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # making File object
+        file = create_file(
+            request.user, djangofile, parent_folder, name, djangofile.size)
         file.save()
+
+        # remove temp file
         os.remove(s3_name)
         # remove_file.delay(s3_name)
-        data = FileSerializer(file).data
-        profile = request.user.profile
-        profile.storage_used += file.get_size()
+
+        # making change to storage data
+        propagate_size_change(file.parent, djangofile.size - djangofile.size)
+        profile.storage_used += djangofile.size
         profile.save()
+
+        # returing response
+        data = FileSerializer(file).data
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
         return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
 
+    @check_request_attr(["id", "DRIVE_URL"])
+    @check_id_file
+    @check_is_owner_file
+    # checking storage available inside the function
+    def put(self, request, * args, **kwargs):
+        drive_url = request.data["DRIVE_URL"]
+
+        # getting old details
+        id = request.data["id"]
+        file = File.objects.get(id=id)
+        old_file_s3_key = file.get_s3_key()
+        old_file_size = file.size
+
+        djangofile, s3_name = self.get_django_file_object(drive_url, file.name)
+
+        # checking storage available or not
+        profile = request.user.profile
+        if(djangofile.size - old_file_size + profile.storage_used > profile.storage_avail):
+            os.remove(s3_name)
+            return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # attaching new s3 file
+        delete_s3(old_file_s3_key)
+        upload_file_to_s3(djangofile, old_file_s3_key)
+
+        # making changes to file details
+        file.file.name = old_file_s3_key
+        file.size = djangofile.size
+        file.shared_among.set([])
+        file.present_in_shared_me_of.set([])
+
+        # making changes to storage
+        profile.storage_used += djangofile.size - old_file_size
+        profile.save()
+
+        # making changes to parent folders
+        propagate_size_change(file.parent, djangofile.size - old_file_size)
+
+        # remove temp file
+        os.remove(s3_name)
+        # remove_file.delay(s3_name)
+
+        data = FileSerializer(file).data
+        storage_data = ProfileSerializer(profile).data["storage_data"]
+        return Response(data={"file_data": data, **storage_data}, status=status.HTTP_200_OK)
+
 
 class DownloadFile(APIView):
 
-    @ check_id_file
-    @ check_has_access_file
-    @ check_file_not_trashed
-    @ update_last_modified_file
+    @check_id_file
+    @check_has_access_file
+    @check_file_not_trashed
+    @update_last_modified_file
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
         file = File.objects.get(id=id)

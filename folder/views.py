@@ -33,7 +33,7 @@ from .serializers import (FolderSerializer, FolderSerializerMinimal,
 from .utils import (create_folder, create_folder_rec,
                     create_folder_rec_partial, recursive_delete,
                     set_recursive_privacy, set_recursive_shared_among,
-                    set_recursive_trash)
+                    set_recursive_trash, propagate_size_change)
 
 # local imports
 
@@ -67,6 +67,16 @@ class Filesystem(APIView):
         new_folder = create_folder(parent_id, request.user, name)
         data = FolderSerializer(new_folder).data
         return Response(data=data, status=status.HTTP_201_CREATED)
+
+    @check_id_folder
+    @check_has_access_folder
+    @check_folder_not_trashed
+    def put(self, request, * args, **kwargs):
+        id = request.GET["id"]
+        folder = Folder.objects.get(id=id)
+        # delete all its children
+        data = FolderSerializer(folder).data
+        return Response(data=data, status=status.HTTP_200_OK)
 
     @check_request_attr(["id"])
     @check_valid_name
@@ -151,6 +161,7 @@ class Filesystem(APIView):
         profile = request.user.profile
         recursive_delete(folder, profile)
         profile.save()
+        propagate_size_change(folder.parent, -folder.size)
         storage_data = ProfileSerializer(profile).data["storage_data"]
         return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
 
@@ -225,7 +236,7 @@ class UploadFolder(APIView):
             parent_name = path_list[-2]
             parent_id = parent_record[file_level-1][parent_name]
             parent = Folder.objects.get(id=parent_id)
-            req_file_size = humanize.naturalsize(files[index].size)
+            req_file_size = files[index].size
             create_file(request.user, files[index],
                         parent, file_name, req_file_size)
             request.user.profile.storage_used = request.user.profile.storage_used + \
@@ -236,6 +247,17 @@ class UploadFolder(APIView):
         storage_data = ProfileSerializer(
             request.user.profile).data["storage_data"]
         return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
+
+    # check valid id
+    # check owner or not
+    # check not trashed
+    # storage check for put
+    @check_storage_available
+    def put(self, request, *args, **kwargs):
+        # call delete on all the children of this folder
+        # add new children by providing the base as this folder
+        return Response(data="nothing", status=status.HTTP_200_OK)
+        pass
 
 
 class DownloadFolder(APIView):
