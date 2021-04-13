@@ -4,8 +4,6 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import Tooltip from "@material-ui/core/Tooltip";
 import {
-  getFileAsync,
-  markSelectedChild,
   updateChildAsync,
   updateSelection,
   resetSelection,

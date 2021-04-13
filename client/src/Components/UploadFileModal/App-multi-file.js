@@ -34,7 +34,7 @@ function App({ parent, modalClose }) {
       // let pathJSON = [];
       const formData = new FormData();
       for (let [index, val] of acceptedFiles.entries()) {
-        //console.log(index);
+        console.log(index);
         // pathJSON[index] = val.path; // comment this for multi-file
         formData.append("file", val);
       }

@@ -18,9 +18,6 @@ import Trash from "../Buttons/moveToTrash";
 import Restore from "../Buttons/restore";
 import Move from "../Buttons/Move/index";
 import { withRouter } from "react-router-dom";
-import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { selectPage } from "../../store/slices/loaderSlice";
 import { rightClickOptions } from "./rightClickOptions";
 import {
   selectChecked,
@@ -51,7 +48,6 @@ function ContextMenu(props) {
     showMove,
   } = rightClickOptions[path];
 
-  const currentPage = useSelector(selectPage);
   const checkedFileFolder = useSelector(selectChecked);
 
   const fetchIdAndType = checkedFileFolder.map((ele) => {

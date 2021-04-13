@@ -6,7 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { ListItemText } from "@material-ui/core";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 // import DisabledTabs from '../File Structure/NavigationTabs/disabledTabs'
 import { updateChildAsync } from "../../store/slices/structureSlice";
 import FocusInput from "./FocusInput";

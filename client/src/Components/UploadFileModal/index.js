@@ -42,8 +42,6 @@ export default function FormDialog(props) {
 
   const dispatch = useDispatch();
 
-  const [progress, setProgress] = React.useState(0);
-
   let inputChangeHandler = (e) => {
     setState({
       ...state,
@@ -61,16 +59,10 @@ export default function FormDialog(props) {
 
   let uploadLink = () => {
     // /api/file/upload-by-url/
-    setProgress(0);
+
     dispatch(normalLoader());
 
-    API.post("/api/file/upload-by-url/", state, {
-      onUploadProgress: (ev) => {
-        const prog = (ev.loaded / ev.total) * 100;
-        setProgress(Math.round(prog));
-        //console.log({ progress });
-      },
-    })
+    API.post("/api/file/upload-by-url/", state)
       .then((res) => {
         // console.log(res.data);
         dispatch(updateChild(res.data.file_data));
