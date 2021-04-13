@@ -20,7 +20,9 @@ import AddFile from "./App-multi-file";
 // import { token, baseURL } from "../../axios";
 // import axios from "axios";
 import { normalLoader } from "../../store/slices/loaderSlice";
-import { pushToCurrentStack } from "../../store/slices/structureSlice";
+import { updateChild } from "../../store/slices/structureSlice";
+
+import { updateStorageData } from "../../store/slices/authSlice";
 // import FileBackdropLoader from '../Loaders/fileUploadBackdrop'
 import DescriptionIcon from "@material-ui/icons/Description";
 
@@ -70,16 +72,16 @@ export default function FormDialog(props) {
       },
     })
       .then((res) => {
-        let newData = {
-          resData: res.data,
-          type: "file",
-        };
-        dispatch(pushToCurrentStack(newData));
+        // console.log(res.data);
+        dispatch(updateChild(res.data.file_data));
+        const { readable, ratio } = res.data;
+        dispatch(updateStorageData({ readable, ratio }));
         dispatch(normalLoader());
         dispatch(success("Your Action was Successful"));
         handleClose();
       })
       .catch((err) => {
+        console.log(err);
         dispatch(normalLoader());
         handleClose();
         //console.log(err.response)

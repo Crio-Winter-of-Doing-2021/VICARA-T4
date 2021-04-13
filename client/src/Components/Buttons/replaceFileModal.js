@@ -6,7 +6,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
+import {
+  fileLoading,
+  fileUploadLoader,
+  normalLoader,
+} from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
 import { updateStorageData } from "../../store/slices/authSlice";
 import {
@@ -17,6 +21,7 @@ import {
 import API from "../../axios";
 
 import { error, success } from "../../store/slices/logSlice";
+import { indigo } from "@material-ui/core/colors";
 export default function AlertDialog() {
   const modalData = useSelector(selectReplaceModal);
   const dispatch = useDispatch();
@@ -29,37 +34,56 @@ export default function AlertDialog() {
   };
   const handleReplace = () => {
     const { url, formData } = modalData.requestData;
+    // to close the modal
+    dispatch(toggleReplaceModal());
 
-    API.post(url, formData, {
-      onUploadProgress: (ev) => {
-        const prog = (ev.loaded / ev.total) * 100;
-        setProgress(Math.round(prog));
-        //console.log({ progress });
-      },
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
-    })
-      .then(function (res) {
-        //handle success
-        //console.log(res);
-        let k;
-        for (k = 0; k < res.data.file_data.length; k++) {
-          dispatch(updateChild(res.data.file_data[k]));
-        }
-
-        //console.log("data = ", res.data);
-        const { readable, ratio } = res.data;
-        dispatch(updateStorageData({ readable, ratio }));
-        dispatch(fileUploadLoader());
-        dispatch(success("Your Action was Successful"));
+    if (url === "/api/folder/") {
+      dispatch(normalLoader());
+      API.post("/api/folder/", formData)
+        .then((res) => {
+          dispatch(updateChild(res.data));
+          const { readable, ratio } = res.data;
+          dispatch(updateStorageData({ readable, ratio }));
+          dispatch(normalLoader());
+          dispatch(success("Your Action was Successful"));
+        })
+        .catch((err) => {
+          dispatch(error(err.response.data.message));
+          dispatch(normalLoader());
+        });
+    } else {
+      dispatch(fileUploadLoader());
+      API.post(url, formData, {
+        onUploadProgress: (ev) => {
+          const prog = (ev.loaded / ev.total) * 100;
+          setProgress(Math.round(prog));
+          //console.log({ progress });
+        },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Accept: "application/json",
+        },
       })
-      .catch(function (err) {
-        dispatch(error(err.response.data.message));
+        .then(function (res) {
+          //handle success
+          //console.log(res);
+          let k;
+          for (k = 0; k < res.data.file_data.length; k++) {
+            dispatch(updateChild(res.data.file_data[k]));
+          }
 
-        dispatch(fileUploadLoader());
-      });
+          //console.log("data = ", res.data);
+          const { readable, ratio } = res.data;
+          dispatch(updateStorageData({ readable, ratio }));
+          dispatch(fileUploadLoader());
+          dispatch(success("Your Action was Successful"));
+        })
+        .catch(function (err) {
+          dispatch(error(err.response.data.message));
+
+          dispatch(fileUploadLoader());
+        });
+    }
   };
   console.log({ modalData });
   return (

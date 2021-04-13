@@ -150,15 +150,15 @@ def check_already_present(to_check):
                         name = req_file.name
                         manage_duplicate(name, parent_folder, duplicate_res)
 
-            if(len(duplicate_res["data"]) > 0):
-                # this is the case in which the file is renamed as its prev name
-                if(request.method == "PATCH"):
-                    if(duplicate_res["data"][0]["id"] == id):
-                        file = File.objects.get(id=id)
-                        data = FileSerializer(file).data
-                        return Response(data=data, status=status.HTTP_200_OK)
+                if(len(duplicate_res["data"]) > 0):
+                    # this is the case in which the file is renamed as its prev name
+                    if(request.method == "PATCH"):
+                        if(duplicate_res["data"][0]["id"] == id):
+                            file = File.objects.get(id=id)
+                            data = FileSerializer(file).data
+                            return Response(data=data, status=status.HTTP_200_OK)
 
-                return Response(data=duplicate_res, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(data=duplicate_res, status=status.HTTP_400_BAD_REQUEST)
 
             result = func(self, request, *args, **kwargs)
             return result

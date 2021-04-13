@@ -12,7 +12,7 @@ import {
   selectCheckedCount,
   selectAll,
   selectOrderBy,
-  setOrderBy
+  setOrderBy,
 } from "../../store/slices/structureSlice";
 
 import { downloadOrViewFile } from "../../store/slices/fileViewSlice";
@@ -43,8 +43,8 @@ import IconButton from "@material-ui/core/IconButton";
 import { skeletonLoading } from "../../store/slices/loaderSlice";
 
 import { typeTest } from "../fileType";
-import SortIcon from '@material-ui/icons/Sort';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import SortIcon from "@material-ui/icons/Sort";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -195,19 +195,28 @@ export default function TableComponent({
                   inputProps={{ "aria-label": "primary checkbox" }}
                 />
               </StyledTableCell>
-              <StyledTableCell>Name
-                  <IconButton onClick={()=>dispatch(setOrderBy("name"))} size="small" style={{margin:"0 20px",color:"white"}}>
-                    <SortIcon/>
-                  </IconButton>
+              <StyledTableCell>
+                Name
+                <IconButton
+                  onClick={() => dispatch(setOrderBy("name"))}
+                  size="small"
+                  style={{ margin: "0 20px", color: "white" }}
+                >
+                  <SortIcon />
+                </IconButton>
               </StyledTableCell>
               {showOwner ? <StyledTableCell>Owner</StyledTableCell> : null}
               <StyledTableCell></StyledTableCell>
               <StyledTableCell>Privacy</StyledTableCell>
               <StyledTableCell>
-                  Time Created
-                  <IconButton onClick={()=>dispatch(setOrderBy("last_modified"))} size="small" style={{color:"white",margin:"2px"}}>
-                    <ArrowDownwardIcon/>
-                  </IconButton>
+                Time Created
+                <IconButton
+                  onClick={() => dispatch(setOrderBy("last_modified"))}
+                  size="small"
+                  style={{ color: "white", margin: "2px" }}
+                >
+                  <ArrowDownwardIcon />
+                </IconButton>
               </StyledTableCell>
               <StyledTableCell>Size</StyledTableCell>
             </TableRow>

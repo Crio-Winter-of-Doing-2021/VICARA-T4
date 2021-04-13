@@ -222,11 +222,13 @@ class FileView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def manage_file_delete(self, file):
-        size = file.get_size()
-        file.owner.profile.storage_used -= size
-        file.owner.profile.save()
-        propagate_size_change(file.parent, -file.size)
+        profile = file.owner.profile
+        size = file.size
+        parent = file.parent
         file.delete()
+        profile.storage_used -= size
+        profile.save()
+        propagate_size_change(parent, -size)
 
     @check_id_file
     @check_is_owner_file
@@ -306,7 +308,7 @@ class UploadByDriveUrl(FileView):
         data = FileSerializer(file).data
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
-        return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
+        return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
 
     @check_request_attr(["id", "DRIVE_URL"])
     @check_id_file
