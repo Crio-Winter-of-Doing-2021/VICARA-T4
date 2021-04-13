@@ -13,6 +13,8 @@ import {
   setOrderBy,
 } from "../../store/slices/structureSlice";
 
+import EmptyFolderPic from '../../assets/rest.png'
+
 import { downloadOrViewFile } from "../../store/slices/fileViewSlice";
 
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -224,6 +226,10 @@ export default function TableComponent({
           </ClickAwayListener>
         </Table>
       </TableContainer>
+      {!loading && tableRenderer.length===0?
+      <div style={{display:"flex",justifyContent:"center",height:"60vh",alignItems:"center"}}>
+        <img style={{width:"30%"}} alt="empty" src={EmptyFolderPic} />
+      </div>:null}
     </div>
   );
 }
