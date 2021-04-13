@@ -6,7 +6,10 @@ import { useDropzone } from "react-dropzone";
 import API from "../../axios";
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
-import { updateChild ,toggleReplaceModalStatus} from "../../store/slices/structureSlice";
+import {
+  updateChild,
+  toggleReplaceModal,
+} from "../../store/slices/structureSlice";
 import { updateStorageData } from "../../store/slices/authSlice";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
@@ -36,6 +39,7 @@ function App({ parent, modalClose }) {
         formData.append("file", val);
       }
       formData.append("PARENT", parent);
+      formData.append("REPLACE", 0);
 
       API.post("/api/file/", formData, {
         onUploadProgress: (ev) => {
@@ -58,24 +62,40 @@ function App({ parent, modalClose }) {
           modalClose();
           //console.log("data = ", res.data);
           const { readable, ratio } = res.data;
-          dispatch(updateStorageData({ readable, ratio}));
+          dispatch(updateStorageData({ readable, ratio }));
           dispatch(fileUploadLoader());
           dispatch(success("Your Action was Successful"));
         })
         .catch(function (err) {
           //handle error
-          console.log(err.response);
-          let message=err.response.data.message
-          if(message.includes("already exists")){
-            dispatch(toggleReplaceModalStatus({type:"file"}))
-          }else{
+          const statusCode = err.response.request.status;
+
+          if (
+            statusCode === 400 &&
+            err.response.data.error_code === "DUPLICATE_FILE"
+          ) {
+            console.log("backend res = ", err.response.data);
+            formData.set("REPLACE", "true");
+            dispatch(
+              toggleReplaceModal({
+                type: "file",
+                data: err.response.data.data,
+                requestData: {
+                  url: "/api/file/",
+                  formData,
+                },
+              })
+            );
+            // formData.append("", parent);
+          } else {
             dispatch(error(err.response.data.message));
           }
+
           dispatch(fileUploadLoader());
           modalClose();
         });
     },
-    [dispatch, modalClose, parent, progress]
+    [dispatch, modalClose, parent]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

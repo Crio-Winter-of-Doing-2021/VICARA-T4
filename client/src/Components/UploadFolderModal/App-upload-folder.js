@@ -5,14 +5,16 @@ import API from "../../axios";
 
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
-import { updateChild,toggleReplaceModalStatus } from "../../store/slices/structureSlice";
+import {
+  updateChild,
+  toggleReplaceModal,
+} from "../../store/slices/structureSlice";
 import { updateStorageData } from "../../store/slices/authSlice";
 import FolderIcon from "@material-ui/icons/Folder";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
 import { error, success } from "../../store/slices/logSlice";
-
 
 function App({ modalClose, parent }) {
   const dispatch = useDispatch();
@@ -36,14 +38,12 @@ function App({ modalClose, parent }) {
       }
       formData.append("PARENT", parent);
 
-      // comment this for multi-file             [START]
       pathJSON = JSON.stringify(pathJSON);
       const blob = new Blob([pathJSON], {
         type: "application/json",
       });
       formData.append("PATH", blob);
-      // comment this for multi-file             [END]
-      formData.append("PATH", blob);
+      formData.append("REPLACE", false);
 
       API.post("/api/folder/upload-folder/", formData, {
         onUploadProgress: (ev) => {
@@ -67,20 +67,32 @@ function App({ modalClose, parent }) {
           dispatch(success("Your Action was Successful"));
         })
         .catch(function (err) {
-          //handle error
-          //console.log(err.response);
+          const statusCode = err.response.request.status;
 
-          let message=err.response.data.message
-          if(message.includes("already exists")){
-            dispatch(toggleReplaceModalStatus({type:"folder"}))
-          }else{
+          if (
+            statusCode === 400 &&
+            err.response.data.error_code === "DUPLICATE_FOLDER"
+          ) {
+            formData.set("REPLACE", "true");
+            dispatch(
+              toggleReplaceModal({
+                type: "folder",
+                data: err.response.data.data,
+                requestData: {
+                  url: "/api/folder/upload-folder/",
+                  formData,
+                },
+              })
+            );
+          } else {
             dispatch(error(err.response.data.message));
           }
+
           dispatch(fileUploadLoader());
           modalClose();
         });
     },
-    [dispatch, modalClose, parent, progress]
+    [dispatch, modalClose, parent]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

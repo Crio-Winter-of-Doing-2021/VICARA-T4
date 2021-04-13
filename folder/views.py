@@ -41,6 +41,20 @@ POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
 
+def manage_reset(self, folder, profile):
+    prev_size = folder.size
+    folder.size = 0
+    for child in folder.children_files:
+        child.delete()
+    for child in folder.children_folders:
+        child.delete()
+    folder.save()
+    propagate_size_change(folder.parent, -prev_size)
+    profile.storage_used -= prev_size
+    profile.save()
+    return folder, profile
+
+
 class Filesystem(APIView):
 
     @allow_id_root
@@ -54,7 +68,7 @@ class Filesystem(APIView):
         data = FolderSerializer(folder).data
         return Response(data=data, status=status.HTTP_200_OK)
 
-    @check_request_attr(POST_FOLDER)
+    @check_request_attr(["name", "PARENT", "REPLACE"])
     @check_valid_name
     @allow_parent_root
     @check_id_parent_folder
@@ -64,9 +78,22 @@ class Filesystem(APIView):
     def post(self, request, * args, **kwargs):
         parent_id = request.data["PARENT"]
         name = request.data["name"]
-        new_folder = create_folder(parent_id, request.user, name)
-        data = FolderSerializer(new_folder).data
-        return Response(data=data, status=status.HTTP_201_CREATED)
+        replace_flag = request.data["REPLACE"]
+        if(not replace_flag):
+            new_folder = create_folder(parent_id, request.user, name)
+        else:
+            parent_folder = Folder.custom_objects.get_or_none(id=parent_id)
+            children = parent_folder.children_folder.all().filter(name=name)
+            if(children):
+                new_folder, _ = manage_reset(
+                    children[0], request.user.profile)
+            else:
+                new_folder = create_folder(parent_id, request.user, name)
+
+        data = FolderSerializerWithoutChildren(new_folder).data
+        storage_data = ProfileSerializer(
+            request.user.profile).data["storage_data"]
+        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
 
     @check_id_folder
     @check_has_access_folder
@@ -74,16 +101,11 @@ class Filesystem(APIView):
     def put(self, request, * args, **kwargs):
         id = request.GET["id"]
         folder = Folder.objects.get(id=id)
-        prev_size = folder.size
-        folder.size = 0
-        for child in folder.children_files:
-            child.delete()
-        for child in folder.children_folders:
-            child.delete()
-        folder.save()
-        propagate_size_change(folder.parent, -prev_size)
-        data = FolderSerializer(folder).data
-        return Response(data=data, status=status.HTTP_200_OK)
+        folder, profile = manage_reset(
+            folder, request.user.profile)
+        data = FolderSerializerWithoutChildren(folder).data
+        storage_data = ProfileSerializer(profile).data["storage_data"]
+        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
 
     @check_request_attr(["id"])
     @check_valid_name
@@ -190,6 +212,7 @@ class UploadFolder(APIView):
         paths = request.data["PATH"].read()
         paths = json.loads(paths.decode('utf-8'))
         files = request.FILES.getlist('file')
+        replace_flag = request.data["REPLACE"]
 
         # check duplicate exists
         # take path of first file then convert to list then 2nd element is base name
@@ -214,10 +237,15 @@ class UploadFolder(APIView):
         base_folder_name = structure[0][0]
         children = parent.children_folder.all().filter(name=base_folder_name)
         if(children):
-            return Response(data={"message": f"Folder with given name = {base_folder_name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
-        base_folder = Folder(owner=request.user,
-                             name=base_folder_name, parent=parent)
-        base_folder.save()
+            if(replace_flag == False):
+                return Response(data={"message": f"Folder with given name = {base_folder_name}already exists"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                base_folder, _ = manage_reset(
+                    children[0], request.user.profile)
+        else:
+            base_folder = Folder(owner=request.user,
+                                 name=base_folder_name, parent=parent)
+            base_folder.save()
 
         # maintain parent record to make folders
         parent_record = defaultdict(dict)
@@ -289,10 +317,9 @@ class UploadFolder(APIView):
 
         id = request.GET["id"]
         base_folder = Folder.objects.get(id=id)
+        base_folder, _ = manage_reset(
+            base_folder, request.user.profile)
         base_folder_name = base_folder.name
-        propagate_size_change(base_folder.parent, -base_folder.size)
-        base_folder.size = 0
-        base_folder.save()
 
         # maintain parent record to make folders
         parent_record = defaultdict(dict)

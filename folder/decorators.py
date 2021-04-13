@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from user.models import Profile
 from file.models import File
 from folder.models import Folder
+from folder.serializers import FolderSerializerWithoutChildren
 
 # check_is_owner
 # check_is_folder
@@ -213,6 +214,12 @@ def check_valid_name(func):
 def check_duplicate_folder_exists(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
+
+        # We are using form-data in frontend which can't send Boolean
+        if(request.data.get("REPLACE") == "true"):
+            result = func(self, request, *args, **kwargs)
+            return result
+
         # there might be cases in patch when we are not changing names
         if("name" in request.data):
             name = request.data["name"]
@@ -228,10 +235,23 @@ def check_duplicate_folder_exists(func):
 
             children = parent_folder.children_folder.all().filter(name=name)
             if(children):
+
+                # this is the case in which the folder is renamed as its prev name
+                if(request.method == "PATCH"):
+                    if(children[0]["id"] == id):
+                        folder = children[0]
+                        data = FolderSerializerWithoutChildren(folder).data
+                        return Response(data=data, status=status.HTTP_200_OK)
+
                 res = {
                     "message": "Duplicate folder exists",
                     "error_code": "DUPLICATE_FOLDER",
-                    "id": children[0].id
+                    "data": [
+                        {
+                            "id": children[0].id,
+                            "name": children[0].name
+                        }
+                    ]
                 }
                 return Response(data=res, status=status.HTTP_400_BAD_REQUEST)
 

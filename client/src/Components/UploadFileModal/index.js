@@ -33,6 +33,7 @@ export default function FormDialog(props) {
     PARENT: props.parent,
     NAME: "",
     DRIVE_URL: "",
+    REPLACE: false,
   });
 
   // let loading = useSelector(fileLoading);
@@ -108,7 +109,12 @@ export default function FormDialog(props) {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle style={{backgroundColor:"black",color:"white"}} id="form-dialog-title">Upload Files</DialogTitle>
+        <DialogTitle
+          style={{ backgroundColor: "black", color: "white" }}
+          id="form-dialog-title"
+        >
+          Upload Files
+        </DialogTitle>
         <Divider />
         <DialogContent style={{ margin: "15px 0" }}>
           <DialogContentText>
