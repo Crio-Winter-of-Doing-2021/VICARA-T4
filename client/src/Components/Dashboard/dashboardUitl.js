@@ -164,6 +164,7 @@ export default function ClippedDrawer(props) {
                       button
                       onClick={(e) => handlePageChange(e, data.name)}
                       key={data.name}
+                      className={data.name==="Shared with Me"?"sharedWithMeClass":`${data.name}Class`}
                     >
                       <ListItemIcon>{data.icon}</ListItemIcon>
                       <ListItemText

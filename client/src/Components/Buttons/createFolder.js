@@ -52,6 +52,7 @@ export default function FormDialog(props) {
         variant="outlined"
         color="primary"
         onClick={handleClickOpen}
+        className="createFolderClass"
       >
         Create Folder
       </Button>

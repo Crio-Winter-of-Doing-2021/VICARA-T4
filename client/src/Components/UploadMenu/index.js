@@ -68,6 +68,7 @@ export default function MenuListComposition(props) {
           startIcon={<CloudUploadIcon />}
           variant="contained"
           color="primary"
+          className="uploadClass"
         >
           New
         </Button>

@@ -21,7 +21,7 @@ export default function BadgeAvatars(props) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={` ${classes.root}`}>
       <Badge
         overlap="circle"
         anchorOrigin={{
@@ -34,6 +34,7 @@ export default function BadgeAvatars(props) {
         badgeContent={
           <ProfilePictureUpdate/>
         }
+        className="profilePictureClass"
       >
         <Avatar
           alt={userData.username}

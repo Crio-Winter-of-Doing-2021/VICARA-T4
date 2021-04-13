@@ -162,8 +162,8 @@ export default function TableComponent({
     <div>
       <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <TableRow>
+          <TableHead >
+            <TableRow className="rowClass">
               <StyledTableCell>
                 Name
                 <IconButton

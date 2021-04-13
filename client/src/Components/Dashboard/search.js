@@ -94,7 +94,7 @@ export default function Search(props) {
 
   return (
     <div>
-      <div className={classes.search}>
+      <div className={`searchClass ${classes.search}`}>
         <div className={classes.searchIcon}>
           <SearchIcon />
         </div>

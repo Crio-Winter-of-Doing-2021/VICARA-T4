@@ -8,7 +8,10 @@ import PrivateRoute from "./Utilities/protectedRoute";
 import AuthorizationCheck from "./Utilities/authorizationCheck";
 import Message from "./Components/RequestLogs/index";
 
+
 function App() {
+
+  
   return (
     <div style={{ padding: "0 !important" }} className="App">
       <NormalLoader />
@@ -22,6 +25,7 @@ function App() {
           <Dashboard />
         </Route> */}
       </Switch>
+      
     </div>
   );
 }

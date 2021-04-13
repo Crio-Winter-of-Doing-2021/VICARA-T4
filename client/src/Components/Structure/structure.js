@@ -7,17 +7,32 @@ import {
   selectChildren,
   resetChildren,
 } from "../../store/slices/structureSlice";
+import Tour from 'reactour'
 
 import CreateFolder from "../Buttons/createFolder";
 
 import UploadMenu from "../UploadMenu/index";
 import TableComponent from "../../Utilities/Table";
+import {steps} from '../../constants'
 
 export const privOpp = 1;
 export default function Structure(props) {
+
   let unique_id = props.match.params.id;
   const children = useSelector(selectChildren);
   let root_id = window.localStorage.getItem("id");
+  console.log("chala");
+
+  let shown=localStorage.getItem("tourShown")===null
+
+  const [isTourOpen, setIsTourOpen] = React.useState(shown);
+
+  
+
+  if(shown){
+    localStorage.setItem("tourShown",true)
+  }
+
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -51,6 +66,13 @@ export default function Structure(props) {
       </div>
       <Path {...props} />
       <TableComponent {...tableProps} />
+      <Tour
+        steps={steps}
+        isOpen={isTourOpen}
+        onRequestClose={() => setIsTourOpen(false)}
+        rounded={5}
+        accentColor={"#5cb7b7"}
+      />
     </div>
   );
 }

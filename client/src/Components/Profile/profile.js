@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import UserImage from "../Avatar/index";
 import { Divider, Typography } from "@material-ui/core";
@@ -43,7 +43,7 @@ export default function Profile() {
   return (
     <div style={{ margin: "15px 0" }}>
       {loading === false ? (
-        <Fragment>
+        <div className="profileDataClass">
           {pictureUpdating?
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Skeleton variant="circle" width={100} height={100} />
@@ -86,9 +86,9 @@ export default function Profile() {
               ? userData.storage_data.readable
               : "Calculating..."}
           </div>
-        </Fragment>
+        </div>
       ) : (
-        <Fragment>
+        <div>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Skeleton variant="circle" width={100} height={100} />
           </div>
@@ -114,7 +114,7 @@ export default function Profile() {
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Skeleton width={60} variant="text" />
           </div>
-        </Fragment>
+        </div>
       )}
     </div>
   );
