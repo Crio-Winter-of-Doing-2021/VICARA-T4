@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { normalLoader, skeletonLoader, navSearchLoader } from "./loaderSlice";
-
+import { updateStorageData } from "./authSlice";
 // import {updateSharePrivacy} from './shareSlice'
 import { success, error } from "./logSlice";
 
@@ -239,19 +239,36 @@ export const addFolderAsync = (data) => (dispatch) => {
       console.log("succ in add folder");
       console.log({ res });
       dispatch(updateChild(res.data));
+      const { readable, ratio } = res.data;
+      dispatch(updateStorageData({ readable, ratio }));
       dispatch(normalLoader());
       dispatch(success("Your Action was Successful"));
     })
     .catch((err) => {
-      console.log("errr in add folder");
       dispatch(normalLoader());
-      //console.log(err.response);
-      dispatch(error(err.response.data.message));
+      const statusCode = err.response.request.status;
+
+      if (
+        statusCode === 400 &&
+        err.response.data.error_code === "DUPLICATE_FOLDER"
+      ) {
+        dispatch(
+          toggleReplaceModal({
+            type: "folder",
+            data: err.response.data.data,
+            requestData: {
+              url: "/api/folder/",
+              formData: { ...data, REPLACE: "true" },
+            },
+          })
+        );
+      } else {
+        dispatch(error(err.response.data.message));
+      }
     });
 };
 
 export const updateChildAsync = (data) => (dispatch) => {
-  //console.log({ data });
   const { type, ...rest } = data;
   dispatch(normalLoader());
   if (type === "file") {

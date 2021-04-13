@@ -41,12 +41,12 @@ POST_FOLDER = ["name", "PARENT"]
 PATCH_FOLDER = ["id"]
 
 
-def manage_reset(self, folder, profile):
+def manage_reset(folder, profile):
     prev_size = folder.size
     folder.size = 0
-    for child in folder.children_files:
+    for child in folder.children_file.all():
         child.delete()
-    for child in folder.children_folders:
+    for child in folder.children_folder.all():
         child.delete()
     folder.save()
     propagate_size_change(folder.parent, -prev_size)
@@ -272,16 +272,20 @@ class UploadFolder(APIView):
             parent_id = parent_record[file_level-1][parent_name]
             parent = Folder.objects.get(id=parent_id)
             req_file_size = files[index].size
-            create_file(request.user, files[index],
-                        parent, file_name, req_file_size)
+            new_file = create_file(request.user, files[index],
+                                   parent, file_name, req_file_size)
+
             request.user.profile.storage_used = request.user.profile.storage_used + \
                 files[index].size
             request.user.profile.save()
 
+        # to get updated size
+        base_folder_id = base_folder.id
+        base_folder = Folder.objects.get(id=base_folder_id)
         data = FolderSerializerWithoutChildren(base_folder).data
         storage_data = ProfileSerializer(
             request.user.profile).data["storage_data"]
-        return Response(data={**data, **storage_data}, status=status.HTTP_200_OK)
+        return Response(data={**data, **storage_data}, status=status.HTTP_201_CREATED)
 
     @check_request_attr(["id", "PATH", "file"])
     @check_id_folder
