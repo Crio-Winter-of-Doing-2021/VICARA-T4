@@ -1,3 +1,4 @@
+from file.serializers import FileSerializer
 import functools
 import re
 from datetime import datetime
@@ -99,10 +100,26 @@ def check_valid_name_request_body(func):
     return wrapper
 
 
+def manage_duplicate(name, parent_folder, duplicate_res):
+
+    children = parent_folder.children_file.all().filter(name=name)
+    if(children):
+        duplicate_res["data"].append({
+            "id": children[0].id,
+            "name": children[0].name,
+        })
+
+
 def check_already_present(to_check):
     def decorator_func(func):
         @functools.wraps(func)
         def wrapper(self, request, *args, **kwargs):
+
+            # We are using form-data in frontend which can't send Boolean
+            if(request.data.get("REPLACE") == "true"):
+                result = func(self, request, *args, **kwargs)
+                return result
+
             # there might be cases in patch when we are not changing names
             if(request.FILES or "name" in request.data):
 
@@ -118,18 +135,30 @@ def check_already_present(to_check):
                     folder = File.custom_objects.get_or_none(id=id)
                     parent_folder = folder.parent
 
+                duplicate_res = {
+                    "message": "Duplicate file exists",
+                    "error_code": "DUPLICATE_FILE",
+                    "data": []
+                }
+
                 if(to_check == "req_data_name"):
                     name = request.data["name"]
-                    children = parent_folder.children_file.all().filter(name=name)
-                    if(children):
-                        return Response(data={"message": f"File with given name = {name} already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                    manage_duplicate(name, parent_folder, duplicate_res)
 
                 elif to_check == "req_file_name":
                     for req_file in request.FILES.getlist('file'):
                         name = req_file.name
-                        children = parent_folder.children_file.all().filter(name=name)
-                        if(children):
-                            return Response(data={"message": f"File with given name = {name} already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                        manage_duplicate(name, parent_folder, duplicate_res)
+
+            if(len(duplicate_res["data"]) > 0):
+                # this is the case in which the file is renamed as its prev name
+                if(request.method == "PATCH"):
+                    if(duplicate_res["data"][0]["id"] == id):
+                        file = File.objects.get(id=id)
+                        data = FileSerializer(file).data
+                        return Response(data=data, status=status.HTTP_200_OK)
+
+                return Response(data=duplicate_res, status=status.HTTP_400_BAD_REQUEST)
 
             result = func(self, request, *args, **kwargs)
             return result
@@ -162,7 +191,7 @@ def update_last_modified_file(func):
     return wrapper
 
 
-def check_storage_available(func):
+def check_storage_available_file_upload(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         profile = request.user.profile

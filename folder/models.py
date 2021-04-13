@@ -23,14 +23,14 @@ class Folder(models.Model):
         User, on_delete=models.CASCADE, related_name="folders")
     shared_among = models.ManyToManyField(
         User, related_name="shared_folders")
+    present_in_shared_me_of = models.ManyToManyField(
+        User, related_name="shared_with_me_folders")
     size = models.IntegerField(default=0)
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
     objects = models.Manager()
     custom_objects = FolderManager()
-    present_in_shared_me_of = models.ManyToManyField(
-        User, related_name="shared_with_me_folders")
 
     def __str__(self):
         return f"{self.name} => parent = {self.parent} "

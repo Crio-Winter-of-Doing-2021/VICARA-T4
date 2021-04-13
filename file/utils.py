@@ -70,13 +70,12 @@ def delete_s3(file_key):
 
 
 def upload_file_to_s3(file, s3_key):
-
     session = boto3.session.Session(aws_access_key_id=config("AWS_ACCESS_KEY_ID"),
                                     aws_secret_access_key=config("AWS_SECRET_ACCESS_KEY"))
     s3 = session.resource('s3')
     res = s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(
         Key=s3_key, Body=file)
-    print(res)
+    return res.key
 
 
 def rename_s3(old_file_key, new_file_key):

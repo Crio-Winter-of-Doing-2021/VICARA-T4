@@ -43,59 +43,95 @@ class FileView(APIView):
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 
-    @check_request_attr(POST_FILE)
+    @check_request_attr(["file", "PARENT", "REPLACE"])
     # @check_valid_name_request_file
     @allow_parent_root
     @check_id_parent_folder
     @check_is_owner_parent_folder
     @check_parent_folder_not_trashed
     @check_already_present(to_check="req_file_name")
-    @check_storage_available
+    @check_storage_available_file_upload
     def post(self, request, * args, **kwargs):
-        parent_id = request.data["PARENT"]
-        parent = Folder.objects.get(id=parent_id)
-        data = []
-        for req_file in request.FILES.getlist('file'):
-            req_file_name = req_file.name
-            new_file = create_file(
-                request.user, req_file, parent, req_file_name, req_file.size)
-            request.user.profile.storage_used += req_file.size
-            request.user.profile.save()
-            new_file = FileSerializer(new_file).data
-            data.append(new_file)
-        storage_data = ProfileSerializer(
-            request.user.profile).data["storage_data"]
-        return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
 
-    @check_request_attr(["id", "file"])
-    @check_id_file
-    @check_is_owner_file
-    @check_storage_available
-    def put(self, request, * args, **kwargs):
-        # getting old details
-        id = request.data["id"]
-        file = File.objects.get(id=id)
-        req_file = request.FILES['file']
+        if(not request.data.get("REPLACE")):
+            #  regular post request
+            parent_id = request.data["PARENT"]
+            parent = Folder.objects.get(id=parent_id)
+            data = []
+            for req_file in request.FILES.getlist('file'):
+                req_file_name = req_file.name
+                new_file = create_file(
+                    request.user, req_file, parent, req_file_name, req_file.size)
+                request.user.profile.storage_used += req_file.size
+                request.user.profile.save()
+                new_file = FileSerializer(new_file).data
+                data.append(new_file)
+            storage_data = ProfileSerializer(
+                request.user.profile).data["storage_data"]
+            return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
+        else:
+            parent_id = request.data["PARENT"]
+            parent = Folder.objects.get(id=parent_id)
+            data = []
+            for req_file in request.FILES.getlist('file'):
+                req_file_name = req_file.name
+
+                # if a duplicate is found
+                children = parent.children_file.all().filter(name=req_file_name)
+                if(children):
+                    print("old s3 key = ", children[0].get_s3_key())
+                    new_file, _ = self.manage_file_fileObj_update(
+                        children[0], req_file, request.user.profile)
+                    print("new_file s3 key = ", new_file.get_s3_key())
+                else:
+                    new_file = create_file(
+                        request.user, req_file, parent, req_file_name, req_file.size)
+                    request.user.profile.storage_used += req_file.size
+                    request.user.profile.save()
+                new_file = FileSerializer(new_file).data
+                data.append(new_file)
+            storage_data = ProfileSerializer(
+                request.user.profile).data["storage_data"]
+            return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
+
+    def manage_file_fileObj_update(self, file, req_file, profile):
         old_file_s3_key = file.get_s3_key()
         old_file_size = file.size
 
         # attaching new s3 file
         delete_s3(old_file_s3_key)
-        upload_file_to_s3(req_file, old_file_s3_key)
+
+        new_key = upload_file_to_s3(req_file, old_file_s3_key)
 
         # making changes to file details
-        file.file.name = old_file_s3_key
+
+        # to remove media/ from the name
+        file.file.name = new_key[6:]
         file.size = req_file.size
         file.shared_among.set([])
         file.present_in_shared_me_of.set([])
+        file.save()
 
         # making changes to storage
-        profile = request.user.profile
+
         profile.storage_used += req_file.size - old_file_size
         profile.save()
 
         # making changes to parent folders
         propagate_size_change(file.parent, req_file.size - old_file_size)
+        return file, profile
+
+    @check_request_attr(["id", "file"])
+    @check_id_file
+    @check_is_owner_file
+    @check_storage_available_file_upload
+    def put(self, request, * args, **kwargs):
+        # getting old details
+        id = request.data["id"]
+        file = File.objects.get(id=id)
+        req_file = request.FILES['file']
+        file, profile = self.manage_file_fileObj_update(
+            file, req_file, request.user.profile)
 
         data = FileSerializer(file).data
         storage_data = ProfileSerializer(
@@ -185,22 +221,25 @@ class FileView(APIView):
         data = FileSerializer(file).data
         return Response(data=data, status=status.HTTP_200_OK)
 
-    @check_id_file
-    @check_is_owner_file
-    def delete(self, request, * args, **kwargs):
-        id = get_id(request)
-        file = File.objects.get(id=id)
+    def manage_file_delete(self, file):
         size = file.get_size()
         file.owner.profile.storage_used -= size
         file.owner.profile.save()
         propagate_size_change(file.parent, -file.size)
         file.delete()
+
+    @check_id_file
+    @check_is_owner_file
+    def delete(self, request, * args, **kwargs):
+        id = get_id(request)
+        file = File.objects.get(id=id)
+        self.manage_file_delete(file)
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
         return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
 
 
-class UploadByDriveUrl(APIView):
+class UploadByDriveUrl(FileView):
 
     def get_django_file_object(self, drive_url, name):
         # getting the django file object
@@ -214,7 +253,7 @@ class UploadByDriveUrl(APIView):
         djangofile = DjangoCoreFile(local_file)
         return djangofile, s3_name
 
-    @check_request_attr(["PARENT", "DRIVE_URL", "NAME"])
+    @check_request_attr(["PARENT", "DRIVE_URL", "NAME", "REPLACE"])
     @check_valid_name
     @allow_parent_root
     @check_id_parent_folder
@@ -226,8 +265,19 @@ class UploadByDriveUrl(APIView):
         parent = request.data["PARENT"]
         drive_url = request.data["DRIVE_URL"]
         name = request.data["NAME"]
+        replace_flag = request.data["REPLACE"]
 
         parent_folder = Folder.objects.get(id=parent)
+        children = parent_folder.children_file.all().filter(name=name)
+
+        if(children and replace_flag):
+            djangofile, _ = self.get_django_file_object(drive_url, name)
+            new_file, profile = self.manage_file_fileObj_update(
+                children[0], djangofile, request.user.profile)
+
+            data = FileSerializer(new_file).data
+            storage_data = ProfileSerializer(profile).data["storage_data"]
+            return Response(data={"file_data": data, **storage_data}, status=status.HTTP_200_OK)
 
         # getting the django file object
         djangofile, s3_name = self.get_django_file_object(drive_url, name)
@@ -281,10 +331,10 @@ class UploadByDriveUrl(APIView):
 
         # attaching new s3 file
         delete_s3(old_file_s3_key)
-        upload_file_to_s3(djangofile, old_file_s3_key)
+        new_key = upload_file_to_s3(djangofile, old_file_s3_key)
 
         # making changes to file details
-        file.file.name = old_file_s3_key
+        file.file.name = new_key
         file.size = djangofile.size
         file.shared_among.set([])
         file.present_in_shared_me_of.set([])

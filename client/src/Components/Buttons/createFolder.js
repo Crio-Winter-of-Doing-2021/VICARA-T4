@@ -32,6 +32,7 @@ export default function FormDialog(props) {
     setData({
       name: e.target.value,
       PARENT: props.id,
+      REPLACE: "false",
     });
   };
 
