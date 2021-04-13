@@ -31,16 +31,6 @@ export default function Structure(props) {
     ...props,
   };
 
-
-  const contextMenuProps={
-    download:true,
-    share:true,
-    trash:false,
-    delete:true,
-    update:true,
-    restore:false
-  }
-
   return (
     <div>
       <TableComponent {...tableProps} />

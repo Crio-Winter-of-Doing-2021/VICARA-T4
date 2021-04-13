@@ -21,7 +21,7 @@ import {
 import API from "../../axios";
 
 import { error, success } from "../../store/slices/logSlice";
-import { indigo } from "@material-ui/core/colors";
+
 export default function AlertDialog() {
   const modalData = useSelector(selectReplaceModal);
   const dispatch = useDispatch();

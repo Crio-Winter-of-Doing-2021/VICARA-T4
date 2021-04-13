@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import { folderPickerLoader, normalLoader } from "./loaderSlice";
 import { error } from "./logSlice";
-import { removeFromChildren, resetSelection } from "./structureSlice";
+import { resetSelection } from "./structureSlice";
 
 export const moveSlice = createSlice({
   name: "move",

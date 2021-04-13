@@ -1,28 +1,22 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
+import React from "react";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import RestoreFromTrashIcon from "@material-ui/icons/RestoreFromTrash";
 
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { ListItemText } from "@material-ui/core";
 
-import {selectChecked} from '../../store/slices/structureSlice'
+import { selectChecked } from "../../store/slices/structureSlice";
 
-import {
-  selectCheckedFolderKeys,
-  selectCheckedFileKeys,
-  restoreAsync,
-} from "../../store/slices/checkBoxSlice";
+import { restoreAsync } from "../../store/slices/checkBoxSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function AlertDialog({ handleCloseOfRightClickMenu,
-  ...data
-}) {
+export default function AlertDialog({ handleCloseOfRightClickMenu, ...data }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -33,20 +27,20 @@ export default function AlertDialog({ handleCloseOfRightClickMenu,
     setOpen(false);
   };
 
-  let checkedFileFolder=useSelector(selectChecked)
+  let checkedFileFolder = useSelector(selectChecked);
 
-  let checkedFolder = checkedFileFolder.filter(ele=>ele.type==='folder');
-  let checkedFile = checkedFileFolder.filter(ele=>ele.type==='file');
+  let checkedFolder = checkedFileFolder.filter((ele) => ele.type === "folder");
+  let checkedFile = checkedFileFolder.filter((ele) => ele.type === "file");
   const dispatch = useDispatch();
 
   let restoreSelected = (fileData, folderData) => {
     dispatch(restoreAsync(fileData, folderData));
   };
 
-    const handleClick = () => {
-      handleCloseOfRightClickMenu();
-      handleClickOpen();
-    };
+  const handleClick = () => {
+    handleCloseOfRightClickMenu();
+    handleClickOpen();
+  };
 
   return (
     <div>
@@ -65,14 +59,22 @@ export default function AlertDialog({ handleCloseOfRightClickMenu,
         <DialogTitle id="alert-dialog-title">Restore Files/Folders</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            After agreeing, {checkedFile.length + checkedFolder.length} files/folder will get restored?
+            After agreeing, {checkedFile.length + checkedFolder.length}{" "}
+            files/folder will get restored?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Disagree
           </Button>
-          <Button onClick={()=>{handleClose();restoreSelected(checkedFile,checkedFolder)}} color="primary" autoFocus>
+          <Button
+            onClick={() => {
+              handleClose();
+              restoreSelected(checkedFile, checkedFolder);
+            }}
+            color="primary"
+            autoFocus
+          >
             Restore
           </Button>
         </DialogActions>

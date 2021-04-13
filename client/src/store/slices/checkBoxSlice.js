@@ -1,17 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import API from "../../axios";
 import axios from "axios";
-import {
-  updateFileName,
-  popFromCurrentStack,
-  removeFromChildren,
-  resetSelection,
-} from "./structureSlice";
+import { removeFromChildren, resetSelection } from "./structureSlice";
 import { normalLoader } from "./loaderSlice";
-import { updateFavFileName, popFromCurrentFavStack } from "./favSlice";
-import { updateRecentFileName, popFromCurrentRecentStack } from "./recentSlice";
-import { popFromCurrentTrashStack } from "./trashSlice";
-import { getProfileAsync,updateStorageData } from "./authSlice";
+import { updateStorageData } from "./authSlice";
 import { success, error } from "./logSlice";
 export const checkBoxSlice = createSlice({
   name: "checkbox",
@@ -68,8 +60,6 @@ export const checkBoxSlice = createSlice({
 export const { updateSelectedKeys, emptykeys } = checkBoxSlice.actions;
 
 export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
-  const id = localStorage.getItem("id");
-  
   if (folderArr.length !== 0) {
     dispatch(normalLoader());
     let i;
@@ -84,11 +74,13 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       .all(axi_data)
       .then(
         axios.spread((...res) => {
-          console.log(res)
+          console.log(res);
           let k;
           for (k = 0; k < folderArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'folder'}))
-            dispatch(updateStorageData(res[k].data.storage_data))
+            dispatch(
+              removeFromChildren({ id: res[k].data.id, type: "folder" })
+            );
+            dispatch(updateStorageData(res[k].data.storage_data));
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
@@ -116,11 +108,11 @@ export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
       .all(axi_data)
       .then(
         axios.spread((...res) => {
-          console.log(res)
+          console.log(res);
           let k;
           for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren({id:res[k].data.id,type:'file'}))
-            dispatch(updateStorageData(res[k].data.storage_data))
+            dispatch(removeFromChildren({ id: res[k].data.id, type: "file" }));
+            dispatch(updateStorageData(res[k].data.storage_data));
           }
           dispatch(resetSelection());
           dispatch(normalLoader());
