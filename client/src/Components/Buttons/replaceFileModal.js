@@ -34,33 +34,6 @@ export default function AlertDialog() {
   };
   const handleReplace = () => {
     const { url, formData } = modalData.requestData;
-<<<<<<< HEAD
-    dispatch(fileUploadLoader());
-    API.post(url, formData, {
-      onUploadProgress: (ev) => {
-        const prog = (ev.loaded / ev.total) * 100;
-        setProgress(Math.round(prog));
-        //console.log({ progress });
-      },
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
-    })
-      .then(function (res) {
-        //handle success
-        //console.log(res);
-        let k;
-        for (k = 0; k < res.data.file_data.length; k++) {
-          dispatch(updateChild(res.data.file_data[k]));
-        }
-
-        //console.log("data = ", res.data);
-        const { readable, ratio } = res.data;
-        dispatch(updateStorageData({ readable, ratio }));
-        dispatch(fileUploadLoader());
-        dispatch(success("Your Action was Successful"));
-=======
     // to close the modal
     dispatch(toggleReplaceModal());
 
@@ -90,7 +63,6 @@ export default function AlertDialog() {
           "Content-Type": "multipart/form-data",
           Accept: "application/json",
         },
->>>>>>> be771163ba2bd1c789737647c61bbf89961b3cf7
       })
         .then(function (res) {
           //handle success
