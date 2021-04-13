@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 from corsheaders.defaults import default_headers
-import django_heroku
 import cloudinary
 from pathlib import Path
 import os
@@ -164,8 +163,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # Google configuration
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "575084088742-q6epbh1tv74ojp1rkvbir727g1dl5c94.apps.googleusercontent.com"
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "O_KAHb6KxxpgvwLriRJBJ8hs"
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
 
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
@@ -233,8 +232,8 @@ CORS_ALLOW_HEADERS = default_headers + (
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'vicara.t4@gmail.com'
-EMAIL_HOST_PASSWORD = 'password_vicara_t4'
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = 587
 
 
