@@ -29,7 +29,7 @@ export default function AlertDialog() {
   };
   const handleReplace = () => {
     const { url, formData } = modalData.requestData;
-
+    dispatch(fileUploadLoader());
     API.post(url, formData, {
       onUploadProgress: (ev) => {
         const prog = (ev.loaded / ev.total) * 100;
