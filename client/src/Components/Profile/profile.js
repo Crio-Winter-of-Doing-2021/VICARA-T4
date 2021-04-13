@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import UserImage from "../Avatar/index";
 import { Divider, Typography } from "@material-ui/core";
 import { selectUserData } from "../../store/slices/authSlice";
-import { profileLoading ,pictureLoading} from "../../store/slices/loaderSlice";
+import { profileLoading, pictureLoading } from "../../store/slices/loaderSlice";
 import Skeleton from "@material-ui/lab/Skeleton";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { withStyles } from "@material-ui/core/styles";
@@ -33,22 +33,30 @@ export default function Profile() {
   let userData = useSelector(selectUserData);
   let loading = useSelector(profileLoading);
 
-  let pictureUpdating=useSelector(pictureLoading)
+  let pictureUpdating = useSelector(pictureLoading);
 
   if (userData.storage_data !== undefined) {
     progress = userData.storage_data.ratio * 100;
   }
-  
-  
+
   return (
     <div style={{ margin: "15px 0" }}>
       {loading === false ? (
         <Fragment>
-          {pictureUpdating?
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Skeleton variant="circle" width={100} height={100} />
-          </div>:<UserImage />}
-          <div style={{ marginTop:"10px",display: "flex", justifyContent: "center" }}>
+          {pictureUpdating ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Skeleton variant="circle" width={100} height={100} />
+            </div>
+          ) : (
+            <UserImage />
+          )}
+          <div
+            style={{
+              marginTop: "10px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Typography style={{ color: "grey", fontStyle: "italic" }}>
               @{userData.username}
             </Typography>
@@ -60,7 +68,11 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            <Typography>{userData.username===undefined?"Fetching profile...":`${userData.first_name} ${userData.last_name}`}</Typography>
+            <Typography>
+              {userData.username === undefined
+                ? "Fetching profile..."
+                : `${userData.first_name} ${userData.last_name}`}
+            </Typography>
           </div>
           <Divider />
           <div

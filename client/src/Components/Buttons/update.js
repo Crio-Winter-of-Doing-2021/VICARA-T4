@@ -51,7 +51,7 @@ export default function UpdateNameModal({
         <ListItemIcon>
           <EditIcon color="primary" />
         </ListItemIcon>
-        <ListItemText style={{ paddingRight: "15px" }}>Update</ListItemText>
+        <ListItemText style={{ paddingRight: "15px" }}>Rename</ListItemText>
       </MenuItem>
       <Dialog
         open={open}
