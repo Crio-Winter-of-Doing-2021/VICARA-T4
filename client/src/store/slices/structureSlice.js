@@ -18,6 +18,10 @@ export const structureSlice = createSlice({
     children: {},
     navSearchResults: [],
     orderBy: "last_modified",
+    replaceModalStatus:{
+      show:false,
+      type:""
+    }
   },
   reducers: {
     updateStructure: (state, action) => {
@@ -120,6 +124,12 @@ export const structureSlice = createSlice({
     setOrderBy: (state, action) => {
       state.orderBy = action.payload;
     },
+    toggleReplaceModalStatus:(state,action)=>{
+      state.replaceModalStatus.show=!state.replaceModalStatus.show
+      if(action.payload!==undefined){
+        state.replaceModalStatus.type=action.payload.type
+      }
+    }
   },
 });
 
@@ -140,6 +150,7 @@ export const {
   updateNavSearchResults,
   removeFromChildren,
   setOrderBy,
+  toggleReplaceModalStatus
 } = structureSlice.actions;
 
 export const structureAsync = (uni_id) => (dispatch) => {
@@ -369,4 +380,5 @@ export const selectOrderBy = (state) => state.structure.orderBy;
 export const selectNavSearchResults = (state) =>
   state.structure.navSearchResults;
 
+export const selectReplaceModalStatus=(state)=>state.structure.replaceModalStatus
 export default structureSlice.reducer;

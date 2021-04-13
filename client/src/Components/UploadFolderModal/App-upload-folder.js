@@ -5,13 +5,14 @@ import API from "../../axios";
 
 import { fileLoading, fileUploadLoader } from "../../store/slices/loaderSlice";
 import UploadLoader from "../Loaders/fileUploadBackdrop";
-import { updateChild } from "../../store/slices/structureSlice";
+import { updateChild,toggleReplaceModalStatus } from "../../store/slices/structureSlice";
 import { updateStorageData } from "../../store/slices/authSlice";
 import FolderIcon from "@material-ui/icons/Folder";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
 import { error, success } from "../../store/slices/logSlice";
+
 
 function App({ modalClose, parent }) {
   const dispatch = useDispatch();
@@ -68,7 +69,13 @@ function App({ modalClose, parent }) {
         .catch(function (err) {
           //handle error
           //console.log(err.response);
-          dispatch(error(err.response.data.message));
+
+          let message=err.response.data.message
+          if(message.includes("already exists")){
+            dispatch(toggleReplaceModalStatus({type:"folder"}))
+          }else{
+            dispatch(error(err.response.data.message));
+          }
           dispatch(fileUploadLoader());
           modalClose();
         });
