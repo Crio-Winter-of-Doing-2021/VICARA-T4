@@ -85,9 +85,9 @@ export default function ClippedDrawer(props) {
       dispatch(getProfileAsync(res));
       setId(res);
     });
-   
+
     // dispatch(getProfileAsync(id));
-  }, [dispatch, id]);
+  }, [dispatch]);
 
   const handleLogout = () => {
     window.localStorage.removeItem("access_token");
@@ -161,7 +161,11 @@ export default function ClippedDrawer(props) {
                       button
                       onClick={(e) => handlePageChange(e, data.name)}
                       key={data.name}
-                      className={data.name==="Shared with Me"?"sharedWithMeClass":`${data.name}Class`}
+                      className={
+                        data.name === "Shared with Me"
+                          ? "sharedWithMeClass"
+                          : `${data.name}Class`
+                      }
                     >
                       <ListItemIcon>{data.icon}</ListItemIcon>
                       <ListItemText

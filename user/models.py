@@ -29,6 +29,7 @@ class Profile(models.Model):
         default=default_profile_picture_url, max_length=300)
     objects = models.Manager()
     custom_objects = ProfileManager()
+    tour_seen = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} | email = {self.user.email}"

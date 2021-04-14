@@ -97,6 +97,11 @@ class ProfileView(APIView):
             else:
                 return Response(data={"message": "Invalid gender"}, status=status.HTTP_400_BAD_REQUEST)
 
+        if("tour_seen" in request.data):
+            new_tour_seen = request.data["tour_seen"]
+            profile.tour_seen = new_tour_seen
+            updated = True
+
         if("capacity" in request.data):
             if(not request.user.is_staff):
                 return Response(data={"message": "Admin Rights required"}, status=status.HTTP_401_UNAUTHORIZED)

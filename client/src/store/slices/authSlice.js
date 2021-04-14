@@ -8,7 +8,9 @@ import { error } from "./logSlice";
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    userData: {},
+    userData: {
+      tour_seen: true,
+    },
     username: "",
   },
   reducers: {
@@ -26,6 +28,9 @@ export const authSlice = createSlice({
     setProfilePicture: (state, action) => {
       state.userData.profile_picture_url = action.payload;
     },
+    setTourSeen: (state, action) => {
+      state.userData.tour_seen = action.payload;
+    },
   },
 });
 
@@ -34,6 +39,7 @@ export const {
   setUser,
   updateStorageData,
   setProfilePicture,
+  setTourSeen,
 } = authSlice.actions;
 
 export const signupAsync = (data) => (dispatch) => {};
@@ -62,6 +68,20 @@ export const loginAsync = (data, props) => (dispatch) => {
 export const getProfileAsync = (id) => (dispatch) => {
   dispatch(profileLoader());
   API.get(`/api/profile/?id=${id}`)
+    .then((res) => {
+      dispatch(login(res.data));
+      dispatch(profileLoader());
+    })
+    .catch((err) => {
+      dispatch(profileLoader());
+      //console.log(err.response);
+      dispatch(error(err.response.data.message));
+    });
+};
+export const updateProfileTourSeen = (data) => (dispatch) => {
+  dispatch(setTourSeen(data.tour_seen));
+  dispatch(profileLoader());
+  API.patch(`/api/profile/`, data)
     .then((res) => {
       dispatch(login(res.data));
       dispatch(profileLoader());
