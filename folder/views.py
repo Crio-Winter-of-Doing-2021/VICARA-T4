@@ -403,7 +403,7 @@ class DownloadFolder(APIView):
         local_file_name = f"{new_folder_zipped_name}.zip"
         file = self.convert_local_to_file_object(
             local_file_name, folder_name, request.user)
-        url = get_presigned_url(file.get_s3_key())
+        url = get_presigned_url(file.get_cloud_storage_key())
 
         # remove_file.delay(new_folder_zip)
         # remove_folder.delay(str(zip_dir))
@@ -472,7 +472,7 @@ class PartialDownload(DownloadFolder):
         local_file_name = f"{new_folder_zipped_name}.zip"
         file = self.convert_local_to_file_object(
             local_file_name, folder_name, request.user)
-        url = get_presigned_url(file.get_s3_key())
+        url = get_presigned_url(file.get_cloud_storage_key())
 
         # remove_file.delay(new_folder_zip)
         # remove_folder.delay(str(zip_dir))

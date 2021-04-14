@@ -23,7 +23,7 @@ from user.utils import get_client_server
 from file.tasks import remove_file
 from .decorators import *
 from .serializers import FileSerializer
-from .utils import create_file, get_presigned_url, get_s3_filename, rename_s3, upload_file_to_s3, delete_s3
+from .utils import create_file, get_presigned_url, get_cloud_filename, rename_s3, upload_file_to_s3, delete_s3
 from folder.utils import propagate_size_change
 POST_FILE = ["file", "PARENT"]
 PATCH_FILE = ["id"]
@@ -79,10 +79,10 @@ class FileView(APIView):
                 # if a duplicate is found
                 children = parent.children_file.all().filter(name=req_file_name)
                 if(children):
-                    print("old s3 key = ", children[0].get_s3_key())
+                    print("old s3 key = ", children[0].get_cloud_storage_key())
                     new_file, _ = self.manage_file_fileObj_update(
                         children[0], req_file, request.user.profile)
-                    print("new_file s3 key = ", new_file.get_s3_key())
+                    print("new_file s3 key = ", new_file.get_cloud_storage_key())
                 else:
                     new_file = create_file(
                         request.user, req_file, parent, req_file_name, req_file.size)
@@ -95,13 +95,13 @@ class FileView(APIView):
             return Response(data={"file_data": data, **storage_data}, status=status.HTTP_201_CREATED)
 
     def manage_file_fileObj_update(self, file, req_file, profile):
-        old_file_s3_key = file.get_s3_key()
+        old_file_cloud_storage_key = file.get_cloud_storage_key()
         old_file_size = file.size
 
         # attaching new s3 file
-        delete_s3(old_file_s3_key)
+        delete_s3(old_file_cloud_storage_key)
 
-        new_key = upload_file_to_s3(req_file, old_file_s3_key)
+        new_key = upload_file_to_s3(req_file, old_file_cloud_storage_key)
 
         # making changes to file details
 
@@ -167,8 +167,8 @@ class FileView(APIView):
             # new_path = os.path.join(settings.MEDIA_ROOT, new_name)
             # initial_path = file_obj.file.path
             # os.rename(initial_path, new_path)
-            old_file_key = file.get_s3_key()
-            s3_new_filename = get_s3_filename(new_name_file_system)
+            old_file_key = file.get_cloud_storage_key()
+            s3_new_filename = get_cloud_filename(new_name_file_system)
             new_file_key = file.make_key(s3_new_filename)
 
             rename_s3(old_file_key, new_file_key)
@@ -245,15 +245,15 @@ class UploadByDriveUrl(FileView):
 
     def get_django_file_object(self, drive_url, name):
         # getting the django file object
-        s3_name = get_s3_filename(name)
+        cloud_filename = get_cloud_filename(name)
         try:
             r = requests.get(drive_url, allow_redirects=True)
         except:
             return Response(data={"message": "Invalid URL"}, status=status.HTTP_400_BAD_REQUEST)
-        open(s3_name, 'wb').write(r.content)
-        local_file = open(s3_name, 'rb')
+        open(cloud_filename, 'wb').write(r.content)
+        local_file = open(cloud_filename, 'rb')
         djangofile = DjangoCoreFile(local_file)
-        return djangofile, s3_name
+        return djangofile, cloud_filename
 
     @check_request_attr(["PARENT", "DRIVE_URL", "NAME", "REPLACE"])
     @check_valid_name
@@ -282,12 +282,13 @@ class UploadByDriveUrl(FileView):
             return Response(data={"file_data": data, **storage_data}, status=status.HTTP_200_OK)
 
         # getting the django file object
-        djangofile, s3_name = self.get_django_file_object(drive_url, name)
+        djangofile, cloud_filename = self.get_django_file_object(
+            drive_url, name)
 
         # checking storage available or not
         profile = request.user.profile
         if(djangofile.size + profile.storage_used > profile.storage_avail):
-            os.remove(s3_name)
+            os.remove(cloud_filename)
             return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
 
         # making File object
@@ -296,8 +297,8 @@ class UploadByDriveUrl(FileView):
         file.save()
 
         # remove temp file
-        os.remove(s3_name)
-        # remove_file.delay(s3_name)
+        os.remove(cloud_filename)
+        # remove_file.delay(cloud_filename)
 
         # making change to storage data
         propagate_size_change(file.parent, djangofile.size - djangofile.size)
@@ -320,20 +321,21 @@ class UploadByDriveUrl(FileView):
         # getting old details
         id = request.data["id"]
         file = File.objects.get(id=id)
-        old_file_s3_key = file.get_s3_key()
+        old_file_cloud_storage_key = file.get_cloud_storage_key()
         old_file_size = file.size
 
-        djangofile, s3_name = self.get_django_file_object(drive_url, file.name)
+        djangofile, cloud_filename = self.get_django_file_object(
+            drive_url, file.name)
 
         # checking storage available or not
         profile = request.user.profile
         if(djangofile.size - old_file_size + profile.storage_used > profile.storage_avail):
-            os.remove(s3_name)
+            os.remove(cloud_filename)
             return Response(data={"message": "Insufficient space"}, status=status.HTTP_400_BAD_REQUEST)
 
         # attaching new s3 file
-        delete_s3(old_file_s3_key)
-        new_key = upload_file_to_s3(djangofile, old_file_s3_key)
+        delete_s3(old_file_cloud_storage_key)
+        new_key = upload_file_to_s3(djangofile, old_file_cloud_storage_key)
 
         # making changes to file details
         file.file.name = new_key
@@ -349,8 +351,8 @@ class UploadByDriveUrl(FileView):
         propagate_size_change(file.parent, djangofile.size - old_file_size)
 
         # remove temp file
-        os.remove(s3_name)
-        # remove_file.delay(s3_name)
+        os.remove(cloud_filename)
+        # remove_file.delay(cloud_filename)
 
         data = FileSerializer(file).data
         storage_data = ProfileSerializer(profile).data["storage_data"]
@@ -366,5 +368,5 @@ class DownloadFile(APIView):
     def get(self, request, *args, **kwargs):
         id = request.GET["id"]
         file = File.objects.get(id=id)
-        url = get_presigned_url(file.get_s3_key())
+        url = get_presigned_url(file.get_cloud_storage_key())
         return Response(data={"url": url}, status=status.HTTP_200_OK)

@@ -1,11 +1,9 @@
-import boto3
 import secrets
 import os
-from mysite.settings import AWS_STORAGE_BUCKET_NAME, PUBLIC_MEDIA_LOCATION
-from decouple import config
 from .models import File
 
 from folder.utils import propagate_size_change
+from mysite.cloud_storage_providers import aws_s3_object as CLOUD_STORAGE_PROVIDER
 
 
 def create_file(owner, req_file, parent, req_file_name, size):
@@ -20,64 +18,29 @@ def create_file(owner, req_file, parent, req_file_name, size):
     return new_file
 
 
-def get_presigned_url(key):
-    s3 = boto3.client('s3')
-    # Generate the URL to get 'key-name' from 'bucket-name'
-    url = s3.generate_presigned_url(
-        ClientMethod='get_object',
-        Params={
-            'Bucket': AWS_STORAGE_BUCKET_NAME,
-            'Key': key
-        },
-        ExpiresIn=20
-    )
-    return url
-
-# serves as a unique temp file name
-# also used while renaming of files in PATCH for making a valid unique s3 key
-
-
-def get_s3_filename(full_filename):
+def get_cloud_filename(full_filename):
     filename, file_extension = os.path.splitext(full_filename)
     random_token = secrets.token_hex(4)
-    s3_filename = f"{filename}__{random_token}{file_extension}"
+    cloud_filename = f"{filename}__{random_token}{file_extension}"
 
-    return s3_filename
+    return cloud_filename
+
+
+def get_presigned_url(key):
+    return CLOUD_STORAGE_PROVIDER.get_presigned_url(key)
 
 
 def copy_s3(old_file_key, new_file_key):
-    s3 = boto3.resource('s3')
-    copy_source = {
-        'Bucket': AWS_STORAGE_BUCKET_NAME,
-        'Key': old_file_key
-    }
-    bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
-    bucket.copy(copy_source, new_file_key)
+    CLOUD_STORAGE_PROVIDER.copy(old_file_key, new_file_key)
 
 
 def delete_s3(file_key):
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
-    bucket.delete_objects(
-        Delete={
-            'Objects': [
-                {
-                    'Key': file_key
-                },
-            ],
-        }
-    )
+    CLOUD_STORAGE_PROVIDER.delete(file_key)
 
 
-def upload_file_to_s3(file, s3_key):
-    session = boto3.session.Session(aws_access_key_id=config("AWS_ACCESS_KEY_ID"),
-                                    aws_secret_access_key=config("AWS_SECRET_ACCESS_KEY"))
-    s3 = session.resource('s3')
-    res = s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(
-        Key=s3_key, Body=file)
-    return res.key
+def upload_file_to_s3(file, cloud_storage_key):
+    return CLOUD_STORAGE_PROVIDER.upload_file(file, cloud_storage_key)
 
 
 def rename_s3(old_file_key, new_file_key):
-    copy_s3(old_file_key, new_file_key)
-    delete_s3(old_file_key)
+    return CLOUD_STORAGE_PROVIDER.rename(old_file_key, new_file_key)

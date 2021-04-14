@@ -1,5 +1,4 @@
 import os
-import boto3
 # django imports
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,7 +6,7 @@ from folder.models import Folder
 import humanize
 
 # local
-from mysite.settings import AWS_STORAGE_BUCKET_NAME
+from mysite.cloud_storage_providers import aws_s3_object as CLOUD_STORAGE_PROVIDER
 
 
 class FileManager(models.Manager):
@@ -50,21 +49,11 @@ class File(models.Model):
     def get_last_modified(self):
         return humanize.naturaltime(self.last_modified)
 
-    def get_s3_key(self):
-        return os.path.join(self.file.storage.location, self.file.name)
-
     def make_key(self, name):
         return os.path.join(self.file.storage.location, name)
 
-    def get_size(self):
-        s3 = boto3.resource('s3')
-        object = s3.Object(AWS_STORAGE_BUCKET_NAME, self.get_s3_key())
-        file_size = object.content_length  # size in bytes
-        return file_size
+    def get_cloud_storage_key(self):
+        return CLOUD_STORAGE_PROVIDER.get_cloud_storage_key(self)
 
     def download_to(self, parent_folder_path):
-        path_file = parent_folder_path.joinpath(self.name)
-        print(str(path_file))
-        s3 = boto3.client('s3')
-        s3.download_file(AWS_STORAGE_BUCKET_NAME,
-                         self.get_s3_key(), str(path_file))
+        CLOUD_STORAGE_PROVIDER.download_to(parent_folder_path, self)
