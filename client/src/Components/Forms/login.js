@@ -20,6 +20,10 @@ import GoogleLogin from "react-google-login";
 // import { googleLogin } from "../../store/slices/authSlice";
 import { googleLogin } from "../../axios";
 import Developers from "./developers";
+import GoogleIcon from '../../assets/icons8-google-480.png'
+import LoginPic from '../../assets/login.png'
+
+import './style.scss'
 
 export function Copyright() {
   return (
@@ -39,10 +43,9 @@ export function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(30),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "center"
   },
   avatar: {
     margin: theme.spacing(1),
@@ -87,17 +90,23 @@ export default function SignIn(props) {
   // };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container className="box" style={{
+      marginTop:"100px",
+      padding:"20px"
+    }} component="main" maxWidth="xs">
       <NormalLoader />
       <CssBaseline />
       {/* {//console.log(state)} */}
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
+        <Typography style={{fontWeight:"bold",textShadow:"1px 1px grey",margin:"15px 0"}} component="h1" variant="h4">
+          Vicara T4
         </Typography>
+
+        <div style={{margin:"10px 0",width:"100%"}}>
+          <img style={{width:"100%"}} src={LoginPic} alt="loginpic"/>
+        </div>
+        
+
         {/* <form className={classes.form} noValidate>
           <TextField
             variant="outlined"
@@ -155,6 +164,11 @@ export default function SignIn(props) {
             clientId="575084088742-2eidkevqutnod9lord9vf2sri50ko7ct.apps.googleusercontent.com"
             buttonText="LOGIN WITH GOOGLE"
             onSuccess={(response) => googleLogin(props, response)(dispatch)}
+            render={renderProps => (
+              <button onClick={renderProps.onClick} disabled={renderProps.disabled} type="button" class="login-with-google-btn" >
+                Sign in with Google
+              </button>
+            )}
             // onFailure={googleResponse}
           />
         </div>
