@@ -17,8 +17,8 @@ $ sudo apt-get update -y
 $ sudo apt-get install python3-pip -y
 $ sudo apt-get install python3-venv -y
 
-# git clone https://github.com/Crio-Winter-of-Doing-2021/VICARA-T4.git
-# cd VICARA-T4
+$ git clone https://github.com/Crio-Winter-of-Doing-2021/VICARA-T4.git
+$ cd VICARA-T4
 
 $ python3 -m venv env
 $ source env/bin/activate
