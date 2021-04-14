@@ -29,7 +29,7 @@ def get_id(request):
 
 def allow_id_root_helper(request):
     id = get_id(request)
-    if(id == "ROOT"):
+    if(id == "HOME"):
         if(request.method == "GET" or request.method == "DELETE"):
             request.GET._mutable = True
             request.GET["id"] = request.user.profile.root.id
@@ -47,7 +47,7 @@ def allow_id_root(func):
     def wrapper(self, request, *args, **kwargs):
 
         id = get_id(request)
-        if(id == "ROOT"):
+        if(id == "HOME"):
             request = allow_id_root_helper(request)
 
         result = func(self, request, args, **kwargs)
@@ -60,7 +60,7 @@ def allow_parent_root(func):
     @functools.wraps(func)
     def wrapper(self, request, *args, **kwargs):
         parent = request.data["PARENT"]
-        if(parent == "ROOT"):
+        if(parent == "HOME"):
             if(request.method == "GET" or request.method == "DELETE"):
                 request.GET._mutable = True
                 request.GET["PARENT"] = request.user.profile.root.id

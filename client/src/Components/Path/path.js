@@ -44,7 +44,7 @@ export default function CustomizedBreadcrumbs(props) {
         href="#"
         label={data.name}
         icon={
-          data.id === "ROOT" ? (
+          data.id === "HOME" ? (
             <HomeIcon fontSize="small" />
           ) : (
             <FolderIcon fontSize="small" />

@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
@@ -29,7 +29,10 @@ import { folderPickerLoading } from "../../../store/slices/loaderSlice";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 import { selectChecked } from "../../../store/slices/structureSlice";
-import { getFolderPickerView, setDefaultPath } from "../../../store/slices/moveSlice";
+import {
+  getFolderPickerView,
+  setDefaultPath,
+} from "../../../store/slices/moveSlice";
 
 const styles = (theme) => ({
   root: {
@@ -112,7 +115,7 @@ export default function CustomizedDialogs({
 
   const handleClick = () => {
     handleCloseOfRightClickMenu();
-    dispatch(getFolderPickerView("ROOT"));
+    dispatch(getFolderPickerView("HOME"));
     dispatch(setDefaultPath());
     handleClickOpen();
   };

@@ -1,1283 +1,1067 @@
 {
-	"info": {
-		"_postman_id": "3abc7ddb-c244-4d30-8f33-42f19e5ee6ac",
-		"name": "Vicara Storage (SQL)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "REGISTER NEW USER",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\":\"random2\",\n    \"password\":\"password\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/auth/register/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"register",
-						""
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "REGISTER NEW USER",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\":\"admin4\",\n    \"password\":\"password\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/auth/register/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"auth",
-								"register",
-								""
-							]
-						}
-					},
-					"status": "Created",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Date",
-							"value": "Mon, 29 Mar 2021 07:05:28 GMT"
-						},
-						{
-							"key": "Server",
-							"value": "WSGIServer/0.2 CPython/3.8.5"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Accept, Origin"
-						},
-						{
-							"key": "Allow",
-							"value": "POST, OPTIONS"
-						},
-						{
-							"key": "X-Frame-Options",
-							"value": "DENY"
-						},
-						{
-							"key": "Content-Length",
-							"value": "125"
-						},
-						{
-							"key": "X-Content-Type-Options",
-							"value": "nosniff"
-						},
-						{
-							"key": "Referrer-Policy",
-							"value": "same-origin"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"token\": \"a498987d6c76d424189eb7b327dac16e95423d1a\",\n    \"first_name\": \"\",\n    \"last_name\": \"\",\n    \"id\": 6,\n    \"username\": \"admin4\",\n    \"root_id\": \"24\"\n}"
-				}
-			]
-		},
-		{
-			"name": "LOGIN",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\":\"random2\",\n    \"password\":\"password\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/auth/login/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"login",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "LOGOUT",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/auth/logout/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"logout",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/users/",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/users/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"users",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/api/users/search",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/users/search/?query=gmai",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"users",
-						"search",
-						""
-					],
-					"query": [
-						{
-							"key": "query",
-							"value": "gmai"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/profile",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/profile/?id=2",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"profile",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "2"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/profile",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \n    \"first_name\":\"Random\",\n    \"last_name\":\"random\"\n\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROD}}/api/profile/",
-					"host": [
-						"{{PROD}}"
-					],
-					"path": [
-						"api",
-						"profile",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/profile-picture",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "picture",
-							"type": "file",
-							"src": "/home/panda/Downloads/image-removebg-preview.jpg"
-						}
-					],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/profile-picture/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"profile-picture",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/path",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/path/?id=4&TYPE=FOLDER",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"path",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "4"
-						},
-						{
-							"key": "TYPE",
-							"value": "FOLDER"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/?id=62",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "62"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\":\"Move to this 4\",\n    \"PARENT\":\"ROOT\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"shared_among\":[4],\n    \"id\":24\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/?id=14",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "14"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder/picker",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/picker/?id=ROOT",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						"picker",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "ROOT"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder/download",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROD}}/api/folder/download/?id=2",
-					"host": [
-						"{{PROD}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						"download",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "2"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder/partial-download",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"CHILDREN\":[\n        {\n            \"id\":62,\n            \"type\":\"folder\"\n        },{\n            \"id\":61,\n            \"type\":\"folder\"\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/partial-download/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						"partial-download",
-						""
-					],
-					"query": [
-						{
-							"key": "CHILDREN",
-							"value": "",
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/folder/upload-folder",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"value": "",
-							"type": "text"
-						}
-					],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/folder/upload-folder/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"folder",
-						"upload-folder",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/shared-with-me",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROD}}/api/shared-with-me/",
-					"host": [
-						"{{PROD}}"
-					],
-					"path": [
-						"api",
-						"shared-with-me",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/file/download",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROD}}/api/file/download/?id=57",
-					"host": [
-						"{{PROD}}"
-					],
-					"path": [
-						"api",
-						"file",
-						"download",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "57"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/file",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "PARENT",
-							"value": "ROOT",
-							"type": "text"
-						},
-						{
-							"key": "file",
-							"type": "file",
-							"src": "/home/panda/Downloads/cloudinary8/shiva_vertical_long.jpeg"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/file/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"file",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/file",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL}}/api/file/?id=47",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"file",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "47"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/file",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\":47,\n    \"shared_among\":[4]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/file/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"file",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/file",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL}}/api/file/?id=48",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"file",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "48"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "search-file-folder",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROD}}/api/search-file-folder/?query=phone",
-					"host": [
-						"{{PROD}}"
-					],
-					"path": [
-						"api",
-						"search-file-folder",
-						""
-					],
-					"query": [
-						{
-							"key": "query",
-							"value": "phone"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/move",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"PARENT\":62,\n    \"CHILDREN\":[\n       {\n            \"id\":61,\n            \"type\":\"folder\"\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/move/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"move",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "upload-by-url Copy",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"PARENT\": \"ROOT\",\n    \"DRIVE_URL\": \"https://openthread.google.cn/images/ot-contrib-google.png\",\n    \"NAME\": \"file 3.png\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{PROD}}/api/file/upload-by-url/",
-					"host": [
-						"{{PROD}}"
-					],
-					"path": [
-						"api",
-						"file",
-						"upload-by-url",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/favourites",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL}}/api/favourites/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"favourites",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/recent",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{auth_token_string}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL}}/api/recent/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"recent",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/trash",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL}}/api/trash/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"trash",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/recover-folder",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\":22\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/api/recover-folder/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"recover-folder",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": null,
-							"disabled": true
-						},
-						{
-							"key": "type",
-							"value": null,
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "/recover-file",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "{{auth_token_string}}"
-					}
-				],
-				"url": {
-					"raw": "{{LOCAL}}/api/recover-file/?id=6",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"api",
-						"recover-file",
-						""
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "6"
-						},
-						{
-							"key": "type",
-							"value": null,
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "{{LOCAL}}/auth/token/",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n      \"refresh_token\": \"39hpwyLOM2UhYitcQbrI57WCqHNF53\",\n      \"grant_type\": \"refresh_token\",\n      \"client_id\": \"0DFH8wA3aOi1jzBmFLPD9Jg8wBKyu6c38LzTvuGY\",\n      \"client_secret\":\n        \"WodBpPyPrHXI9m8uDjRsFBNGNo3S8l2KPsFJ0OJyVqD3dHb6098DBaUbLFdcGxxMXGnG0ZUbAN3HyuWKubcvNZjaMEfEK3LOvyCgAv3oIoZynkzPSlExoO4wTp1O460J\"\n    }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOCAL}}/auth/token/",
-					"host": [
-						"{{LOCAL}}"
-					],
-					"path": [
-						"auth",
-						"token",
-						""
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	]
+  "info": {
+    "_postman_id": "3abc7ddb-c244-4d30-8f33-42f19e5ee6ac",
+    "name": "Vicara Storage (SQL)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "REGISTER NEW USER",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\":\"random2\",\n    \"password\":\"password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/auth/register/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "auth", "register", ""]
+        }
+      },
+      "response": [
+        {
+          "name": "REGISTER NEW USER",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\":\"admin4\",\n    \"password\":\"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "register", ""]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 29 Mar 2021 07:05:28 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "WSGIServer/0.2 CPython/3.8.5"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept, Origin"
+            },
+            {
+              "key": "Allow",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Length",
+              "value": "125"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"token\": \"a498987d6c76d424189eb7b327dac16e95423d1a\",\n    \"first_name\": \"\",\n    \"last_name\": \"\",\n    \"id\": 6,\n    \"username\": \"admin4\",\n    \"root_id\": \"24\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "LOGIN",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\":\"random2\",\n    \"password\":\"password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/auth/login/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "auth", "login", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "LOGOUT",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/auth/logout/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "auth", "logout", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/users/",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/users/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "users", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/api/users/search",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/users/search/?query=gmai",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "users", "search", ""],
+          "query": [
+            {
+              "key": "query",
+              "value": "gmai"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/profile/?id=2",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "profile", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \n    \"first_name\":\"Random\",\n    \"last_name\":\"random\"\n\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{PROD}}/api/profile/",
+          "host": ["{{PROD}}"],
+          "path": ["api", "profile", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/profile-picture",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "picture",
+              "type": "file",
+              "src": "/home/panda/Downloads/image-removebg-preview.jpg"
+            }
+          ],
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/profile-picture/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "profile-picture", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/path",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/path/?id=4&TYPE=FOLDER",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "path", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "4"
+            },
+            {
+              "key": "TYPE",
+              "value": "FOLDER"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/?id=62",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "62"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\":\"Move to this 4\",\n    \"PARENT\":\"ROOT\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"shared_among\":[4],\n    \"id\":24\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/?id=14",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "14"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder/picker",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/picker/?id=ROOT",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", "picker", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "HOME"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder/download",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{PROD}}/api/folder/download/?id=2",
+          "host": ["{{PROD}}"],
+          "path": ["api", "folder", "download", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder/partial-download",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"CHILDREN\":[\n        {\n            \"id\":62,\n            \"type\":\"folder\"\n        },{\n            \"id\":61,\n            \"type\":\"folder\"\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/partial-download/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", "partial-download", ""],
+          "query": [
+            {
+              "key": "CHILDREN",
+              "value": "",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/folder/upload-folder",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "value": "",
+              "type": "text"
+            }
+          ],
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/folder/upload-folder/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "folder", "upload-folder", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/shared-with-me",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{PROD}}/api/shared-with-me/",
+          "host": ["{{PROD}}"],
+          "path": ["api", "shared-with-me", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/file/download",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{PROD}}/api/file/download/?id=57",
+          "host": ["{{PROD}}"],
+          "path": ["api", "file", "download", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "57"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/file",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "PARENT",
+              "value": "HOME",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/home/panda/Downloads/cloudinary8/shiva_vertical_long.jpeg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/file/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "file", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/file",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCAL}}/api/file/?id=47",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "file", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "47"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/file",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"id\":47,\n    \"shared_among\":[4]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/file/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "file", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/file",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCAL}}/api/file/?id=48",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "file", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "48"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "search-file-folder",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{PROD}}/api/search-file-folder/?query=phone",
+          "host": ["{{PROD}}"],
+          "path": ["api", "search-file-folder", ""],
+          "query": [
+            {
+              "key": "query",
+              "value": "phone"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/move",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"PARENT\":62,\n    \"CHILDREN\":[\n       {\n            \"id\":61,\n            \"type\":\"folder\"\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/move/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "move", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "upload-by-url Copy",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"PARENT\": \"ROOT\",\n    \"DRIVE_URL\": \"https://openthread.google.cn/images/ot-contrib-google.png\",\n    \"NAME\": \"file 3.png\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{PROD}}/api/file/upload-by-url/",
+          "host": ["{{PROD}}"],
+          "path": ["api", "file", "upload-by-url", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/favourites",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCAL}}/api/favourites/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "favourites", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/recent",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{auth_token_string}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCAL}}/api/recent/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "recent", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/trash",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCAL}}/api/trash/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "trash", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/recover-folder",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"id\":22\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/api/recover-folder/",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "recover-folder", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": null,
+              "disabled": true
+            },
+            {
+              "key": "type",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/recover-file",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "type": "text",
+            "value": "{{auth_token_string}}"
+          }
+        ],
+        "url": {
+          "raw": "{{LOCAL}}/api/recover-file/?id=6",
+          "host": ["{{LOCAL}}"],
+          "path": ["api", "recover-file", ""],
+          "query": [
+            {
+              "key": "id",
+              "value": "6"
+            },
+            {
+              "key": "type",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "{{LOCAL}}/auth/token/",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n      \"refresh_token\": \"39hpwyLOM2UhYitcQbrI57WCqHNF53\",\n      \"grant_type\": \"refresh_token\",\n      \"client_id\": \"0DFH8wA3aOi1jzBmFLPD9Jg8wBKyu6c38LzTvuGY\",\n      \"client_secret\":\n        \"WodBpPyPrHXI9m8uDjRsFBNGNo3S8l2KPsFJ0OJyVqD3dHb6098DBaUbLFdcGxxMXGnG0ZUbAN3HyuWKubcvNZjaMEfEK3LOvyCgAv3oIoZynkzPSlExoO4wTp1O460J\"\n    }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{LOCAL}}/auth/token/",
+          "host": ["{{LOCAL}}"],
+          "path": ["auth", "token", ""]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ]
 }

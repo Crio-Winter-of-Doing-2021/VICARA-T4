@@ -67,13 +67,13 @@ class FileViewTest(APITestCase):
 
         test_file = self.get_test_file("file 2.txt")
         res = self.client.post(self.file_endpoint, {
-            'PARENT': 'ROOT', 'file': test_file})
+            'PARENT': 'HOME', 'file': test_file})
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_file_post_url(self):
         post_data = {
-            "PARENT": "ROOT",
+            "PARENT": "HOME",
             "DRIVE_URL": "https://openthread.google.cn/images/ot-contrib-google.png",
             "NAME": "file 3.png"
         }

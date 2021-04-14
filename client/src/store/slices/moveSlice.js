@@ -15,7 +15,7 @@ export const moveSlice = createSlice({
     currentNavigation: [
       {
         name: "Home",
-        id: "ROOT",
+        id: "HOME",
       },
     ],
   },
@@ -30,18 +30,22 @@ export const moveSlice = createSlice({
     updatePath: (state, action) => {
       state.currentNavigation = action.payload;
     },
-    setDefaultPath:(state)=>{
-      state.currentNavigation=[
+    setDefaultPath: (state) => {
+      state.currentNavigation = [
         {
           name: "Home",
-          id: "ROOT",
+          id: "HOME",
         },
-      ]
-    }
+      ];
+    },
   },
 });
 
-export const { setFolderPicker, updatePath ,setDefaultPath} = moveSlice.actions;
+export const {
+  setFolderPicker,
+  updatePath,
+  setDefaultPath,
+} = moveSlice.actions;
 
 export const getFolderPickerView = (current_parent) => (dispatch) => {
   dispatch(folderPickerLoader());
@@ -81,7 +85,7 @@ export const pathAsync = (data) => (dispatch) => {
   // console.log("asking for path ");
   // console.log("token now = ", window.localStorage.getItem("access_token"));
 
-  if (data.id === "ROOT") return;
+  if (data.id === "HOME") return;
 
   API.get(`/api/path/`, {
     params: {
