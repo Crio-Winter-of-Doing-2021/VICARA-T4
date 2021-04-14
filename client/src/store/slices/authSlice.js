@@ -31,6 +31,9 @@ export const authSlice = createSlice({
     setTourSeen: (state, action) => {
       state.userData.tour_seen = action.payload;
     },
+    toggleTourSeen:(state,action)=>{
+      state.userData.tour_seen = !state.userData.tour_seen;
+    }
   },
 });
 
@@ -40,6 +43,7 @@ export const {
   updateStorageData,
   setProfilePicture,
   setTourSeen,
+  toggleTourSeen
 } = authSlice.actions;
 
 export const signupAsync = (data) => (dispatch) => {};
