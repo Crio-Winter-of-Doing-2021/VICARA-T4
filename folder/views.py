@@ -19,7 +19,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from user.decorators import check_children
+from user.decorators import check_children_without_new_parent
 from user.serializers import ProfileSerializer, UserSerializer
 from user.tasks import send_mail, sync_send_mail
 from user.utils import get_client_server
@@ -449,7 +449,7 @@ class PartialDownload(DownloadFolder):
         return file_ids, folder_ids
 
     @check_request_attr(["CHILDREN"])
-    @check_children
+    @check_children_without_new_parent
     def post(self, request, * args, **kwargs):
         children = request.data.get("CHILDREN")
         file_ids, folder_ids = self.get_file_folder_ids(children)
