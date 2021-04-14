@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import Avatar from "@material-ui/core/Avatar";
+
 // import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 // import TextField from "@material-ui/core/TextField";
@@ -9,7 +9,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Link from "@material-ui/core/Link";
 // import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -20,10 +20,10 @@ import GoogleLogin from "react-google-login";
 // import { googleLogin } from "../../store/slices/authSlice";
 import { googleLogin } from "../../axios";
 import Developers from "./developers";
-import GoogleIcon from '../../assets/icons8-google-480.png'
-import LoginPic from '../../assets/login.png'
 
-import './style.scss'
+import LoginPic from "../../assets/login.png";
+
+import "./style.scss";
 
 export function Copyright() {
   return (
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -90,22 +90,34 @@ export default function SignIn(props) {
   // };
 
   return (
-    <Container className="box" style={{
-      marginTop:"100px",
-      padding:"20px"
-    }} component="main" maxWidth="xs">
+    <Container
+      className="box"
+      style={{
+        marginTop: "100px",
+        padding: "20px",
+      }}
+      component="main"
+      maxWidth="xs"
+    >
       <NormalLoader />
       <CssBaseline />
       {/* {//console.log(state)} */}
       <div className={classes.paper}>
-        <Typography style={{fontWeight:"bold",textShadow:"1px 1px grey",margin:"15px 0"}} component="h1" variant="h4">
+        <Typography
+          style={{
+            fontWeight: "bold",
+            textShadow: "1px 1px grey",
+            margin: "15px 0",
+          }}
+          component="h1"
+          variant="h4"
+        >
           Vicara T4
         </Typography>
 
-        <div style={{margin:"10px 0",width:"100%"}}>
-          <img style={{width:"100%"}} src={LoginPic} alt="loginpic"/>
+        <div style={{ margin: "10px 0", width: "100%" }}>
+          <img style={{ width: "100%" }} src={LoginPic} alt="loginpic" />
         </div>
-        
 
         {/* <form className={classes.form} noValidate>
           <TextField
@@ -164,8 +176,13 @@ export default function SignIn(props) {
             clientId="575084088742-2eidkevqutnod9lord9vf2sri50ko7ct.apps.googleusercontent.com"
             buttonText="LOGIN WITH GOOGLE"
             onSuccess={(response) => googleLogin(props, response)(dispatch)}
-            render={renderProps => (
-              <button onClick={renderProps.onClick} disabled={renderProps.disabled} type="button" class="login-with-google-btn" >
+            render={(renderProps) => (
+              <button
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                type="button"
+                class="login-with-google-btn"
+              >
                 Sign in with Google
               </button>
             )}
