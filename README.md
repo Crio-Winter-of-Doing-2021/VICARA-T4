@@ -1,7 +1,6 @@
-# [VICARA-T4](https://vicara.netlify.app/)
+# [VICARA-T4](https://vicara.netlify.app/)-#[CWOD](https://www.crio.do/crio-winter-of-doing/) Stage3
 
-Team ID: VICARA-T4 | Team Members: Ashutosh Panda &amp; Pratik Chaudhary
-[CWOD](https://www.crio.do/crio-winter-of-doing/) Stage3 submission by [Pratik Chaudhary](https://github.com/pratik0204) and [Ashutosh Panda](https://github.com/aashutoshPanda)
+Team ID: VICARA-T4 | Team Members: [Ashutosh Panda](https://github.com/aashutoshPanda) &amp; [Pratik Chaudhary](https://github.com/pratik0204)
 
 - WEBSITE HOSTED: https://vicara.netlify.app/
 - BACKEND-HOSTED: http://vicara-drf-backend.herokuapp.com/
