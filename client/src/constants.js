@@ -9,6 +9,8 @@ import RowFunctionGIF from './assets/gifs/check_star_privacy_show.gif'
 import NewButtonGIF from './assets/gifs/new_button_show.gif'
 import RightClickGIF from './assets/gifs/right_click_show.gif'
 import SearchGIF from './assets/gifs/search_show.gif'
+import ShareGIF from './assets/gifs/share_show.gif'
+import SortGIF from './assets/gifs/sort_show.gif'
 
 export const sideNav=[
     {
@@ -130,12 +132,28 @@ export const steps = [
            Files/Folders shared with you will be displayed here. Below you can see how you can share!
           </div>
           <div style={{display:"flex",justifyContent:"center",marginTop:"25px"}}>
-            <img style={{width:"80%",border:"2px solid black",borderRadius:'3px',padding:"10px",boxShadow:"revert"}} alt="uploadbutton" src={SearchGIF} />
+            <img style={{width:"80%",border:"2px solid black",borderRadius:'3px',padding:"10px",boxShadow:"revert"}} alt="uploadbutton" src={ShareGIF} />
           </div>
         </div>
       ),
       style:{
         maxWidth:"700px"
+      }
+    },
+    {
+      selector: '.rowClass',
+      content: ()=>(
+        <div>
+          <div style={{marginTop:"15px",textAlign:"center",fontSize:"15px"}}>
+            You can also sort files either alphabetically or when they were last_accessed.
+          </div>
+          <div style={{display:"flex",justifyContent:"center",marginTop:"25px"}}>
+            <img style={{width:"100%",border:"2px solid black",borderRadius:'3px',padding:"10px",boxShadow:"revert"}} alt="uploadbutton" src={SortGIF} />
+          </div>
+        </div>
+      ),
+      style:{
+        maxWidth:"900px"
       }
     },
     {
