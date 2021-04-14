@@ -43,7 +43,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'first_name',
                   'last_name', 'root_id', 'gender', 'storage_data',
                   'storage_used', 'storage_avail', 'profile_picture_url',
-                  'date_joined', 'last_login')
+                  'date_joined', 'last_login', 'tour_seen')
 
     def get_gender(self, obj):
         options = {

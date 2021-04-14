@@ -1,39 +1,40 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "../Path/path";
-import './style.css'
+import "./style.css";
 import {
   structureAsync,
   pathAsync,
   selectChildren,
   resetChildren,
 } from "../../store/slices/structureSlice";
-import Tour from 'reactour'
+import {
+  selectUserData,
+  updateProfileTourSeen,
+} from "../../store/slices/authSlice";
+import Tour from "reactour";
 
 import CreateFolder from "../Buttons/createFolder";
 
 import UploadMenu from "../UploadMenu/index";
 import TableComponent from "../../Utilities/Table";
-import {steps} from '../../constants'
+import { steps } from "../../constants";
 
 export const privOpp = 1;
 export default function Structure(props) {
-
+  const dispatch = useDispatch();
   let unique_id = props.match.params.id;
   const children = useSelector(selectChildren);
   let root_id = window.localStorage.getItem("id");
-  console.log("chala");
 
-  let shown=localStorage.getItem("tourShown")===null
+  const userData = useSelector(selectUserData);
+  // console.log("chala");
 
-  const [isTourOpen, setIsTourOpen] = React.useState(true);
+  // let shown=localStorage.getItem("tourShown")===null
+  console.log("tour shown = ", userData.tour_seen);
 
-  if(shown){
-    localStorage.setItem("tourShown",true)
-  }
+  const isTourOpen = !userData.tour_seen;
 
-
-  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(resetChildren());
     dispatch(structureAsync(unique_id));
@@ -68,7 +69,9 @@ export default function Structure(props) {
       <Tour
         steps={steps}
         isOpen={isTourOpen}
-        onRequestClose={() => setIsTourOpen(false)}
+        onRequestClose={() =>
+          dispatch(updateProfileTourSeen({ tour_seen: true }))
+        }
         rounded={5}
         accentColor={"#1E2022"}
       />
