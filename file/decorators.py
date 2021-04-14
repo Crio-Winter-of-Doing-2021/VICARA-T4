@@ -102,7 +102,7 @@ def check_valid_name_request_body(func):
 
 def manage_duplicate(name, parent_folder, duplicate_res):
 
-    children = parent_folder.children_file.all().filter(name=name)
+    children = parent_folder.children_file.all().filter(name=name, trash=False)
     if(children):
         duplicate_res["data"].append({
             "id": children[0].id,

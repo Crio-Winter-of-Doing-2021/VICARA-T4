@@ -77,7 +77,7 @@ class FileView(APIView):
                 req_file_name = req_file.name
 
                 # if a duplicate is found
-                children = parent.children_file.all().filter(name=req_file_name)
+                children = parent.children_file.all().filter(name=req_file_name, trash=False)
                 if(children):
                     print("old s3 key = ", children[0].get_cloud_storage_key())
                     new_file, _ = self.manage_file_fileObj_update(
@@ -270,7 +270,7 @@ class UploadByDriveUrl(FileView):
         replace_flag = request.data["REPLACE"]
 
         parent_folder = Folder.objects.get(id=parent)
-        children = parent_folder.children_file.all().filter(name=name)
+        children = parent_folder.children_file.all().filter(name=name, trash=False)
 
         if(children and replace_flag):
             djangofile, _ = self.get_django_file_object(drive_url, name)

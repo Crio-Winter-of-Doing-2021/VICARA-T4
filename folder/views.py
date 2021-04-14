@@ -83,7 +83,7 @@ class Filesystem(APIView):
             new_folder = create_folder(parent_id, request.user, name)
         else:
             parent_folder = Folder.custom_objects.get_or_none(id=parent_id)
-            children = parent_folder.children_folder.all().filter(name=name)
+            children = parent_folder.children_folder.all().filter(name=name, trash=False)
             if(children):
                 new_folder, _ = manage_reset(
                     children[0], request.user.profile)
@@ -235,7 +235,8 @@ class UploadFolder(APIView):
         # create base folder
 
         base_folder_name = structure[0][0]
-        children = parent.children_folder.all().filter(name=base_folder_name)
+        children = parent.children_folder.all().filter(
+            name=base_folder_name, trash=False)
         if(children):
             if(replace_flag == False):
                 return Response(data={"message": f"Folder with given name = {base_folder_name}already exists"}, status=status.HTTP_400_BAD_REQUEST)

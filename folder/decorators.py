@@ -233,7 +233,7 @@ def check_duplicate_folder_exists(func):
                 folder = Folder.custom_objects.get_or_none(id=id)
                 parent_folder = folder.parent
 
-            children = parent_folder.children_folder.all().filter(name=name)
+            children = parent_folder.children_folder.all().filter(name=name, trash=False)
             if(children):
 
                 # this is the case in which the folder is renamed as its prev name

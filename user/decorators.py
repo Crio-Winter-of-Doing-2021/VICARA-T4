@@ -111,10 +111,10 @@ def check_children(func):
             child_obj = get_child_object(child)
             if(child["type"] == "folder"):
                 matches = new_parent_children_folder.filter(
-                    name=child_obj.name)
+                    name=child_obj.name, trash=False)
             else:
                 matches = new_parent_children_file.filter(
-                    name=child_obj.name)
+                    name=child_obj.name, trash=False)
             if(matches):
                 return Response(data={"message": f"A {child['type']} with name '{child_obj.name}' Already exists in destination folder"}, status=status.HTTP_400_BAD_REQUEST)
 
