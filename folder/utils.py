@@ -36,7 +36,7 @@ def recursive_delete(folder, profile):
         recursive_delete(child_folder, profile)
     for child_file in folder.children_file.all():
         child_file.delete()
-        profile.storage_used -= child_file.get_size()
+        profile.storage_used -= child_file.size
     folder.delete()
 
 
