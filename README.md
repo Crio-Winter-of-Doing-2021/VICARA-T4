@@ -1,10 +1,10 @@
 # VICARA-T4
 
 Team ID: VICARA-T4 | Team Members: Ashutosh Panda &amp; Pratik Chaudhary
-# [VICARA-T4](https://vicara.netlify.app/)- [CWOD](https://www.crio.do/crio-winter-of-doing/) Stage3 by [Pratik Chaudhary](https://github.com/pratik0204) and [Ashutosh Panda]()
+# [VICARA-T4](https://vicara.netlify.app/)- [CWOD](https://www.crio.do/crio-winter-of-doing/) Stage3 by [Pratik Chaudhary](https://github.com/pratik0204) and [Ashutosh Panda](https://github.com/aashutoshPanda)
 
-WEBSITE HOSTED: https://vicara.netlify.app/
-BACKEND-HOSTED: http://vicara-drf-backend.herokuapp.com/
+- WEBSITE HOSTED: https://vicara.netlify.app/
+- BACKEND-HOSTED: http://vicara-drf-backend.herokuapp.com/
 
 Make sure you have [python3](https://www.python.org/downloads/) and [git](https://git-scm.com/) installed on your local machine.
 
