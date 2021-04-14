@@ -27,7 +27,6 @@ import { Copyright } from "../Forms/login";
 import { getProfileAsync } from "../../store/slices/authSlice";
 import { asyncLocalStorage } from "../../Utilities/localStoreAsync";
 import { setCurrentPage } from "../../store/slices/loaderSlice";
-import { getFolderPickerView, pathAsync } from "../../store/slices/moveSlice";
 
 import Search from "./search";
 import { resetSelection } from "../../store/slices/structureSlice";
@@ -86,9 +85,7 @@ export default function ClippedDrawer(props) {
       dispatch(getProfileAsync(res));
       setId(res);
     });
-
-    dispatch(getFolderPickerView("ROOT"));
-    dispatch(pathAsync({ id: "ROOT", type: "FOLDER" }));
+   
     // dispatch(getProfileAsync(id));
   }, [dispatch, id]);
 

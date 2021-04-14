@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Path from "../Path/path";
+import './style.css'
 import {
   structureAsync,
   pathAsync,
@@ -25,9 +26,7 @@ export default function Structure(props) {
 
   let shown=localStorage.getItem("tourShown")===null
 
-  const [isTourOpen, setIsTourOpen] = React.useState(shown);
-
-  
+  const [isTourOpen, setIsTourOpen] = React.useState(true);
 
   if(shown){
     localStorage.setItem("tourShown",true)
@@ -71,7 +70,7 @@ export default function Structure(props) {
         isOpen={isTourOpen}
         onRequestClose={() => setIsTourOpen(false)}
         rounded={5}
-        accentColor={"#5cb7b7"}
+        accentColor={"#1E2022"}
       />
     </div>
   );
