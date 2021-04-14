@@ -11,8 +11,11 @@ import {
 import {
   selectUserData,
   updateProfileTourSeen,
+  toggleTourSeen
 } from "../../store/slices/authSlice";
 import Tour from "reactour";
+import {Button} from '@material-ui/core'
+import HelpIcon from '@material-ui/icons/Help';
 
 import CreateFolder from "../Buttons/createFolder";
 
@@ -64,7 +67,14 @@ export default function Structure(props) {
         <UploadMenu parent={unique_id} />
         <CreateFolder id={unique_id} />
       </div>
-      <Path {...props} />
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <Path {...props} />
+        <div style={{width:"100px"}}>
+            <Button onClick={()=>dispatch(toggleTourSeen())} color="primary" size="small" variant="outlined" startIcon={<HelpIcon/>}>
+              Help
+            </Button>
+        </div>
+      </div>
       <TableComponent {...tableProps} />
       <Tour
         steps={steps}
