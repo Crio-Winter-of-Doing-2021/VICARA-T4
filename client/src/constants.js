@@ -4,11 +4,11 @@ import DeleteSweepRoundedIcon from '@material-ui/icons/DeleteSweepRounded';
 import FolderSharedIcon from '@material-ui/icons/FolderShared';
 import StarRoundedIcon from '@material-ui/icons/StarRounded';
 
-import AvatarGIF from './assets/avatar_show.gif'
-import RowFunctionGIF from './assets/check_star_privacy_show.gif'
-import NewButtonGIF from './assets/new_button_show.gif'
-import RightClickGIF from './assets/right_click_show.gif'
-import SearchGIF from './assets/search_show.gif'
+import AvatarGIF from './assets/gifs/avatar_show.gif'
+import RowFunctionGIF from './assets/gifs/check_star_privacy_show.gif'
+import NewButtonGIF from './assets/gifs/new_button_show.gif'
+import RightClickGIF from './assets/gifs/right_click_show.gif'
+import SearchGIF from './assets/gifs/search_show.gif'
 
 export const sideNav=[
     {

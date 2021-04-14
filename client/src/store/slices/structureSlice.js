@@ -11,7 +11,7 @@ export const structureSlice = createSlice({
     currentDisplayStructure: [],
     currentPath: [
       {
-        name: "ROOT",
+        name: "Home",
         id: "ROOT",
       },
     ],

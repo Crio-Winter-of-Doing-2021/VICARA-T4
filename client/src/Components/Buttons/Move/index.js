@@ -29,7 +29,7 @@ import { folderPickerLoading } from "../../../store/slices/loaderSlice";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 import { selectChecked } from "../../../store/slices/structureSlice";
-import { getFolderPickerView, pathAsync } from "../../../store/slices/moveSlice";
+import { getFolderPickerView, setDefaultPath } from "../../../store/slices/moveSlice";
 
 const styles = (theme) => ({
   root: {
@@ -113,7 +113,7 @@ export default function CustomizedDialogs({
   const handleClick = () => {
     handleCloseOfRightClickMenu();
     dispatch(getFolderPickerView("ROOT"));
-    dispatch(pathAsync({ id: "ROOT", type: "FOLDER" }));
+    dispatch(setDefaultPath());
     handleClickOpen();
   };
 

@@ -14,7 +14,7 @@ export const moveSlice = createSlice({
     },
     currentNavigation: [
       {
-        name: "ROOT",
+        name: "Home",
         id: "ROOT",
       },
     ],
@@ -30,10 +30,18 @@ export const moveSlice = createSlice({
     updatePath: (state, action) => {
       state.currentNavigation = action.payload;
     },
+    setDefaultPath:(state)=>{
+      state.currentNavigation=[
+        {
+          name: "Home",
+          id: "ROOT",
+        },
+      ]
+    }
   },
 });
 
-export const { setFolderPicker, updatePath } = moveSlice.actions;
+export const { setFolderPicker, updatePath ,setDefaultPath} = moveSlice.actions;
 
 export const getFolderPickerView = (current_parent) => (dispatch) => {
   dispatch(folderPickerLoader());
