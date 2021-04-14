@@ -46,7 +46,7 @@ export default function AuthorizationCheck(props) {
       {success === null
         ? "Checking Authorizaton..."
         : success
-        ? "Access granted. Reload page to download again..."
+        ? "Access granted. Reload page to download again. Make sure to allow popups for this site."
         : "403 Access Denied"}
     </div>
   );
