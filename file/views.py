@@ -238,7 +238,7 @@ class FileView(APIView):
         self.manage_file_delete(file)
         storage_data = ProfileSerializer(
             file.owner.profile).data["storage_data"]
-        return Response(data={"id": id, "storage_data": storage_data}, status=status.HTTP_200_OK)
+        return Response(data={"id": id, "storage_data": storage_data,"type":"file"}, status=status.HTTP_200_OK)
 
 
 class UploadByDriveUrl(FileView):

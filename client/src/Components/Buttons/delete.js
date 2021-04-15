@@ -28,13 +28,10 @@ export default function AlertDialog({ handleCloseOfRightClickMenu, ...data }) {
   };
 
   let checkedFileFolder = useSelector(selectChecked);
-
-  let checkedFolder = checkedFileFolder.filter((ele) => ele.type === "folder");
-  let checkedFile = checkedFileFolder.filter((ele) => ele.type === "file");
   const dispatch = useDispatch();
 
-  let deleteSelected = (fileData, folderData) => {
-    dispatch(deleteAsync(fileData, folderData));
+  let deleteSelected = () => {
+    dispatch(deleteAsync(checkedFileFolder));
   };
 
   const handleClick = () => {
@@ -60,7 +57,7 @@ export default function AlertDialog({ handleCloseOfRightClickMenu, ...data }) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Are you sure you want to delete{" "}
-            {checkedFile.length + checkedFolder.length} files/folder
+            {checkedFileFolder.length} files/folder
             permanently?
           </DialogContentText>
         </DialogContent>
@@ -71,7 +68,7 @@ export default function AlertDialog({ handleCloseOfRightClickMenu, ...data }) {
           <Button
             onClick={() => {
               handleClose();
-              deleteSelected(checkedFile, checkedFolder);
+              deleteSelected();
             }}
             color="secondary"
             autoFocus

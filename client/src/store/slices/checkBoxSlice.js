@@ -59,72 +59,110 @@ export const checkBoxSlice = createSlice({
 
 export const { updateSelectedKeys, emptykeys } = checkBoxSlice.actions;
 
-export const deleteAsync = (fileArr, folderArr) => (dispatch) => {
-  if (folderArr.length !== 0) {
-    dispatch(normalLoader());
-    let i;
-    let axi_data = [];
+export const deleteAsync = (checkedData) => (dispatch) => {
+  dispatch(normalLoader());
+  let combined_axi_data=[]
 
-    for (i = 0; i < folderArr.length; i++) {
-      let new_data = API.delete(`/api/folder/?id=${folderArr[i].id}`);
-      axi_data.push(new_data);
+  let k=0;
+  for(k=0;k<checkedData.length;k++){
+    let new_data;
+    if(checkedData[k].type==='folder'){
+      new_data = API.delete(`/api/folder/?id=${checkedData[k].id}`);
+    }else{
+      new_data = API.delete(`/api/file/?id=${checkedData[k].id}`);
     }
 
-    axios
-      .all(axi_data)
-      .then(
-        axios.spread((...res) => {
-          console.log(res);
-          let k;
-          for (k = 0; k < folderArr.length; k++) {
-            dispatch(
-              removeFromChildren({ id: res[k].data.id, type: "folder" })
-            );
-            dispatch(updateStorageData(res[k].data.storage_data));
-          }
-          dispatch(resetSelection());
-          dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"));
-        })
-      )
-      .catch((err) => {
-        dispatch(normalLoader());
-        console.log(err);
-        dispatch(error(err.response.data.message));
-      });
+    combined_axi_data.push(new_data)
   }
 
-  if (fileArr.length !== 0) {
-    dispatch(normalLoader());
-    let i;
-    let axi_data = [];
+  axios.all(combined_axi_data).then(axios.spread((...res)=>{
+    
+    console.log(res);
+    let i=0;
+    let updated_storage_data={ratio:1};
+    for(i=0;i<res.length;i++){
+      dispatch(removeFromChildren({id:res[i].data.id,type:res[i].data.type}));
+      let current=updated_storage_data.ratio;
+      let processing=res[i].data.storage_data.ratio;
 
-    for (i = 0; i < fileArr.length; i++) {
-      let new_data = API.delete(`/api/file/?id=${fileArr[i].id}`);
-      axi_data.push(new_data);
+      if(current>processing){
+        updated_storage_data=res[i].data.storage_data
+      }
     }
+    console.log("min_data",updated_storage_data)
+    dispatch(updateStorageData(updated_storage_data))
+    dispatch(normalLoader());
+  })).catch(err=>{
+    dispatch(normalLoader());
+    console.log(err);
+    dispatch(error(err.response.data.message));
+  })
 
-    axios
-      .all(axi_data)
-      .then(
-        axios.spread((...res) => {
-          console.log(res);
-          let k;
-          for (k = 0; k < fileArr.length; k++) {
-            dispatch(removeFromChildren({ id: res[k].data.id, type: "file" }));
-            dispatch(updateStorageData(res[k].data.storage_data));
-          }
-          dispatch(resetSelection());
-          dispatch(normalLoader());
-          dispatch(success("Your Action was Successful"));
-        })
-      )
-      .catch((err) => {
-        dispatch(normalLoader());
-        console.log(err);
-        dispatch(error(err.response.data.message));
-      });
-  }
+  // if (folderArr.length !== 0) {
+  //   dispatch(normalLoader());
+  //   let i;
+  //   let axi_data = [];
+
+  //   for (i = 0; i < folderArr.length; i++) {
+  //     let new_data = API.delete(`/api/folder/?id=${folderArr[i].id}`);
+  //     axi_data.push(new_data);
+  //   }
+
+  //   axios
+  //     .all(axi_data)
+  //     .then(
+  //       axios.spread((...res) => {
+  //         console.log(res);
+  //         let k;
+  //         for (k = 0; k < folderArr.length; k++) {
+  //           dispatch(
+  //             removeFromChildren({ id: res[k].data.id, type: "folder" })
+  //           );
+  //           dispatch(updateStorageData(res[k].data.storage_data));
+  //         }
+  //         dispatch(resetSelection());
+  //         dispatch(normalLoader());
+  //         dispatch(success("Your Action was Successful"));
+  //       })
+  //     )
+  //     .catch((err) => {
+  //       dispatch(normalLoader());
+  //       console.log(err);
+  //       dispatch(error(err.response.data.message));
+  //     });
+  // }
+
+  // if (fileArr.length !== 0) {
+  //   dispatch(normalLoader());
+  //   let i;
+  //   let axi_data = [];
+
+  //   for (i = 0; i < fileArr.length; i++) {
+  //     let new_data = API.delete(`/api/file/?id=${fileArr[i].id}`);
+  //     axi_data.push(new_data);
+  //   }
+
+  //   axios
+  //     .all(axi_data)
+  //     .then(
+  //       axios.spread((...res) => {
+  //         console.log(res);
+  //         let k;
+  //         for (k = 0; k < fileArr.length; k++) {
+  //           dispatch(removeFromChildren({ id: res[k].data.id, type: "file" }));
+  //           dispatch(updateStorageData(res[k].data.storage_data));
+  //         }
+  //         dispatch(resetSelection());
+  //         dispatch(normalLoader());
+  //         dispatch(success("Your Action was Successful"));
+  //       })
+  //     )
+  //     .catch((err) => {
+  //       dispatch(normalLoader());
+  //       console.log(err);
+  //       dispatch(error(err.response.data.message));
+  //     });
+  // }
 };
 
 export const trashAsync = (fileArr, folderArr) => (dispatch) => {

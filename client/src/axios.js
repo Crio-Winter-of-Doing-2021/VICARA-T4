@@ -1,9 +1,9 @@
 import axios from "axios";
 import { normalLoader } from "./store/slices/loaderSlice";
-// export let baseURL = "http://localhost:8000";
-// export let frontURL = "http://localhost:3000";
-export let baseURL = "https://vicara-drf-backend.herokuapp.com";
-export let frontURL = "https://vicara.netlify.app";
+export let baseURL = "http://localhost:8000";
+export let frontURL = "http://localhost:3000";
+// export let baseURL = "https://vicara-drf-backend.herokuapp.com";
+// export let frontURL = "https://vicara.netlify.app";
 
 // Function that will be called to refresh authorization
 const client_id = process.env.REACT_APP_CLIENT_ID;
