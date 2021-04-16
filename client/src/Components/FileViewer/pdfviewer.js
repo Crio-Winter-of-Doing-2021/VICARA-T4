@@ -14,7 +14,7 @@ export default function Pdfviewer({url}) {
 
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
     return (
-        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.7.570/build/pdf.worker.min.js">
             <Viewer 
             fileUrl={url}
             plugins={[
