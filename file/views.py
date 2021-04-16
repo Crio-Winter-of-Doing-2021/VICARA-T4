@@ -1,6 +1,7 @@
 import os
 
 # django imports
+from user.models import Profile
 from django.db import transaction
 import humanize
 import requests
@@ -223,7 +224,7 @@ class FileView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def manage_file_delete(self, file):
-        profile = file.owner.profile
+        profile = Profile.objects.select_for_update().get(id=file.owner.id)
         size = file.size
         parent = file.parent
         file.delete()
