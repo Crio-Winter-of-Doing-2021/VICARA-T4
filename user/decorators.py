@@ -73,6 +73,7 @@ def check_children(func):
     children array not of 0 len
     check proper format of request body children
     check already present in new_parent or not
+    any folder should not be root
     children id is correct | owner check | not trash | common parent
     """
     @functools.wraps(func)
@@ -110,6 +111,10 @@ def check_children(func):
         for child in children:
             child_obj = get_child_object(child)
             if(child["type"] == "folder"):
+                owner = child_obj.owner
+                if(owner.root == child_obj):
+                    return Response(data={"message": "ROOT folder not allowed in this operation"}, status=status.HTTP_400_BAD_REQUEST)
+
                 matches = new_parent_children_folder.filter(
                     name=child_obj.name, trash=False)
             else:

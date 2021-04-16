@@ -3,7 +3,7 @@ import os
 import secrets
 import shutil
 from collections import defaultdict
-
+from django.db import transaction
 import humanize
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.files import File as DjangoCoreFile
@@ -185,14 +185,16 @@ class Filesystem(APIView):
     @check_id_not_root
     @check_is_owner_folder
     def delete(self, request, * args, **kwargs):
-        id = get_id(request)
-        folder = Folder.objects.get(id=id)
-        profile = request.user.profile
-        recursive_delete(folder, profile)
-        profile.save()
-        propagate_size_change(folder.parent, -folder.size)
-        storage_data = ProfileSerializer(profile).data["storage_data"]
-        return Response(data={"id": id, "storage_data": storage_data,"type":"folder"}, status=status.HTTP_200_OK)
+        with transaction.atomic():
+            id = get_id(request)
+            folder = Folder.objects.get(id=id)
+            # profile = request.user.profile
+            profile = Profile.objects.select_for_update().get(user=folder.owner)
+            recursive_delete(folder, profile)
+            profile.save()
+            propagate_size_change(folder.parent, -folder.size)
+            storage_data = ProfileSerializer(profile).data["storage_data"]
+            return Response(data={"id": id, "storage_data": storage_data, "type": "folder"}, status=status.HTTP_200_OK)
 
 
 class UploadFolder(APIView):

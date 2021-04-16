@@ -1,6 +1,8 @@
 import os
 
 # django imports
+from user.models import Profile
+from django.db import transaction
 import humanize
 import requests
 from django.contrib.auth.models import AnonymousUser
@@ -222,7 +224,7 @@ class FileView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def manage_file_delete(self, file):
-        profile = file.owner.profile
+        profile = Profile.objects.select_for_update().get(user=file.owner)
         size = file.size
         parent = file.parent
         file.delete()
@@ -233,12 +235,13 @@ class FileView(APIView):
     @check_id_file
     @check_is_owner_file
     def delete(self, request, * args, **kwargs):
-        id = get_id(request)
-        file = File.objects.get(id=id)
-        self.manage_file_delete(file)
-        storage_data = ProfileSerializer(
-            file.owner.profile).data["storage_data"]
-        return Response(data={"id": id, "storage_data": storage_data,"type":"file"}, status=status.HTTP_200_OK)
+        with transaction.atomic():
+            id = get_id(request)
+            file = File.objects.get(id=id)
+            self.manage_file_delete(file)
+            storage_data = ProfileSerializer(
+                file.owner.profile).data["storage_data"]
+            return Response(data={"id": id, "storage_data": storage_data, "type": "file"}, status=status.HTTP_200_OK)
 
 
 class UploadByDriveUrl(FileView):
