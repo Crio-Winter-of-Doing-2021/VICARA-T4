@@ -224,7 +224,7 @@ class FileView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def manage_file_delete(self, file):
-        profile = Profile.objects.select_for_update().get(id=file.owner.id)
+        profile = Profile.objects.select_for_update().get(user=file.owner)
         size = file.size
         parent = file.parent
         file.delete()

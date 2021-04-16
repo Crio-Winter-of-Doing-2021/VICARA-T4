@@ -189,7 +189,7 @@ class Filesystem(APIView):
             id = get_id(request)
             folder = Folder.objects.get(id=id)
             # profile = request.user.profile
-            profile = Profile.objects.select_for_update().get(id=folder.owner.id)
+            profile = Profile.objects.select_for_update().get(user=folder.owner)
             recursive_delete(folder, profile)
             profile.save()
             propagate_size_change(folder.parent, -folder.size)
