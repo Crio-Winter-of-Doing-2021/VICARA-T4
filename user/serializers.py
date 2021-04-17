@@ -74,7 +74,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         data = {
             "readable": f"{readable_used} of {readable_avail}",
-            "ratio": used/avail
+            "ratio": used/avail,
+            "avail": avail,
+            "used": used,
         }
 
         return data
