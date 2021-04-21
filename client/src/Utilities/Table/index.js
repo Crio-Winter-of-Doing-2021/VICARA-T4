@@ -189,6 +189,9 @@ export default function TableComponent({
                   <ArrowDownwardIcon />
                 </IconButton>
               </StyledTableCell>
+
+              <StyledTableCell>Privacy</StyledTableCell>
+              <StyledTableCell>Created</StyledTableCell>
               <StyledTableCell>
                 Size
                 <IconButton
@@ -199,8 +202,6 @@ export default function TableComponent({
                   <ArrowDownwardIcon />
                 </IconButton>
               </StyledTableCell>
-              <StyledTableCell>Privacy</StyledTableCell>
-              <StyledTableCell>Created</StyledTableCell>
             </TableRow>
           </TableHead>
           <ClickAwayListener onClickAway={() => dispatch(resetSelection())}>
