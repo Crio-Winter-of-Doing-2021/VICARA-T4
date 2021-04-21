@@ -9,7 +9,10 @@ import {
   updateChild,
   toggleReplaceModal,
 } from "../../store/slices/structureSlice";
-import { updateStorageData,selectUserData } from "../../store/slices/authSlice";
+import {
+  updateStorageData,
+  selectUserData,
+} from "../../store/slices/authSlice";
 import FolderIcon from "@material-ui/icons/Folder";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
@@ -20,8 +23,8 @@ function App({ modalClose, parent }) {
   const dispatch = useDispatch();
 
   let loading = useSelector(fileLoading);
-  let userData=useSelector(selectUserData);
-  let dataLeftIntheDrive=userData.storage_data.left;
+  let userData = useSelector(selectUserData);
+  let dataLeftIntheDrive = userData.storage_data.left;
 
   let [progress, setProgress] = useState(0);
 
@@ -31,19 +34,23 @@ function App({ modalClose, parent }) {
 
       setProgress(0);
       dispatch(fileUploadLoader());
-      let bytesToBeUploaded=0;
+      let bytesToBeUploaded = 0;
       let pathJSON = [];
       const formData = new FormData();
       for (let [index, val] of acceptedFiles.entries()) {
         pathJSON[index] = val.path; // comment this for multi-file
         formData.append("file", val);
-        bytesToBeUploaded+=val.size
+        bytesToBeUploaded += val.size;
         // console.log(val)
       }
-      if(bytesToBeUploaded>dataLeftIntheDrive){
+      if (bytesToBeUploaded > dataLeftIntheDrive) {
         dispatch(fileUploadLoader());
         modalClose();
-        dispatch(error("Insufficient storage space available, clean your drive and try again"))
+        dispatch(
+          error(
+            "Insufficient storage space available, clean your drive and try again"
+          )
+        );
         return;
       }
       formData.append("PARENT", parent);
@@ -71,8 +78,8 @@ function App({ modalClose, parent }) {
 
           dispatch(updateChild(res.data));
           modalClose();
-          const { readable, ratio,left } = res.data;
-          dispatch(updateStorageData({ readable, ratio ,left}));
+          const { readable, ratio, left } = res.data;
+          dispatch(updateStorageData({ readable, ratio, left }));
           dispatch(fileUploadLoader());
           dispatch(success("Your Action was Successful"));
         })
@@ -102,7 +109,7 @@ function App({ modalClose, parent }) {
           modalClose();
         });
     },
-    [dispatch, modalClose, parent]
+    [dispatch, modalClose, parent, dataLeftIntheDrive]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
