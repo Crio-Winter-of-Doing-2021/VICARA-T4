@@ -112,7 +112,7 @@ def check_children(func):
             child_obj = get_child_object(child)
             if(child["type"] == "folder"):
                 owner = child_obj.owner
-                if(owner.root == child_obj):
+                if(owner.profile.root == child_obj):
                     return Response(data={"message": "ROOT folder not allowed in this operation"}, status=status.HTTP_400_BAD_REQUEST)
 
                 matches = new_parent_children_folder.filter(
