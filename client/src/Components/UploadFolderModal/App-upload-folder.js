@@ -9,7 +9,7 @@ import {
   updateChild,
   toggleReplaceModal,
 } from "../../store/slices/structureSlice";
-import { updateStorageData } from "../../store/slices/authSlice";
+import { updateStorageData,selectUserData } from "../../store/slices/authSlice";
 import FolderIcon from "@material-ui/icons/Folder";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
@@ -20,6 +20,8 @@ function App({ modalClose, parent }) {
   const dispatch = useDispatch();
 
   let loading = useSelector(fileLoading);
+  let userData=useSelector(selectUserData);
+  let dataLeftIntheDrive=userData.storage_data.left;
 
   let [progress, setProgress] = useState(0);
 
@@ -29,13 +31,19 @@ function App({ modalClose, parent }) {
 
       setProgress(0);
       dispatch(fileUploadLoader());
-
+      let bytesToBeUploaded=0;
       let pathJSON = [];
       const formData = new FormData();
       for (let [index, val] of acceptedFiles.entries()) {
         pathJSON[index] = val.path; // comment this for multi-file
         formData.append("file", val);
-        console.log(val)
+        bytesToBeUploaded+=val.size
+        // console.log(val)
+      }
+      if(bytesToBeUploaded>dataLeftIntheDrive){
+        dispatch(fileUploadLoader());
+        dispatch(error("Insufficient storage space available, clean your drive and try again"))
+        return;
       }
       formData.append("PARENT", parent);
 

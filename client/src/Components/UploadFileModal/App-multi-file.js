@@ -21,6 +21,8 @@ function App({ parent, modalClose }) {
   const dispatch = useDispatch();
 
   let loading = useSelector(fileLoading);
+  let userData=useSelector(selectUserData);
+  let dataLeftIntheDrive=userData.storage_data.left;
 
   let [progress, setProgress] = useState(0);
 
@@ -37,12 +39,19 @@ function App({ parent, modalClose }) {
       for (let [index, val] of acceptedFiles.entries()) {
         console.log(index);
         // pathJSON[index] = val.path; // comment this for multi-file
-        console.log(val)
+        // console.log(val)
         bytesToBeUploaded+=val.size
         formData.append("file", val);
       }
 
-      console.log(bytesToBeUploaded)
+      if(bytesToBeUploaded>dataLeftIntheDrive){
+        dispatch(fileUploadLoader());
+        dispatch(error("Insufficient storage space available, clean your drive and try again"))
+        return;
+      }
+
+
+      // console.log(bytesToBeUploaded)
 
       formData.append("PARENT", parent);
       formData.append("REPLACE", 0);
