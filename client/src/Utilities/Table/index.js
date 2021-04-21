@@ -179,10 +179,8 @@ export default function TableComponent({
                 </IconButton>
               </StyledTableCell>
               {showOwner ? <StyledTableCell>Owner</StyledTableCell> : null}
-              <StyledTableCell></StyledTableCell>
-              <StyledTableCell>Privacy</StyledTableCell>
               <StyledTableCell>
-                Time Created
+                Last Modified
                 <IconButton
                   onClick={() => dispatch(setOrderBy("last_modified"))}
                   size="small"
@@ -201,6 +199,8 @@ export default function TableComponent({
                   <ArrowDownwardIcon />
                 </IconButton>
               </StyledTableCell>
+              <StyledTableCell>Privacy</StyledTableCell>
+              <StyledTableCell>Created</StyledTableCell>
             </TableRow>
           </TableHead>
           <ClickAwayListener onClickAway={() => dispatch(resetSelection())}>
