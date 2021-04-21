@@ -20,6 +20,7 @@ import GoogleLogin from "react-google-login";
 // import { googleLogin } from "../../store/slices/authSlice";
 import { googleLogin } from "../../axios";
 import Developers from "./developers";
+import APIDoc from "./apiDoc"
 
 import LoginPic from "../../assets/login.png";
 
@@ -36,6 +37,7 @@ export function Copyright() {
         {new Date().getFullYear()}
         {"."}
       </Typography>
+      <APIDoc/>
       <Developers />
     </div>
   );
