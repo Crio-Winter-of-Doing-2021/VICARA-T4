@@ -46,6 +46,7 @@ function App({ parent, modalClose }) {
 
       if(bytesToBeUploaded>dataLeftIntheDrive){
         dispatch(fileUploadLoader());
+        modalClose();
         dispatch(error("Insufficient storage space available, clean your drive and try again"))
         return;
       }
