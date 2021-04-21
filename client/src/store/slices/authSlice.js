@@ -24,6 +24,8 @@ export const authSlice = createSlice({
       //console.log("update data", action.payload);
       state.userData.storage_data.readable = action.payload.readable;
       state.userData.storage_data.ratio = action.payload.ratio;
+      state.userData.storage_data.left = action.payload.left;
+      console.log("left",action.payload.left)
     },
     setProfilePicture: (state, action) => {
       state.userData.profile_picture_url = action.payload;

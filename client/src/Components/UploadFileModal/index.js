@@ -66,8 +66,8 @@ export default function FormDialog(props) {
       .then((res) => {
         // console.log(res.data);
         dispatch(updateChild(res.data.file_data));
-        const { readable, ratio } = res.data;
-        dispatch(updateStorageData({ readable, ratio }));
+        const { readable, ratio,left } = res.data;
+        dispatch(updateStorageData({ readable, ratio,left }));
         dispatch(normalLoader());
         dispatch(success("Your Action was Successful"));
         handleClose();

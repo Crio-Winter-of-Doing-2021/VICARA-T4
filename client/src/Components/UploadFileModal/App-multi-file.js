@@ -76,8 +76,8 @@ function App({ parent, modalClose }) {
           }
           modalClose();
           //console.log("data = ", res.data);
-          const { readable, ratio } = res.data;
-          dispatch(updateStorageData({ readable, ratio }));
+          const { readable, ratio,left } = res.data;
+          dispatch(updateStorageData({ readable, ratio,left }));
           dispatch(fileUploadLoader());
           dispatch(success("Your Action was Successful"));
         })

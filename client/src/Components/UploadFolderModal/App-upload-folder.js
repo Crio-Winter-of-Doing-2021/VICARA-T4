@@ -70,8 +70,8 @@ function App({ modalClose, parent }) {
 
           dispatch(updateChild(res.data));
           modalClose();
-          const { readable, ratio } = res.data;
-          dispatch(updateStorageData({ readable, ratio }));
+          const { readable, ratio,left } = res.data;
+          dispatch(updateStorageData({ readable, ratio ,left}));
           dispatch(fileUploadLoader());
           dispatch(success("Your Action was Successful"));
         })
