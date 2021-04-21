@@ -77,6 +77,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "ratio": used/avail,
             "avail": avail,
             "used": used,
+            "left": avail-used
         }
 
         return data

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  # required for serving swagger ui's css/js files
     # Third-Party Apps
     'corsheaders',
     'rest_framework',
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'social_django',
     'drf_social_oauth2',
+    'drf_yasg',
     # Local Apps (Your project's apps)
     'user.apps.UserConfig',
     'file.apps.FileConfig',
@@ -162,7 +163,8 @@ REST_FRAMEWORK = {
         'drf_social_oauth2.authentication.SocialAuthentication',
     ), 'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 AUTHENTICATION_BACKENDS = (
     # Google OAuth2
@@ -230,6 +232,8 @@ else:
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
+STATIC_URL = '/staticfiles/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOW_HEADERS = default_headers + (
