@@ -10,7 +10,7 @@ import {
   updateChild,
   toggleReplaceModal,
 } from "../../store/slices/structureSlice";
-import { updateStorageData } from "../../store/slices/authSlice";
+import { updateStorageData,selectUserData } from "../../store/slices/authSlice";
 // import Button from '@material-ui/core/Button';
 import { Typography } from "@material-ui/core";
 import DevicesIcon from "@material-ui/icons/Devices";
@@ -32,12 +32,18 @@ function App({ parent, modalClose }) {
       dispatch(fileUploadLoader());
 
       // let pathJSON = [];
+      let bytesToBeUploaded=0;
       const formData = new FormData();
       for (let [index, val] of acceptedFiles.entries()) {
         console.log(index);
         // pathJSON[index] = val.path; // comment this for multi-file
+        console.log(val)
+        bytesToBeUploaded+=val.size
         formData.append("file", val);
       }
+
+      console.log(bytesToBeUploaded)
+
       formData.append("PARENT", parent);
       formData.append("REPLACE", 0);
 
