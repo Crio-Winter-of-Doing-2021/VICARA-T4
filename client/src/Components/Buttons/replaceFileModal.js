@@ -42,8 +42,8 @@ export default function AlertDialog() {
       API.post("/api/folder/", formData)
         .then((res) => {
           dispatch(updateChild(res.data));
-          const { readable, ratio } = res.data;
-          dispatch(updateStorageData({ readable, ratio }));
+          const { readable, ratio,left } = res.data;
+          dispatch(updateStorageData({ readable, ratio,left }));
           dispatch(normalLoader());
           dispatch(success("Your Action was Successful"));
         })
@@ -73,8 +73,8 @@ export default function AlertDialog() {
           }
 
           //console.log("data = ", res.data);
-          const { readable, ratio } = res.data;
-          dispatch(updateStorageData({ readable, ratio }));
+          const { readable, ratio ,left} = res.data;
+          dispatch(updateStorageData({ readable, ratio,left }));
           dispatch(fileUploadLoader());
           dispatch(success("Your Action was Successful"));
         })

@@ -239,8 +239,8 @@ export const addFolderAsync = (data) => (dispatch) => {
       console.log("succ in add folder");
       console.log({ res });
       dispatch(updateChild(res.data));
-      const { readable, ratio } = res.data;
-      dispatch(updateStorageData({ readable, ratio }));
+      const { readable, ratio,left } = res.data;
+      dispatch(updateStorageData({ readable, ratio,left }));
       dispatch(normalLoader());
       dispatch(success("Your Action was Successful"));
     })

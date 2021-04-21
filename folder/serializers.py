@@ -34,6 +34,7 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     type = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
+    size_bytes = serializers.SerializerMethodField()
 
     class Meta:
         model = Folder
@@ -42,6 +43,9 @@ class FolderSerializerWithoutChildren(serializers.ModelSerializer):
 
     def get_type(self, obj):
         return "folder"
+
+    def get_size_bytes(self, obj):
+        return obj.size
 
     def get_size(self, obj):
         return humanize.naturalsize(obj.size)
