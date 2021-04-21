@@ -20,4 +20,3 @@ django-celery-results
 redis
 coverage
 drf_social_oauth2
-drf-yasg
