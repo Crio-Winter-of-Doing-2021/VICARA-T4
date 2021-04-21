@@ -106,11 +106,16 @@ export default function TableComponent({
   const compareByLastModified = (a, b) => {
     return a.last_modified_ms < b.last_modified_ms;
   };
+  const compareBySize = (a, b) => {
+    return a.size_bytes > b.size_bytes;
+  };
   const orderBy = useSelector(selectOrderBy);
   if (orderBy === "last_modified") {
     tableData.sort(compareByLastModified);
-  } else {
+  } else if (orderBy === "name") {
     tableData.sort(compareByName);
+  } else {
+    tableData.sort(compareBySize);
   }
 
   const tableRenderer = tableData.map((data, index) => {
@@ -161,7 +166,7 @@ export default function TableComponent({
     <div>
       <TableContainer style={{ margin: "20px 10px" }} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
-          <TableHead >
+          <TableHead>
             <TableRow className="rowClass">
               <StyledTableCell>
                 Name
@@ -186,7 +191,16 @@ export default function TableComponent({
                   <ArrowDownwardIcon />
                 </IconButton>
               </StyledTableCell>
-              <StyledTableCell>Size</StyledTableCell>
+              <StyledTableCell>
+                Size
+                <IconButton
+                  onClick={() => dispatch(setOrderBy("size"))}
+                  size="small"
+                  style={{ color: "white", margin: "2px" }}
+                >
+                  <ArrowDownwardIcon />
+                </IconButton>
+              </StyledTableCell>
             </TableRow>
           </TableHead>
           <ClickAwayListener onClickAway={() => dispatch(resetSelection())}>

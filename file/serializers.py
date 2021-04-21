@@ -14,15 +14,19 @@ class FileSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
     owner = UserSerializer(read_only=True)
+    size_bytes = serializers.SerializerMethodField()
 
     class Meta:
         model = File
 
         fields = ('created_at', 'last_modified', 'last_modified_ms', 'shared_among', 'name',
-                  'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size', 'type')
+                  'id', 'parent', 'privacy', 'owner', 'trash', 'favourite', 'size', 'type', 'size_bytes')
 
     def get_size(self, obj):
         return humanize.naturalsize(obj.size)
+
+    def get_size_bytes(self, obj):
+        return obj.size
 
     def get_type(self, obj):
         return "file"
