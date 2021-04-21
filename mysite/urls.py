@@ -33,11 +33,11 @@ urlpatterns = [
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
+        title="VICARA",
         default_version='v1',
-        description="Test description",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
+        description="https://vicara.netlify.app/",
+        terms_of_service="https://vicara.netlify.app/",
+        contact=openapi.Contact(email="vicara.t4@gmail.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
