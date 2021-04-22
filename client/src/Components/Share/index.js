@@ -27,6 +27,7 @@ import {
   setUsersWithAccess,
   removeUsersWithAccess,
   selectUsersWithAccess,
+  resetUsers,
 } from "../../store/slices/shareSlice";
 import { updateChildAsync } from "../../store/slices/structureSlice";
 
@@ -70,6 +71,7 @@ export default function FormDialog(props) {
 
   const handleClose = () => {
     setOpen(false);
+    dispatch(resetUsers());
   };
   const { shared_among, type, id, privacy } = props.data;
   return (
