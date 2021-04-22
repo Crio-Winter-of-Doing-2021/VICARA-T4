@@ -36,8 +36,10 @@ function ContextMenu(props) {
   const { id, type } = data;
 
   const { path } = props.match;
+
   //console.log({ path });
   //console.log({ rightClickOptions });
+
   const {
     showShare,
     showTrash,

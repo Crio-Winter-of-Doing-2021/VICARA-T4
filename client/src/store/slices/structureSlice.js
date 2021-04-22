@@ -15,6 +15,7 @@ export const structureSlice = createSlice({
         id: "HOME",
       },
     ],
+    path: "/drive/:id",
     children: {},
     navSearchResults: [],
     orderBy: "last_modified",
@@ -134,10 +135,14 @@ export const structureSlice = createSlice({
         state.replaceModal.requestData = action.payload.requestData;
       }
     },
+    setPath: (state, action) => {
+      state.path = action.payload;
+    },
   },
 });
 
 export const {
+  setPath,
   updateStructure,
   pushToCurrentStack,
   updateFileName,
@@ -239,8 +244,8 @@ export const addFolderAsync = (data) => (dispatch) => {
       console.log("succ in add folder");
       console.log({ res });
       dispatch(updateChild(res.data));
-      const { readable, ratio,left } = res.data;
-      dispatch(updateStorageData({ readable, ratio,left }));
+      const { readable, ratio, left } = res.data;
+      dispatch(updateStorageData({ readable, ratio, left }));
       dispatch(normalLoader());
       dispatch(success("Your Action was Successful"));
     })
@@ -398,6 +403,7 @@ export const selectCheckedCount = (state) => {
 };
 export const navStructure = (state) => state.structure.currentPath;
 export const selectOrderBy = (state) => state.structure.orderBy;
+export const selectPath = (state) => state.structure.path;
 export const selectNavSearchResults = (state) =>
   state.structure.navSearchResults;
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
@@ -9,6 +9,7 @@ import {
   resetSelection,
   selectOrderBy,
   setOrderBy,
+  setPath,
 } from "../../store/slices/structureSlice";
 
 import EmptyFolderPic from "../../assets/rest.png";
@@ -43,6 +44,7 @@ import { skeletonLoading } from "../../store/slices/loaderSlice";
 import { typeTest } from "../fileType";
 import SortIcon from "@material-ui/icons/Sort";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import { withRouter } from "react-router";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -85,19 +87,24 @@ let loaderStructure = [1, 2, 3, 4, 5, 6, 7, 8].map((key) => {
   );
 });
 
-export default function TableComponent({
+function TableComponent({
   privacyOptions,
   favouriteOptions,
   tableData,
   showOwner,
   ...props
 }) {
+  const dispatch = useDispatch();
+  const { path } = props.match;
+  useEffect(() => {
+    dispatch(setPath(path));
+  }, [dispatch, path]);
+
   const classes = useStyles();
 
   let loading = useSelector(skeletonLoading);
 
   // let tableData = [];
-  const dispatch = useDispatch();
 
   const compareByName = (a, b) => {
     return a.name > b.name;
@@ -418,3 +425,5 @@ const nameAndFavouriteCell = ({
     </StyledTableCell>
   );
 };
+
+export default withRouter(TableComponent);

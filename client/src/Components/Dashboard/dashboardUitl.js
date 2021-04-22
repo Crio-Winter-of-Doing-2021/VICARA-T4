@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -29,7 +29,7 @@ import { asyncLocalStorage } from "../../Utilities/localStoreAsync";
 import { setCurrentPage } from "../../store/slices/loaderSlice";
 
 import Search from "./search";
-import { resetSelection } from "../../store/slices/structureSlice";
+import { resetSelection, selectPath } from "../../store/slices/structureSlice";
 
 const drawerWidth = 280;
 
@@ -71,7 +71,7 @@ export default function ClippedDrawer(props) {
   const classes = useStyles();
 
   const dispatch = useDispatch();
-
+  const path = useSelector(selectPath);
   const handlePageChange = (e, data) => {
     //console.log(data);
     dispatch(emptykeys());
@@ -149,16 +149,12 @@ export default function ClippedDrawer(props) {
                       dispatch(setCurrentPage(data.name));
                       dispatch(resetSelection());
                     }}
-                    to={
-                      data.name === "Home"
-                        ? `/drive/${id}`
-                        : data.name === "Shared with Me"
-                        ? `/shared-with-me`
-                        : `/${data.name}`
-                    }
+                    to={data.name === "Home" ? `/drive/${id}` : data.routerPath}
                   >
+                    {console.log(data.routerPath, path)}
                     <ListItem
                       button
+                      selected={data.routerPath === path}
                       onClick={(e) => handlePageChange(e, data.name)}
                       key={data.name}
                       className={

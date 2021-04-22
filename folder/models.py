@@ -29,6 +29,7 @@ class Folder(models.Model):
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
+
     objects = models.Manager()
     custom_objects = FolderManager()
 

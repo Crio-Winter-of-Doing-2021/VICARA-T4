@@ -33,6 +33,7 @@ class File(models.Model):
     privacy = models.BooleanField(default=True)
     trash = models.BooleanField(default=False)
     favourite = models.BooleanField(default=False)
+    temporary = models.BooleanField(default=False)
     size = models.IntegerField(default=0)
     objects = models.Manager()
     custom_objects = FileManager()
