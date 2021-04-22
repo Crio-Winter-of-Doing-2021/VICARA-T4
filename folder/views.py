@@ -378,7 +378,7 @@ class DownloadFolder(APIView):
         file = File(file=djangofile,
                     name=f"{name_for_file_obj}.zip",
                     owner=owner,
-                    parent=None)
+                    parent=None, temporary=True)
         file.save()
         return file
 

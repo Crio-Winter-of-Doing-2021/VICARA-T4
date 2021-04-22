@@ -74,7 +74,7 @@ class FolderSerializer(FolderSerializerWithoutChildren):
         folders = FolderSerializerWithoutChildren(folders, many=True).data
 
         # files
-        files = obj.children_file.filter(trash=False)
+        files = obj.children_file.filter(trash=False, temporary=False)
         files = FileSerializer(files, many=True).data
 
         result_list = list(chain(folders, files))

@@ -215,7 +215,8 @@ class Recent(APIView):
         folders = FolderSerializerWithoutChildren(folders, many=True).data
 
         # files
-        files = File.objects.filter(owner=request.user, trash=False)
+        files = File.objects.filter(
+            owner=request.user, trash=False, temporary=False)
         files = FileSerializer(files, many=True).data
 
         # combined
