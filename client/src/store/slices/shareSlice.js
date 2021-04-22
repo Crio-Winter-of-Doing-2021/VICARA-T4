@@ -9,6 +9,9 @@ export const shareSlice = createSlice({
     searchResults: [],
   },
   reducers: {
+    resetUsers: (state, action) => {
+      state.usersWithAccess = {};
+    },
     setSearchResults: (state, action) => {
       state.searchResults = action.payload;
     },
@@ -26,6 +29,7 @@ export const {
   setSearchResults,
   setUsersWithAccess,
   removeUsersWithAccess,
+  resetUsers,
 } = shareSlice.actions;
 
 export const searchUserAsync = (value) => (dispatch) => {
